@@ -7,6 +7,10 @@ import sharp from "sharp";
 
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
+import { Officers } from "./collections/Officers";
+import { RecruitmentRoles } from "./collections/RecruitmentRoles";
+import { GuildSettings } from "./globals/GuildSettings";
+import { Progression } from "./globals/Progression";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -18,7 +22,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Officers, RecruitmentRoles],
+  globals: [GuildSettings, Progression],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

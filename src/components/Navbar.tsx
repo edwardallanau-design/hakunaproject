@@ -61,7 +61,7 @@ export function Navbar() {
           <span
             className="tracking-wider text-sm hidden sm:block transition-colors"
             style={{
-              fontFamily: "'Pirata One', serif",
+              fontFamily: "'Bebas Neue', sans-serif",
               color: isVoid ? "#e2d9f3" : "#1e1b0f",
               textShadow: isVoid ? "0 0 20px rgba(168,85,247,0.5)" : "0 0 20px rgba(245,158,11,0.4)",
             }}
@@ -78,7 +78,7 @@ export function Navbar() {
               href={l.href}
               className="text-sm tracking-widest transition-colors duration-200"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "'Rajdhani', sans-serif",
                 color: isVoid ? "rgba(226,217,243,0.65)" : "rgba(30,27,15,0.6)",
               }}
               onMouseEnter={(e) => {
@@ -116,7 +116,7 @@ export function Navbar() {
               <span
                 className="text-xs tracking-widest hidden sm:block"
                 style={{
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Rajdhani', sans-serif",
                   color: isVoid ? "#a855f7" : "#f59e0b",
                 }}
               >
@@ -152,7 +152,7 @@ export function Navbar() {
                 href={l.href}
                 onClick={() => setOpen(false)}
                 className="block py-3 text-sm tracking-widest"
-                style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}
+                style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}
               >
                 {l.label}
               </a>

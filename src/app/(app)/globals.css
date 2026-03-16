@@ -1,12 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap");
 
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-cinzel-deco: "Pirata One", serif;
-  --font-cinzel: "Cinzel", serif;
+  --font-cinzel-deco: "Bebas Neue", sans-serif;
+  --font-cinzel: "Rajdhani", sans-serif;
   --font-body: "EB Garamond", serif;
 }
 

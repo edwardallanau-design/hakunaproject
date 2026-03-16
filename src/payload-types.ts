@@ -69,6 +69,8 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    officers: Officer;
+    'recruitment-roles': RecruitmentRole;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -87,7 +89,10 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
+  globals: {
+    'guild-settings': GuildSettingsGlobal;
+    progression: ProgressionGlobal;
+  };
   globalsSelect: {};
   locale: null;
   user: User;
@@ -95,6 +100,60 @@ export interface Config {
     tasks: unknown;
     workflows: unknown;
   };
+}
+
+export interface Officer {
+  id: string;
+  name: string;
+  class: 'Death Knight' | 'Demon Hunter' | 'Druid' | 'Evoker' | 'Hunter' | 'Mage' | 'Monk' | 'Paladin' | 'Priest' | 'Rogue' | 'Shaman' | 'Warlock' | 'Warrior';
+  spec: string;
+  role: 'Tank' | 'Healer' | 'DPS';
+  rank?: string | null;
+  ilvl?: number | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface RecruitmentRole {
+  id: string;
+  role: 'Tank' | 'Healer' | 'DPS';
+  specs?: { id: string; spec: string }[] | null;
+  priority?: 'High' | 'Medium' | 'Low' | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface GuildSettingsGlobal {
+  id: string;
+  name?: string | null;
+  tagline?: string | null;
+  server?: string | null;
+  region?: string | null;
+  faction?: string | null;
+  founded?: string | null;
+  description?: string | null;
+  raidSchedule?: { id: string; day: string }[] | null;
+  stats?: {
+    members?: number | null;
+    cuttingEdge?: number | null;
+    keystoneRuns?: number | null;
+    worldRank?: number | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface ProgressionGlobal {
+  id: string;
+  tier?: string | null;
+  season?: string | null;
+  mythicKills?: number | null;
+  totalBosses?: number | null;
+  bosses?: { id: string; name: string; mythic?: boolean | null }[] | null;
+  updatedAt: string;
+  createdAt: string;
 }
 export interface UserAuthOperations {
   forgotPassword: {

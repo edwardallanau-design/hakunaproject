@@ -2,15 +2,16 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { recruitmentRoles } from "@/lib/guildData";
 import { ExternalLink } from "lucide-react";
+
+type RecruitmentRoleData = { role: string; specs: string[]; priority: string }
 
 const PRIORITY_STYLE: Record<string, { bg: string; text: string }> = {
   High: { bg: "rgba(239,68,68,0.15)", text: "#f87171" },
   Low:  { bg: "rgba(34,211,238,0.1)", text: "#22d3ee" },
 };
 
-export function Recruitment() {
+export function Recruitment({ recruitmentRoles }: { recruitmentRoles: RecruitmentRoleData[] }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -45,13 +46,13 @@ export function Recruitment() {
           className="text-center mb-14"
         >
           <p className="text-xs tracking-[0.3em] uppercase mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "var(--accent)" }}>
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--accent)" }}>
             Join the Ranks
           </p>
           <h2
             className="glow-text mb-4"
             style={{
-              fontFamily: "'Pirata One', serif",
+              fontFamily: "'Bebas Neue', sans-serif",
               fontSize: "clamp(1.6rem, 4vw, 2.8rem)",
               color: "var(--text)",
             }}
@@ -78,13 +79,13 @@ export function Recruitment() {
                 className="glass-card rounded-2xl p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: "0.95rem", color: "var(--text)" }}>
+                  <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "0.95rem", color: "var(--text)" }}>
                     {r.role}
                   </h3>
                   <span
                     className="text-xs px-2 py-0.5 rounded-full"
                     style={{
-                      fontFamily: "'Cinzel', serif",
+                      fontFamily: "'Rajdhani', sans-serif",
                       background: ps.bg,
                       color: ps.text,
                       border: `1px solid ${ps.text}44`,
@@ -99,7 +100,7 @@ export function Recruitment() {
                       key={spec}
                       className="px-2.5 py-1 rounded-md text-xs"
                       style={{
-                        fontFamily: "'Cinzel', serif",
+                        fontFamily: "'Rajdhani', sans-serif",
                         background: isVoid ? "rgba(124,58,237,0.1)" : "rgba(245,158,11,0.08)",
                         border: "1px solid var(--border)",
                         color: "var(--muted)",
@@ -128,7 +129,7 @@ export function Recruitment() {
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-10 py-4 rounded-xl text-sm tracking-widest font-medium transition-all duration-300"
             style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Rajdhani', sans-serif",
               background: isVoid
                 ? "linear-gradient(135deg, #7c3aed, #4a1d8a)"
                 : "linear-gradient(135deg, #f59e0b, #d97706)",
@@ -146,7 +147,7 @@ export function Recruitment() {
           >
             Apply via Discord <ExternalLink size={14} />
           </a>
-          <p className="text-xs" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
+          <p className="text-xs" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
             Exceptional players of any role are always considered
           </p>
         </motion.div>

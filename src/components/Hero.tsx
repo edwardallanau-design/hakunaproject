@@ -193,7 +193,7 @@ export function Hero() {
             <h1
               className="tracking-widest leading-tight glow-text"
               style={{
-                fontFamily: "'Pirata One', serif",
+                fontFamily: "'Bebas Neue', sans-serif",
                 fontSize: "clamp(2rem, 7vw, 5rem)",
                 color: isVoid ? "#e2d9f3" : "#1e1b0f",
               }}
@@ -203,7 +203,7 @@ export function Hero() {
             <p
               className="tracking-[0.3em] text-xs sm:text-sm"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "'Rajdhani', sans-serif",
                 color: "var(--muted)",
               }}
             >
@@ -218,7 +218,7 @@ export function Hero() {
                 key={tag}
                 className="px-3 py-1 rounded-full text-xs tracking-wider"
                 style={{
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Rajdhani', sans-serif",
                   background: isVoid ? "rgba(124,58,237,0.15)" : "rgba(245,158,11,0.12)",
                   border: "1px solid var(--border)",
                   color: isVoid ? "#c084fc" : "#b45309",
@@ -235,7 +235,7 @@ export function Hero() {
               href="#progression"
               className="px-7 py-3 rounded-lg text-sm tracking-widest font-medium transition-all duration-300"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "'Rajdhani', sans-serif",
                 background: isVoid
                   ? "linear-gradient(135deg, #7c3aed, #4a1d8a)"
                   : "linear-gradient(135deg, #f59e0b, #d97706)",
@@ -261,7 +261,7 @@ export function Hero() {
               href="#recruitment"
               className="px-7 py-3 rounded-lg text-sm tracking-widest font-medium transition-all duration-300"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "'Rajdhani', sans-serif",
                 background: "transparent",
                 border: "1px solid var(--border)",
                 color: "var(--text)",

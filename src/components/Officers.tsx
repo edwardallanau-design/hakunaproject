@@ -3,11 +3,17 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, Heart, Swords } from "lucide-react";
-import { officers, CLASS_COLORS } from "@/lib/guildData";
+const CLASS_COLORS: Record<string, string> = {
+  "Death Knight": "#C41E3A", "Demon Hunter": "#A330C9", Druid: "#FF7C0A",
+  Evoker: "#33937F", Hunter: "#AAD372", Mage: "#3FC7EB", Monk: "#00FF98",
+  Paladin: "#F48CBA", Priest: "#FFFFFF", Rogue: "#FFF468", Shaman: "#0070DD",
+  Warlock: "#8788EE", Warrior: "#C69B3A",
+};
 
 const ROLE_ICONS = { Tank: Shield, Healer: Heart, DPS: Swords };
 
-export function Officers() {
+type OfficerData = { id: string; name: string; class: string; spec: string; role: string; rank: string; ilvl: number }
+export function Officers({ officers }: { officers: OfficerData[] }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -34,13 +40,13 @@ export function Officers() {
           className="text-center mb-14"
         >
           <p className="text-xs tracking-[0.3em] uppercase mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
             The Vanguard
           </p>
           <h2
             className="glow-text"
             style={{
-              fontFamily: "'Pirata One', serif",
+              fontFamily: "'Bebas Neue', sans-serif",
               fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
               color: "var(--text)",
             }}
@@ -79,7 +85,7 @@ export function Officers() {
                   <div>
                     <p
                       className="text-sm font-medium"
-                      style={{ fontFamily: "'Cinzel', serif", color: "var(--text)" }}
+                      style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text)" }}
                     >
                       {member.name}
                     </p>
@@ -92,17 +98,17 @@ export function Officers() {
                 {/* Details */}
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs">
-                    <span style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>Spec</span>
-                    <span style={{ fontFamily: "'Cinzel', serif", color: "var(--text)" }}>{member.spec}</span>
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>Spec</span>
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text)" }}>{member.spec}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>Role</span>
-                    <span style={{ fontFamily: "'Cinzel', serif", color: "var(--text)" }}>{member.role}</span>
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>Role</span>
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text)" }}>{member.role}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>ilvl</span>
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>ilvl</span>
                     <span style={{
-                      fontFamily: "'Cinzel', serif",
+                      fontFamily: "'Rajdhani', sans-serif",
                       color: isVoid ? "#22d3ee" : "#f59e0b",
                     }}>
                       {member.ilvl}
@@ -114,7 +120,7 @@ export function Officers() {
                 <div
                   className="mt-auto px-2 py-1 rounded-md text-center text-xs tracking-wider"
                   style={{
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "'Rajdhani', sans-serif",
                     background: isVoid ? "rgba(124,58,237,0.1)" : "rgba(245,158,11,0.1)",
                     border: "1px solid var(--border)",
                     color: "var(--muted)",

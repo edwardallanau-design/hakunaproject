@@ -3,8 +3,6 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Users, Trophy, Swords, Globe } from "lucide-react";
-import { guild } from "@/lib/guildData";
-
 function useCountUp(target: number, active: boolean, duration = 1600) {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -21,12 +19,7 @@ function useCountUp(target: number, active: boolean, duration = 1600) {
   return val;
 }
 
-const stats = [
-  { icon: Users, value: guild.stats.members, label: "Members", suffix: "" },
-  { icon: Trophy, value: guild.stats.cuttingEdge, label: "Cutting Edge", suffix: "" },
-  { icon: Swords, value: guild.stats.keystoneRuns, label: "M+ Runs", suffix: "" },
-  { icon: Globe, value: guild.stats.worldRank, label: "World Rank", prefix: "#" },
-];
+type StatsData = { members: number; cuttingEdge: number; keystoneRuns: number; worldRank: number }
 
 function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }: {
   icon: typeof Users; value: number; label: string; prefix?: string; suffix?: string; isVoid: boolean;
@@ -48,7 +41,7 @@ function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }
       <span
         className="leading-none"
         style={{
-          fontFamily: "'Pirata One', serif",
+          fontFamily: "'Bebas Neue', sans-serif",
           fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
           color: "var(--text)",
           textShadow: isVoid ? "0 0 20px rgba(168,85,247,0.4)" : "0 0 16px rgba(245,158,11,0.3)",
@@ -58,7 +51,7 @@ function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }
       </span>
       <span
         className="text-xs tracking-[0.2em] uppercase"
-        style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}
+        style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}
       >
         {label}
       </span>
@@ -66,11 +59,18 @@ function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }
   );
 }
 
-export function StatsBar() {
+export function StatsBar({ stats }: { stats: StatsData }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const isVoid = resolvedTheme !== "light";
+
+  const items = [
+    { icon: Users,  value: stats.members,      label: "Members",      suffix: "" },
+    { icon: Trophy, value: stats.cuttingEdge,   label: "Cutting Edge", suffix: "" },
+    { icon: Swords, value: stats.keystoneRuns,  label: "M+ Runs",      suffix: "" },
+    { icon: Globe,  value: stats.worldRank,     label: "World Rank",   prefix: "#" },
+  ];
 
   return (
     <section
@@ -85,7 +85,7 @@ export function StatsBar() {
     >
       <div className="max-w-4xl mx-auto px-5">
         <div className="grid grid-cols-2 sm:grid-cols-4 divide-x" style={{ ["--tw-divide-opacity" as string]: "1" }}>
-          {stats.map((s) => (
+          {items.map((s) => (
             <StatItem key={s.label} {...s} isVoid={mounted ? isVoid : true} />
           ))}
         </div>

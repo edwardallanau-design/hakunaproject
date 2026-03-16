@@ -2,8 +2,9 @@
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { currentProgression } from "@/lib/guildData";
 import { CheckCircle2, Circle } from "lucide-react";
+
+type ProgressionData = { tier: string; season: string; mythicKills: number; totalBosses: number; bosses: { name: string; mythic: boolean }[] }
 
 function ProgressBar({ pct, isVoid }: { pct: number; isVoid: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -36,12 +37,12 @@ function ProgressBar({ pct, isVoid }: { pct: number; isVoid: boolean }) {
   );
 }
 
-export function Progression() {
+export function Progression({ progression }: { progression: ProgressionData }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const isVoid = resolvedTheme !== "light";
-  const pct = Math.round((currentProgression.mythicKills / currentProgression.totalBosses) * 100);
+  const pct = Math.round((progression.mythicKills / progression.totalBosses) * 100);
 
   return (
     <section id="progression" className="py-24 px-5">
@@ -55,21 +56,21 @@ export function Progression() {
           className="text-center mb-14"
         >
           <p className="text-xs tracking-[0.3em] uppercase mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
+            style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
             Current Tier
           </p>
           <h2
             className="glow-text"
             style={{
-              fontFamily: "'Pirata One', serif",
+              fontFamily: "'Bebas Neue', sans-serif",
               fontSize: "clamp(1.5rem, 4vw, 2.4rem)",
               color: "var(--text)",
             }}
           >
-            {currentProgression.tier}
+            {progression.tier}
           </h2>
-          <p className="text-sm mt-2" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
-            {currentProgression.season}
+          <p className="text-sm mt-2" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
+            {progression.season}
           </p>
         </motion.div>
 
@@ -87,21 +88,21 @@ export function Progression() {
               <span
                 className="glow-text"
                 style={{
-                  fontFamily: "'Pirata One', serif",
+                  fontFamily: "'Bebas Neue', sans-serif",
                   fontSize: "clamp(2rem, 5vw, 3rem)",
                   color: "var(--text)",
                 }}
               >
-                {currentProgression.mythicKills}/{currentProgression.totalBosses}
+                {progression.mythicKills}/{progression.totalBosses}
               </span>
-              <span className="text-sm ml-3" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
+              <span className="text-sm ml-3" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
                 Mythic
               </span>
             </div>
             <span
               className="px-3 py-1 rounded-full text-xs tracking-wider"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "'Rajdhani', sans-serif",
                 background: isVoid ? "rgba(34,211,238,0.1)" : "rgba(245,158,11,0.1)",
                 border: "1px solid var(--border)",
                 color: isVoid ? "#22d3ee" : "#b45309",
@@ -118,7 +119,7 @@ export function Progression() {
 
           {/* Boss list */}
           <div className="grid sm:grid-cols-2 gap-3">
-            {currentProgression.bosses.map((boss, i) => (
+            {progression.bosses.map((boss, i) => (
               <motion.div
                 key={boss.name}
                 initial={{ opacity: 0, x: -10 }}
@@ -140,7 +141,7 @@ export function Progression() {
                 <span
                   className="text-sm"
                   style={{
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "'Rajdhani', sans-serif",
                     color: boss.mythic ? "var(--text)" : "var(--muted)",
                     opacity: boss.mythic ? 1 : 0.5,
                   }}
@@ -151,7 +152,7 @@ export function Progression() {
                   <span
                     className="ml-auto text-xs px-2 py-0.5 rounded-full"
                     style={{
-                      fontFamily: "'Cinzel', serif",
+                      fontFamily: "'Rajdhani', sans-serif",
                       background: isVoid ? "rgba(34,211,238,0.12)" : "rgba(245,158,11,0.12)",
                       color: isVoid ? "#22d3ee" : "#b45309",
                       flexShrink: 0,

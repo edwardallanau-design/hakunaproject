@@ -25,7 +25,7 @@ export function Footer() {
         {/* Guild name */}
         <p
           style={{
-            fontFamily: "'Pirata One', serif",
+            fontFamily: "'Bebas Neue', sans-serif",
             fontSize: "1.1rem",
             color: "var(--text)",
             textShadow: isVoid ? "0 0 20px rgba(168,85,247,0.3)" : "0 0 16px rgba(245,158,11,0.3)",
@@ -44,7 +44,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs tracking-wider transition-colors duration-200"
               style={{
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "'Rajdhani', sans-serif",
                 color: "var(--muted)",
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--accent)"; }}
@@ -59,10 +59,10 @@ export function Footer() {
         <div className="w-24 h-px" style={{ background: "var(--border)" }} />
 
         {/* Copyright */}
-        <p className="text-xs" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)", opacity: 0.5 }}>
+        <p className="text-xs" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)", opacity: 0.5 }}>
           © {new Date().getFullYear()} Hakuna Muh Nagga · Zul&apos;jin US · World of Warcraft
         </p>
-        <p className="text-xs opacity-30" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
+        <p className="text-xs opacity-30" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
           World of Warcraft is a trademark of Blizzard Entertainment
         </p>
       </div>
