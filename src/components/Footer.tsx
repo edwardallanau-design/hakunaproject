@@ -1,71 +1,109 @@
 "use client";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronUp } from "lucide-react";
 
 const links = [
-  { label: "Raider.IO", href: "https://raider.io/guilds/us/zuljin/Hakuna%20Muh%20Nagga" },
-  { label: "WoWProgress", href: "https://www.wowprogress.com/guild/us/zuljin/Hakuna+Muh+Nagga" },
-  { label: "Discord", href: "https://discord.gg/placeholder" },
+  { label: "Raider.IO",    href: "https://raider.io/guilds/us/zuljin/Hakuna%20Muh%20Nagga" },
+  { label: "WoWProgress",  href: "https://www.wowprogress.com/guild/us/zuljin/Hakuna+Muh+Nagga" },
+  { label: "Discord",      href: "https://discord.gg/placeholder" },
   { label: "WarcraftLogs", href: "https://www.warcraftlogs.com/guild/us/zuljin/hakuna%20muh%20nagga" },
 ];
 
 export function Footer() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted]   = useState(false);
+  const [showTop, setShowTop]   = useState(false);
+
   useEffect(() => { setMounted(true); }, []);
-  const isVoid = resolvedTheme !== "light";
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 500);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <footer
-      className="py-12 px-5"
-      style={{ borderTop: "1px solid var(--border)" }}
-    >
-      <div className="max-w-4xl mx-auto flex flex-col items-center gap-6 text-center">
-        {/* Guild name */}
-        <p
-          style={{
-            fontFamily: "'Pirata One', serif",
-            fontSize: "1.1rem",
+    <>
+      {/* Floating back-to-top */}
+      <AnimatePresence>
+        {mounted && showTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            whileHover={{ y: -2 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="px-card fixed bottom-6 right-6 z-40 cursor-pointer"
+            style={{
+              width: 40, height: 40,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: 0,
+            }}
+            aria-label="Back to top"
+          >
+            <div className="px-gem tl" style={{ width: 5, height: 5 }} />
+            <ChevronUp size={16} style={{ color: "var(--accent)" }} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <footer
+        style={{
+          borderTop: "2px solid var(--border-dim)",
+          padding: "clamp(36px,4vw,60px) clamp(24px,3vw,48px)",
+        }}
+      >
+        <div style={{ maxWidth: "clamp(480px,60vw,720px)", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(12px,1.2vw,20px)", textAlign: "center" }}>
+          {/* Guild name */}
+          <p style={{
+            fontFamily: "'VT323', monospace",
+            fontSize: "clamp(24px,2vw,36px)",
             color: "var(--text)",
-            textShadow: isVoid ? "0 0 20px rgba(168,85,247,0.3)" : "0 0 16px rgba(245,158,11,0.3)",
-          }}
-        >
-          Hakuna Muh Nagga
-        </p>
+            textShadow: "0 0 16px color-mix(in srgb,var(--glow) 40%,transparent)",
+            letterSpacing: "0.1em",
+          }}>
+            Hakuna Muh Nagga
+          </p>
 
-        {/* Links */}
-        <div className="flex flex-wrap justify-center gap-6">
-          {links.map((l) => (
-            <a
-              key={l.label}
-              href={l.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs tracking-wider transition-colors duration-200"
-              style={{
-                fontFamily: "'Cinzel', serif",
-                color: "var(--muted)",
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--accent)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted)"; }}
-            >
-              {l.label} <ExternalLink size={10} />
-            </a>
-          ))}
+          {/* Links */}
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "clamp(16px,1.8vw,32px)" }}>
+            {links.map((l) => (
+              <a
+                key={l.label}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "var(--px-sm)",
+                  color: "var(--muted)",
+                  textDecoration: "none",
+                  letterSpacing: "0.1em",
+                  transition: "color 200ms ease",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--glow)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted)"; }}
+              >
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
+
+          {/* px-divider */}
+          <div className="px-divider" style={{ width: "100%", maxWidth: 260 }}>
+            <span className="px-divider-label">◆</span>
+          </div>
+
+          {/* Copyright */}
+          <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)", opacity: 0.4, letterSpacing: "0.08em" }}>
+            © {new Date().getFullYear()} Hakuna Muh Nagga · Zul&apos;jin US · World of Warcraft
+          </p>
+          <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", opacity: 0.25, color: "var(--muted)" }}>
+            World of Warcraft is a trademark of Blizzard Entertainment
+          </p>
         </div>
-
-        {/* Divider */}
-        <div className="w-24 h-px" style={{ background: "var(--border)" }} />
-
-        {/* Copyright */}
-        <p className="text-xs" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)", opacity: 0.5 }}>
-          © {new Date().getFullYear()} Hakuna Muh Nagga · Zul&apos;jin US · World of Warcraft
-        </p>
-        <p className="text-xs opacity-30" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
-          World of Warcraft is a trademark of Blizzard Entertainment
-        </p>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }

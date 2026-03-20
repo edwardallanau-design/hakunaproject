@@ -1,35 +1,49 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 const links = [
-  { href: "#home", label: "Home" },
-  { href: "#progression", label: "Progression" },
-  { href: "#roster", label: "Roster" },
-  { href: "#recruitment", label: "Recruitment" },
+  { href: "#home",        label: "HOME" },
+  { href: "#progression", label: "PROGRESSION" },
+  { href: "#roster",      label: "ROSTER" },
+  { href: "#recruitment", label: "RECRUITMENT" },
 ];
 
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted]             = useState(false);
+  const [open, setOpen]                   = useState(false);
+  const [scrolled, setScrolled]           = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isVoid = resolvedTheme !== "light";
+  useEffect(() => {
+    const ids = links.map((l) => l.href.slice(1));
+    const handleScroll = () => {
+      const trigger = window.scrollY + window.innerHeight * 0.38;
+      let current = "home";
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= trigger) current = id;
+      }
+      setActiveSection(current);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  if (!mounted) return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16" />
-  );
+  const isVoid = resolvedTheme !== "light";
+  if (!mounted) return <nav className="fixed top-0 left-0 right-0 z-50" style={{ height: "clamp(52px,4.5vw,72px)" }} />;
 
   return (
     <motion.nav
@@ -39,99 +53,116 @@ export function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
         background: scrolled
-          ? isVoid
-            ? "rgba(3,7,16,0.92)"
-            : "rgba(250,248,242,0.92)"
+          ? isVoid ? "rgba(3,7,16,0.94)" : "rgba(250,248,242,0.95)"
           : "transparent",
         backdropFilter: scrolled ? "blur(16px)" : "none",
-        borderBottom: scrolled ? `1px solid var(--border)` : "1px solid transparent",
+        borderBottom: scrolled ? "2px solid var(--border)" : "2px solid transparent",
+        boxShadow: scrolled ? "0 0 0 1px color-mix(in srgb,var(--accent2) 10%,transparent),0 4px 20px color-mix(in srgb,var(--accent) 12%,transparent)" : "none",
       }}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <div
+        className="max-w-7xl mx-auto flex items-center justify-between gap-3"
+        style={{ padding: "0 clamp(16px,2.5vw,48px)", height: "clamp(52px,4.5vw,72px)" }}
+      >
         {/* Logo */}
-        <a href="#home" className="flex items-center gap-3 group">
-          <Image
-            src="/guild-logo.png"
-            alt="Hakuna Muh Nagga"
-            width={40}
-            height={40}
-            className="rounded-full"
-            style={{ filter: "drop-shadow(0 0 6px var(--glow))" }}
-          />
+        <a href="#home" className="flex items-center gap-2 min-w-0" style={{ textDecoration: "none", flexShrink: 1 }}>
+          {/* Pixel gem replacing image drop-shadow */}
+          <div style={{
+            width: 10, height: 10, flexShrink: 0,
+            background: "var(--glow)",
+            transform: "rotate(45deg)",
+            boxShadow: "0 0 8px var(--glow)",
+          }} />
+          {/* Title — hidden below 520px */}
           <span
-            className="tracking-wider text-sm hidden sm:block transition-colors"
+            className="hidden-below-520"
             style={{
-              fontFamily: "'Pirata One', serif",
-              color: isVoid ? "#e2d9f3" : "#1e1b0f",
-              textShadow: isVoid ? "0 0 20px rgba(168,85,247,0.5)" : "0 0 20px rgba(245,158,11,0.4)",
+              fontFamily: "'VT323', monospace",
+              fontSize: "clamp(18px,1.7vw,32px)",
+              color: "var(--text)",
+              textShadow: "0 0 16px color-mix(in srgb,var(--glow) 70%,transparent)",
+              letterSpacing: "0.1em",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
-            Hakuna Muh Nagga
+            HAKUNA MUH NAGGA
           </span>
         </a>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="text-sm tracking-widest transition-colors duration-200"
-              style={{
-                fontFamily: "'Cinzel', serif",
-                color: isVoid ? "rgba(226,217,243,0.65)" : "rgba(30,27,15,0.6)",
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.color = isVoid ? "#e2d9f3" : "#1e1b0f";
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.color = isVoid ? "rgba(226,217,243,0.65)" : "rgba(30,27,15,0.6)";
-              }}
-            >
-              {l.label}
-            </a>
-          ))}
+        {/* Desktop nav links — hidden below 640px */}
+        <div className="hidden-below-640 items-center" style={{ gap: "clamp(20px,2vw,36px)" }}>
+          {links.map((l) => {
+            const sId = l.href.slice(1);
+            const isActive = activeSection === sId;
+            return (
+              <a
+                key={l.href}
+                href={l.href}
+                style={{
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "var(--px-md)",
+                  color: isActive ? "var(--glow)" : isVoid ? "rgba(226,217,243,0.6)" : "rgba(30,27,15,0.55)",
+                  textShadow: isActive ? "0 0 8px var(--glow)" : "none",
+                  letterSpacing: "0.1em",
+                  textDecoration: "none",
+                  position: "relative",
+                }}
+              >
+                {l.label}
+                {isActive && (
+                  <motion.div
+                    layoutId="navUnderline"
+                    style={{ position: "absolute", bottom: -2, left: 0, right: 0, height: 2, background: "var(--glow)" }}
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </a>
+            );
+          })}
         </div>
 
-        {/* Theme toggle + mobile */}
-        <div className="flex items-center gap-3">
+        {/* Right side controls */}
+        <div className="flex items-center" style={{ gap: 10, flexShrink: 0 }}>
+          {/* Theme toggle */}
           <button
             onClick={() => setTheme(isVoid ? "light" : "dark")}
-            className="relative flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-500 cursor-pointer"
+            className="flex items-center cursor-pointer"
             style={{
-              background: isVoid ? "rgba(124,58,237,0.15)" : "rgba(245,158,11,0.12)",
-              border: `1px solid var(--border)`,
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "var(--px-sm)",
+              gap: 7,
+              padding: "clamp(5px,0.45vw,8px) clamp(8px,0.9vw,14px)",
+              border: "2px solid var(--border)",
+              background: "color-mix(in srgb,var(--accent) 12%,transparent)",
+              color: "var(--glow)",
             }}
             aria-label="Toggle theme"
           >
-            <motion.div
-              animate={{ x: isVoid ? 0 : 2 }}
-              className="flex items-center gap-1.5"
-            >
-              {isVoid ? (
-                <Moon size={14} style={{ color: "#a855f7" }} />
-              ) : (
-                <Sun size={14} style={{ color: "#f59e0b" }} />
-              )}
-              <span
-                className="text-xs tracking-widest hidden sm:block"
-                style={{
-                  fontFamily: "'Cinzel', serif",
-                  color: isVoid ? "#a855f7" : "#f59e0b",
-                }}
-              >
-                {isVoid ? "VOID" : "LIGHT"}
-              </span>
-            </motion.div>
+            {isVoid
+              ? <Moon size={10} style={{ color: "var(--glow)", flexShrink: 0 }} />
+              : <Sun  size={10} style={{ color: "var(--glow)", flexShrink: 0 }} />}
+            <span className="hidden-below-400">{isVoid ? "VOID" : "LIGHT"}</span>
           </button>
 
+          {/* Hamburger — only below 640px */}
           <button
-            className="md:hidden"
+            className="show-below-640"
             onClick={() => setOpen(!open)}
-            style={{ color: "var(--text)" }}
+            aria-expanded={open}
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "var(--px-md)",
+              background: "transparent",
+              border: "1px solid var(--border-dim)",
+              color: "var(--muted)",
+              cursor: "pointer",
+              padding: "clamp(5px,0.45vw,8px) clamp(8px,0.9vw,12px)",
+            }}
             aria-label="Menu"
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? "✕" : "☰"}
           </button>
         </div>
       </div>
@@ -143,20 +174,43 @@ export function Navbar() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="md:hidden px-5 pb-5 pt-2"
-            style={{ background: isVoid ? "rgba(3,7,16,0.96)" : "rgba(250,248,242,0.96)", borderBottom: "1px solid var(--border)" }}
+            style={{
+              background: isVoid ? "rgba(3,7,16,0.97)" : "rgba(250,248,242,0.97)",
+              borderBottom: "2px solid var(--border)",
+              padding: "12px 20px",
+            }}
           >
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="block py-3 text-sm tracking-widest"
-                style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}
-              >
-                {l.label}
-              </a>
-            ))}
+            {links.map((l, i) => {
+              const sId = l.href.slice(1);
+              const isActive = activeSection === sId;
+              return (
+                <motion.a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "10px 8px",
+                    fontFamily: "'Press Start 2P', monospace",
+                    fontSize: "var(--px-md)",
+                    color: isActive ? "var(--glow)" : "var(--muted)",
+                    background: isActive ? "color-mix(in srgb,var(--accent) 10%,transparent)" : "transparent",
+                    textDecoration: "none",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  {isActive && (
+                    <span style={{ width: 6, height: 6, background: "var(--glow)", transform: "rotate(45deg)", flexShrink: 0 }} />
+                  )}
+                  {l.label}
+                </motion.a>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>

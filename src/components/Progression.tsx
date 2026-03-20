@@ -2,46 +2,33 @@
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { currentProgression } from "@/lib/guildData";
-import { CheckCircle2, Circle } from "lucide-react";
+
+type ProgressionData = { tier: string; season: string; mythicKills: number; totalBosses: number; bosses: { name: string; mythic: boolean }[] }
 
 function ProgressBar({ pct, isVoid }: { pct: number; isVoid: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <div ref={ref} className="relative h-3 rounded-full overflow-hidden"
-      style={{ background: isVoid ? "rgba(124,58,237,0.1)" : "rgba(245,158,11,0.1)" }}>
+    <div ref={ref} className="px-progress-wrap">
       <motion.div
-        className="absolute inset-y-0 left-0 rounded-full"
-        style={{
-          background: isVoid
-            ? "linear-gradient(90deg, #7c3aed, #22d3ee)"
-            : "linear-gradient(90deg, #f59e0b, #d97706)",
-        }}
+        className="px-progress-fill"
         initial={{ width: 0 }}
         animate={inView ? { width: `${pct}%` } : { width: 0 }}
         transition={{ duration: 1.4, ease: [0.4, 0, 0.2, 1], delay: 0.2 }}
       />
-      {/* Shimmer */}
-      <motion.div
-        className="absolute inset-y-0 w-16 rounded-full"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-        }}
-        animate={inView ? { x: ["-100%", "600%"] } : {}}
-        transition={{ duration: 1.8, ease: "easeInOut", delay: 0.8 }}
-      />
+      <div className="px-progress-shine" />
     </div>
   );
 }
 
-export function Progression() {
+export function Progression({ progression }: { progression: ProgressionData }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const isVoid = resolvedTheme !== "light";
-  const pct = Math.round((currentProgression.mythicKills / currentProgression.totalBosses) * 100);
+  const pct = Math.round((progression.mythicKills / progression.totalBosses) * 100);
+  const isFullClear = progression.mythicKills === progression.totalBosses;
 
   return (
     <section id="progression" className="py-24 px-5">
@@ -54,22 +41,32 @@ export function Progression() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <p className="text-xs tracking-[0.3em] uppercase mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
-            Current Tier
-          </p>
-          <h2
-            className="glow-text"
-            style={{
-              fontFamily: "'Pirata One', serif",
-              fontSize: "clamp(1.5rem, 4vw, 2.4rem)",
-              color: "var(--text)",
-            }}
-          >
-            {currentProgression.tier}
+          <span style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "var(--px-md)",
+            color: "var(--muted)",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase" as const,
+            display: "block",
+            marginBottom: 12,
+          }}>◆ Current Tier ◆</span>
+          <h2 style={{
+            fontFamily: "'VT323', monospace",
+            fontSize: "var(--vt-lg)",
+            color: "var(--text)",
+            textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)",
+            letterSpacing: "0.08em",
+          }}>
+            {progression.tier}
           </h2>
-          <p className="text-sm mt-2" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
-            {currentProgression.season}
+          <p style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "var(--px-sm)",
+            color: "var(--muted)",
+            marginTop: 8,
+            letterSpacing: "0.1em",
+          }}>
+            {progression.season}
           </p>
         </motion.div>
 
@@ -79,34 +76,65 @@ export function Progression() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="glass-card rounded-2xl p-8"
+          className="px-card"
+          style={{ padding: "clamp(18px,1.6vw,28px)" }}
         >
+          <div className="px-gem tl" /><div className="px-gem tr" />
+          <div className="px-gem bl" /><div className="px-gem br" />
+          {/* Full clear banner */}
+          {isFullClear && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                marginBottom: "clamp(14px,1.4vw,22px)",
+                padding: "clamp(8px,0.8vw,14px)",
+                border: "1px solid var(--accent)",
+                background: "color-mix(in srgb,var(--accent2) 6%,transparent)",
+                textAlign: "center",
+              }}
+            >
+              <span style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "var(--px-lg)",
+                letterSpacing: "0.2em",
+                color: "var(--accent)",
+              }}>
+                ✦ &nbsp;FULL CLEAR&nbsp; ✦
+              </span>
+            </motion.div>
+          )}
+
           {/* Kill count header */}
           <div className="flex items-end justify-between mb-4">
             <div>
-              <span
-                className="glow-text"
-                style={{
-                  fontFamily: "'Pirata One', serif",
-                  fontSize: "clamp(2rem, 5vw, 3rem)",
-                  color: "var(--text)",
-                }}
-              >
-                {currentProgression.mythicKills}/{currentProgression.totalBosses}
+              <span style={{
+                fontFamily: "'VT323', monospace",
+                fontSize: "var(--vt-2xl)",
+                color: "var(--text)",
+                textShadow: "0 0 20px color-mix(in srgb,var(--glow) 60%,transparent)",
+                lineHeight: 1,
+              }}>
+                {progression.mythicKills}/{progression.totalBosses}
               </span>
-              <span className="text-sm ml-3" style={{ fontFamily: "'Cinzel', serif", color: "var(--muted)" }}>
+              <span style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "var(--px-md)",
+                color: "var(--muted)",
+                marginLeft: 10,
+                verticalAlign: "middle",
+              }}>
                 Mythic
               </span>
             </div>
-            <span
-              className="px-3 py-1 rounded-full text-xs tracking-wider"
-              style={{
-                fontFamily: "'Cinzel', serif",
-                background: isVoid ? "rgba(34,211,238,0.1)" : "rgba(245,158,11,0.1)",
-                border: "1px solid var(--border)",
-                color: isVoid ? "#22d3ee" : "#b45309",
-              }}
-            >
+            <span style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "var(--px-md)",
+              color: "var(--accent2)",
+              border: "1px solid color-mix(in srgb,var(--accent2) 30%,transparent)",
+              padding: "clamp(4px,0.4vw,7px) clamp(10px,1vw,16px)",
+              background: "color-mix(in srgb,var(--accent2) 8%,transparent)",
+            }}>
               {pct}% Complete
             </span>
           </div>
@@ -116,47 +144,59 @@ export function Progression() {
             <ProgressBar pct={pct} isVoid={mounted ? isVoid : true} />
           </div>
 
-          {/* Boss list */}
-          <div className="grid sm:grid-cols-2 gap-3">
-            {currentProgression.bosses.map((boss, i) => (
+          {/* Boss list — numbered badges replace icon+text-number */}
+          <div className="grid sm:grid-cols-2 gap-1.5">
+            {progression.bosses.map((boss, i) => (
               <motion.div
                 key={boss.name}
                 initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.07, duration: 0.4 }}
-                className="flex items-center gap-3 py-2 px-3 rounded-lg transition-colors"
                 style={{
-                  background: boss.mythic
-                    ? isVoid ? "rgba(124,58,237,0.08)" : "rgba(245,158,11,0.06)"
-                    : "transparent",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "clamp(8px,0.7vw,12px)",
+                  padding: "clamp(6px,0.55vw,10px) clamp(10px,0.9vw,16px)",
+                  borderLeft: boss.mythic ? "2px solid var(--accent2)" : "2px solid transparent",
+                  background: boss.mythic ? "color-mix(in srgb,var(--accent2) 4%,transparent)" : "transparent",
                 }}
               >
-                {boss.mythic ? (
-                  <CheckCircle2 size={16} style={{ color: isVoid ? "#22d3ee" : "#f59e0b", flexShrink: 0 }} />
-                ) : (
-                  <Circle size={16} style={{ color: "var(--muted)", opacity: 0.4, flexShrink: 0 }} />
-                )}
-                <span
-                  className="text-sm"
-                  style={{
-                    fontFamily: "'Cinzel', serif",
-                    color: boss.mythic ? "var(--text)" : "var(--muted)",
-                    opacity: boss.mythic ? 1 : 0.5,
-                  }}
-                >
-                  {i + 1}. {boss.name}
+                {/* Number badge */}
+                <div style={{
+                  width: "clamp(24px,2vw,34px)", height: "clamp(24px,2vw,34px)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "var(--px-sm)",
+                  border: `1px solid ${boss.mythic ? "color-mix(in srgb,var(--accent2) 50%,transparent)" : "color-mix(in srgb,var(--muted) 20%,transparent)"}`,
+                  color: boss.mythic ? "var(--accent2)" : "var(--muted)",
+                  background: boss.mythic ? "color-mix(in srgb,var(--accent2) 8%,transparent)" : "transparent",
+                }}>
+                  {i + 1}
+                </div>
+                {/* Boss name */}
+                <span style={{
+                  fontFamily: "'VT323', monospace",
+                  fontSize: "var(--vt-sm)",
+                  flex: 1,
+                  color: boss.mythic ? "var(--text)" : "var(--muted)",
+                  opacity: boss.mythic ? 1 : 0.5,
+                  letterSpacing: "0.04em",
+                }}>
+                  {boss.name}
                 </span>
+                {/* Mythic tag */}
                 {boss.mythic && (
-                  <span
-                    className="ml-auto text-xs px-2 py-0.5 rounded-full"
-                    style={{
-                      fontFamily: "'Cinzel', serif",
-                      background: isVoid ? "rgba(34,211,238,0.12)" : "rgba(245,158,11,0.12)",
-                      color: isVoid ? "#22d3ee" : "#b45309",
-                      flexShrink: 0,
-                    }}
-                  >
+                  <span style={{
+                    fontFamily: "'Press Start 2P', monospace",
+                    fontSize: "var(--px-xs)",
+                    color: "var(--accent2)",
+                    background: "color-mix(in srgb,var(--accent2) 10%,transparent)",
+                    border: "1px solid color-mix(in srgb,var(--accent2) 30%,transparent)",
+                    padding: "clamp(2px,0.2vw,4px) clamp(6px,0.55vw,10px)",
+                    flexShrink: 0,
+                  }}>
                     Mythic
                   </span>
                 )}
