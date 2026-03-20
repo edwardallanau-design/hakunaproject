@@ -1,63 +1,90 @@
 "use client";
 import { useTheme } from "next-themes";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const STARS = Array.from({ length: 120 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 2.2 + 0.4,
-  dur: Math.random() * 4 + 2,
-  delay: Math.random() * 5,
-}));
+// Crystal coordinates: [top%, right%, bottom%, left%, size, colorVar, delay]
+const VOID_CRYSTALS = [
+  { top: "13%", right: "11%", size: 11, color: "var(--glow)",    delay: 0   },
+  { top: "29%", right: "21%", size: 6,  color: "var(--accent2)", delay: 0.5 },
+  { bottom: "19%", left: "9%",  size: 9,  color: "var(--accent)",  delay: 1   },
+  { bottom: "34%", left: "19%", size: 5,  color: "var(--accent2)", delay: 1.5 },
+  { top: "19%",  left: "7%",  size: 8,  color: "var(--glow)",    delay: 2   },
+] as const;
 
-function StarField() {
+function VoidCrystals() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {STARS.map((s) => (
+    <>
+      {VOID_CRYSTALS.map((c, i) => (
         <div
-          key={s.id}
-          className="absolute rounded-full"
+          key={i}
+          className="crystal"
           style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: s.size,
-            height: s.size,
-            background: s.id % 5 === 0 ? "#22d3ee" : s.id % 3 === 0 ? "#c084fc" : "#e2d9f3",
-            opacity: 0.15,
-            animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
+            ...("top" in c    ? { top: c.top }       : {}),
+            ...("bottom" in c ? { bottom: c.bottom }  : {}),
+            ...("right" in c  ? { right: c.right }    : {}),
+            ...("left" in c   ? { left: c.left }      : {}),
+            width: c.size, height: c.size,
+            background: c.color,
+            boxShadow: `0 0 ${c.size}px ${c.color}`,
+            animationDelay: `${c.delay}s`,
           }}
         />
       ))}
-    </div>
+    </>
   );
 }
 
-function LightRays() {
+const RAY_ANGLES = [-15, -8, -2, 3, 9, 14];
+const SHARD_POSITIONS = [
+  { top: "14%",    right: "12%",  size: 10, color: "#fbbf24", delay: 0   },
+  { top: "28%",    right: "22%",  size: 6,  color: "#f59e0b", delay: 1.2 },
+  { bottom: "22%", left: "10%",   size: 8,  color: "#d97706", delay: 0.6 },
+  { bottom: "36%", left: "20%",   size: 5,  color: "#fbbf24", delay: 1.8 },
+  { top: "22%",    left: "8%",    size: 7,  color: "#f59e0b", delay: 0.3 },
+] as const;
+
+function LightDecorations() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 8 }).map((_, i) => (
+    <>
+      {RAY_ANGLES.map((angle, i) => (
         <div
           key={i}
-          className="absolute top-0 origin-top"
           style={{
-            left: `${8 + i * 12}%`,
-            width: "3px",
-            height: "70%",
-            background: "linear-gradient(to bottom, rgba(251,191,36,0.2), transparent)",
-            transform: `rotate(${-20 + i * 5}deg)`,
-            animation: `rayPulse ${3 + i * 0.6}s ease-in-out ${i * 0.3}s infinite`,
+            position: "absolute", top: 0,
+            left: `${10 + i * 13}%`,
+            width: 2,
+            height: `${55 + i * 3}%`,
+            background: "linear-gradient(to bottom, rgba(251,191,36,0.35), transparent)",
+            transformOrigin: "top center",
+            transform: `rotate(${angle}deg)`,
+            animation: `rayPulse ${3 + i * 0.4}s ease-in-out ${i * 0.3}s infinite`,
           }}
         />
       ))}
-    </div>
+      {SHARD_POSITIONS.map((s, i) => (
+        <div
+          key={i}
+          className="crystal"
+          style={{
+            ...("top" in s    ? { top: s.top }       : {}),
+            ...("bottom" in s ? { bottom: s.bottom }  : {}),
+            ...("right" in s  ? { right: s.right }    : {}),
+            ...("left" in s   ? { left: s.left }      : {}),
+            width: s.size, height: s.size,
+            background: s.color,
+            boxShadow: `0 0 ${s.size}px ${s.color}`,
+            animationDelay: `${s.delay}s`,
+          }}
+        />
+      ))}
+    </>
   );
 }
 
 function GuildCrest({ isVoid }: { isVoid: boolean }) {
   return (
-    <svg viewBox="0 0 200 200" className="w-40 h-40 sm:w-52 sm:h-52 animate-float" aria-hidden>
+    <svg viewBox="0 0 200 200" className="w-40 h-40 sm:w-52 sm:h-52 animate-crest" aria-hidden>
       <defs>
         <radialGradient id="crestOuter" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor={isVoid ? "#4a1d8a" : "#fbbf24"} stopOpacity="0.9" />
@@ -78,9 +105,9 @@ function GuildCrest({ isVoid }: { isVoid: boolean }) {
       <circle cx="100" cy="100" r="90" fill="url(#crestOuter)" />
 
       {/* Orbit rings */}
-      <circle cx="100" cy="100" r="74" fill="none" stroke={isVoid ? "#7c3aed" : "#f59e0b"} strokeWidth="0.8" opacity="0.4" />
-      <circle cx="100" cy="100" r="60" fill="none" stroke={isVoid ? "#a855f7" : "#fbbf24"} strokeWidth="1.2" opacity="0.5" />
-      <circle cx="100" cy="100" r="46" fill="none" stroke={isVoid ? "#22d3ee" : "#d97706"} strokeWidth="0.6" opacity="0.4" />
+      <circle cx="100" cy="100" r="74" fill="none" stroke={isVoid ? "#7c3aed" : "#f59e0b"} strokeWidth="1.3" opacity="0.4" />
+      <circle cx="100" cy="100" r="60" fill="none" stroke={isVoid ? "#a855f7" : "#fbbf24"} strokeWidth="1.7" opacity="0.5" />
+      <circle cx="100" cy="100" r="46" fill="none" stroke={isVoid ? "#22d3ee" : "#d97706"} strokeWidth="1.1" opacity="0.4" />
 
       {/* Rune ticks on outer ring */}
       {Array.from({ length: 12 }).map((_, i) => {
@@ -162,7 +189,11 @@ export function Hero() {
           : "radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.25) 0%, transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(245,158,11,0.15) 0%, transparent 50%), #faf8f2",
       }}
     >
-      {mounted && (isVoid ? <StarField /> : <LightRays />)}
+      {mounted && (isVoid ? <VoidCrystals /> : <LightDecorations />)}
+
+      {mounted && <div className="px-grid" />}
+      {mounted && <div className="px-bokeh" />}
+      <div className="px-scanlines" />
 
       {/* Decorative void tendrils / light aura */}
       {mounted && (
@@ -191,38 +222,33 @@ export function Hero() {
           {/* Guild name */}
           <motion.div variants={stagger.item} className="flex flex-col items-center gap-2">
             <h1
-              className="tracking-widest leading-tight glow-text"
               style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: "clamp(2rem, 7vw, 5rem)",
+                fontFamily: "'VT323', monospace",
+                fontSize: "var(--vt-xl)",
                 color: isVoid ? "#e2d9f3" : "#1e1b0f",
+                letterSpacing: "0.1em",
+                lineHeight: 1,
+                textShadow: "0 0 20px color-mix(in srgb,var(--glow) 80%,transparent), 0 0 60px color-mix(in srgb,var(--accent) 40%,transparent)",
               }}
             >
               Hakuna Muh Nagga
             </h1>
-            <p
-              className="tracking-[0.3em] text-xs sm:text-sm"
-              style={{
-                fontFamily: "'Rajdhani', sans-serif",
-                color: "var(--muted)",
-              }}
-            >
+            <p style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "var(--px-md)",
+              color: "var(--muted)",
+              letterSpacing: "0.2em",
+            }}>
               Don&apos;t Worry, Be Raiding
             </p>
           </motion.div>
 
           {/* Badge row */}
           <motion.div variants={stagger.item} className="flex flex-wrap justify-center gap-2">
-            {["Zul'jin · US", "Horde", "Mythic Progression", "5/8 Mythic"].map((tag) => (
+            {["Barthilas · OCE", "Horde"].map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full text-xs tracking-wider"
-                style={{
-                  fontFamily: "'Rajdhani', sans-serif",
-                  background: isVoid ? "rgba(124,58,237,0.15)" : "rgba(245,158,11,0.12)",
-                  border: "1px solid var(--border)",
-                  color: isVoid ? "#c084fc" : "#b45309",
-                }}
+                className="px-badge"
               >
                 {tag}
               </span>
@@ -231,77 +257,33 @@ export function Hero() {
 
           {/* CTAs */}
           <motion.div variants={stagger.item} className="flex flex-wrap gap-4 justify-center mt-2">
-            <a
-              href="#progression"
-              className="px-7 py-3 rounded-lg text-sm tracking-widest font-medium transition-all duration-300"
-              style={{
-                fontFamily: "'Rajdhani', sans-serif",
-                background: isVoid
-                  ? "linear-gradient(135deg, #7c3aed, #4a1d8a)"
-                  : "linear-gradient(135deg, #f59e0b, #d97706)",
-                color: "#fff",
-                boxShadow: isVoid
-                  ? "0 0 24px rgba(124,58,237,0.5)"
-                  : "0 0 24px rgba(245,158,11,0.4)",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = "translateY(-2px)";
-                el.style.boxShadow = isVoid ? "0 0 40px rgba(124,58,237,0.7)" : "0 0 40px rgba(245,158,11,0.6)";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = "translateY(0)";
-                el.style.boxShadow = isVoid ? "0 0 24px rgba(124,58,237,0.5)" : "0 0 24px rgba(245,158,11,0.4)";
-              }}
-            >
-              View Progression
-            </a>
-            <a
-              href="#recruitment"
-              className="px-7 py-3 rounded-lg text-sm tracking-widest font-medium transition-all duration-300"
-              style={{
-                fontFamily: "'Rajdhani', sans-serif",
-                background: "transparent",
-                border: "1px solid var(--border)",
-                color: "var(--text)",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = "translateY(-2px)";
-                el.style.borderColor = "var(--accent)";
-                el.style.boxShadow = "0 0 16px color-mix(in srgb, var(--accent) 30%, transparent)";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = "translateY(0)";
-                el.style.borderColor = "var(--border)";
-                el.style.boxShadow = "none";
-              }}
-            >
-              Apply Now
-            </a>
+            <a href="#progression" className="px-btn">View Progression</a>
+            <a href="#recruitment" className="px-btn outline">Apply Now</a>
           </motion.div>
         </motion.div>
 
-        {/* Scroll hint */}
+        {/* Scroll hint — cascading chevrons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.8 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
+          aria-hidden
         >
-          <div
-            className="w-5 h-8 rounded-full border flex items-start justify-center pt-1.5"
-            style={{ borderColor: "var(--border)" }}
-          >
+          {[0, 1, 2].map((i) => (
             <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-              className="w-1 h-1.5 rounded-full"
-              style={{ background: "var(--accent)" }}
+              key={i}
+              animate={{ opacity: [0.15, 0.7, 0.15] }}
+              transition={{ duration: 1.8, delay: i * 0.25, repeat: Infinity }}
+              style={{
+                width: 8,
+                height: 8,
+                borderRight: "1.5px solid var(--accent)",
+                borderBottom: "1.5px solid var(--accent)",
+                transform: "rotate(45deg)",
+              }}
             />
-          </div>
+          ))}
         </motion.div>
       </div>
     </section>
