@@ -57,7 +57,7 @@ export async function GET() {
       collection: "recruitment-roles",
       data: {
         role: r.role,
-        specs: r.specs.map((spec) => ({ spec })),
+        specs: r.specs.map((spec) => ({ spec })) as { id: string; spec: string }[],
         priority: r.priority,
         order: i,
       },

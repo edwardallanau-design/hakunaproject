@@ -37,7 +37,7 @@ export const officers = [
   { id: 2, name: "Seraphina", class: "Paladin", spec: "Holy", role: "Healer", rank: "Officer", ilvl: 641 },
   { id: 3, name: "Zulgrimar", class: "Death Knight", spec: "Unholy", role: "DPS", rank: "Officer", ilvl: 638 },
   { id: 4, name: "Lunethara", class: "Druid", spec: "Restoration", role: "Healer", rank: "Officer", ilvl: 636 },
-];
+] as const;
 
 export const currentProgression = {
   tier: "Azj-Kahet Nexus",
@@ -60,4 +60,4 @@ export const recruitmentRoles = [
   { role: "Tank", specs: ["Blood DK", "Prot Warrior"], priority: "Low" },
   { role: "Healer", specs: ["Resto Druid", "Disc Priest"], priority: "High" },
   { role: "DPS", specs: ["Augmentation Evoker", "Havoc DH", "Arcane Mage"], priority: "High" },
-];
+] as const;
