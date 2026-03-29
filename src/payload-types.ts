@@ -172,6 +172,7 @@ export interface ProgressionGlobal {
   } | null;
   bosses?: { id: string; name: string; killed?: boolean | null; pulls?: number | null; bestPull?: number | null }[] | null;
   lastSyncedAt?: string | null;
+  guildMembers?: { name: string; realm: string }[] | null;
   mythicPlusRunners?: { id: string; name: string; class: string; spec: string; score: number }[] | null;
   mythicPlusSyncedAt?: string | null;
   updatedAt: string;

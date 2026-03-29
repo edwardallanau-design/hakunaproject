@@ -217,26 +217,6 @@ export function Progression({ progression }: { progression: ProgressionData }) {
             ))}
           </div>
 
-          {/* Raider.IO attribution */}
-          {progression.profileUrl && (
-            <div style={{ marginTop: "clamp(16px,1.4vw,24px)", textAlign: "center" }}>
-              <a
-                href={progression.profileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontFamily: "'Press Start 2P', monospace",
-                  fontSize: "var(--px-xs)",
-                  color: "var(--muted)",
-                  opacity: 0.6,
-                  textDecoration: "none",
-                  letterSpacing: "0.1em",
-                }}
-              >
-                Data from Raider.IO
-              </a>
-            </div>
-          )}
         </motion.div>
 
         {/* M+ Runners card */}

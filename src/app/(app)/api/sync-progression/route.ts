@@ -1,7 +1,6 @@
 import { getPayload } from "payload";
 import config from "@/payload.config";
-import { fetchGuildProgression, fetchTopMythicPlusRunners } from "@/lib/raiderio";
-import type { MythicPlusRunner } from "@/lib/raiderio";
+import { fetchGuildProgression, fetchGuildMembers } from "@/lib/raiderio";
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config: await config });
@@ -18,66 +17,37 @@ export async function POST(request: Request) {
   try {
     const syncedAt = new Date().toISOString();
 
-    // Fetch raid progression and M+ runners in parallel.
-    // Use allSettled so a M+ failure doesn't block saving raid data.
-    const [progressionResult, runnersResult] = await Promise.allSettled([
+    const [progression, members] = await Promise.all([
       fetchGuildProgression(),
-      fetchTopMythicPlusRunners(),
+      fetchGuildMembers(),
     ]);
-
-    if (progressionResult.status === "rejected") {
-      console.error("Progression sync failed:", progressionResult.reason);
-      return Response.json(
-        { error: "Sync failed", details: String(progressionResult.reason) },
-        { status: 500 },
-      );
-    }
-
-    const progression = progressionResult.value;
-    const runners: MythicPlusRunner[] =
-      runnersResult.status === "fulfilled" ? runnersResult.value : [];
-    const runnersWarning =
-      runnersResult.status === "rejected"
-        ? String(runnersResult.reason)
-        : undefined;
-
-    if (runnersWarning) {
-      console.error("M+ runners sync failed (raid data still saved):", runnersWarning);
-    }
 
     await payload.updateGlobal({
       slug: "progression",
       data: {
-        tier:         progression.tier,
-        difficulty:   progression.difficulty as "Normal" | "Heroic" | "Mythic",
-        summary:      progression.summary,
-        kills:        progression.kills,
-        totalBosses:  progression.totalBosses,
-        profileUrl:   progression.profileUrl,
-        rankings:     progression.rankings ?? { world: 0, region: 0, realm: 0 },
-        bosses:       progression.bosses.map((b) => ({
+        tier:        progression.tier,
+        difficulty:  progression.difficulty as "Normal" | "Heroic" | "Mythic",
+        summary:     progression.summary,
+        kills:       progression.kills,
+        totalBosses: progression.totalBosses,
+        profileUrl:  progression.profileUrl,
+        rankings:    progression.rankings ?? { world: 0, region: 0, realm: 0 },
+        bosses:      progression.bosses.map((b) => ({
           name:     b.name,
           killed:   b.killed,
           pulls:    b.pulls ?? null,
           bestPull: b.bestPull ?? null,
         })),
-        lastSyncedAt:      syncedAt,
-        mythicPlusRunners: runners.map((r) => ({
-          name:  r.name,
-          class: r.class,
-          spec:  r.spec,
-          score: r.score,
-        })),
-        mythicPlusSyncedAt: runnersResult.status === "fulfilled" ? syncedAt : undefined,
+        lastSyncedAt: syncedAt,
+        guildMembers: members,
       },
     });
 
     return Response.json({
-      message:      "Progression synced successfully",
+      message:      "Synced successfully",
       summary:      progression.summary,
-      runnersCount: runners.length,
       syncedAt,
-      ...(runnersWarning ? { warning: `M+ sync failed: ${runnersWarning}` } : {}),
+      membersCount: members.length,
     });
   } catch (err) {
     console.error("Sync failed:", err);

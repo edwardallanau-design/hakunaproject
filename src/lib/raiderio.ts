@@ -58,14 +58,20 @@ type RaiderIOGuildMember = {
   character: { name: string; realm: string };
 };
 
-type RawMember = {
-  character: {
-    name: string;
-    class: string;
-    active_spec_name: string;
-    mythic_plus_scores_by_current_season?: { all: number };
-  };
-};
+
+export type GuildMember = { name: string; realm: string };
+
+export async function fetchGuildMembers(): Promise<GuildMember[]> {
+  const res = await fetch(
+    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
+  );
+  if (!res.ok) throw new Error(`Roster fetch failed: ${res.status}`);
+  const data = await res.json();
+  return (data.members ?? []).map((m: RaiderIOGuildMember) => ({
+    name: m.character.name,
+    realm: m.character.realm,
+  }));
+}
 
 const ROLE_MAP: Record<string, 'Tank' | 'Healer' | 'DPS'> = {
   TANK: 'Tank',
@@ -207,62 +213,49 @@ export async function fetchGuildProgression(): Promise<ProgressionData> {
   };
 }
 
-export async function fetchTopMythicPlusRunners(): Promise<MythicPlusRunner[]> {
-  // Single guild call — avoids per-member rate limits.
-  // The `members:mythic_plus_scores_by_current_season` sub-field requests score
-  // data inline with the roster. Verify this field is supported by the Raider.IO
-  // API before relying on it (inspect network requests on:
-  // raider.io/guilds/us/barthilas/Hakuna%20Muh%20Nagga/roster#mode=mythic_plus).
-  //
-  // FALLBACK: If the guild endpoint doesn't return scores, see the fallback
-  // implementation at the bottom of this file comment block.
-  const res = await fetch(
-    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members%3Amythic_plus_scores_by_current_season`,
-    fetchOptions,
+export type RunnerMatch = {
+  name: string;
+  realm: string;
+  class: string;
+  spec: string;
+  score: number;
+};
+
+export async function fetchRunnerMatches(name: string): Promise<RunnerMatch[]> {
+  const rosterRes = await fetch(
+    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
   );
-  if (!res.ok) throw new Error(`Raider.IO M+ fetch failed: ${res.status}`);
+  if (!rosterRes.ok) return [];
 
-  const data = await res.json();
-  const members: unknown[] = data.members ?? [];
+  const roster = await rosterRes.json();
+  const members: RaiderIOGuildMember[] = (roster.members ?? []).filter(
+    (m: RaiderIOGuildMember) => m.character.name.toLowerCase() === name.toLowerCase(),
+  );
+  if (members.length === 0) return [];
 
-  return (members as RawMember[])
-    .filter((m) => (m.character?.mythic_plus_scores_by_current_season?.all ?? 0) > 0)
-    .map((m) => ({
-      name: m.character.name,
-      class: m.character.class,
-      spec: m.character.active_spec_name,
-      score: m.character.mythic_plus_scores_by_current_season?.all ?? 0,
-    }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+  const results = await Promise.all(
+    members.map(async (member) => {
+      const realmSlug = member.character.realm.toLowerCase().replace(/\s+/g, "-");
+      const charRes = await fetch(
+        `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realmSlug}&name=${encodeURIComponent(member.character.name)}&fields=mythic_plus_scores_by_season%3Acurrent,spec`,
+      );
+      if (!charRes.ok) return null;
+      const data = await charRes.json() as {
+        class?: string;
+        active_spec_name?: string;
+        mythic_plus_scores_by_season?: { scores: { all: number } }[];
+      };
+      if (!data.class || !data.active_spec_name) return null;
+      return {
+        name: member.character.name,
+        realm: member.character.realm,
+        class: data.class,
+        spec: data.active_spec_name,
+        score: data.mythic_plus_scores_by_season?.[0]?.scores?.all ?? 0,
+      } satisfies RunnerMatch;
+    }),
+  );
+
+  return results.filter((r): r is RunnerMatch => r !== null);
 }
 
-/*
- * FALLBACK if guild endpoint does not include scores in members:
- *
- * 1. Fetch roster with fields=members (returns name + realm only).
- * 2. Batch-fetch character profiles 5 at a time with a 300ms delay between batches:
- *
- * async function batchFetch(members: RaiderIOGuildMember[]): Promise<MythicPlusRunner[]> {
- *   const results: MythicPlusRunner[] = [];
- *   for (let i = 0; i < members.length; i += 5) {
- *     const batch = members.slice(i, i + 5);
- *     const fetched = await Promise.all(batch.map(async (m) => {
- *       const realm = m.character.realm.toLowerCase().replace(/\s+/g, '-');
- *       const r = await fetch(
- *         `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realm}` +
- *         `&name=${encodeURIComponent(m.character.name)}&fields=mythic_plus_scores_by_current_season,spec`,
- *         fetchOptions,
- *       );
- *       if (!r.ok) return null;
- *       const d = await r.json();
- *       const score = d.mythic_plus_scores_by_current_season?.all ?? 0;
- *       if (score <= 0) return null;
- *       return { name: d.name, class: d.class, spec: d.active_spec_name, score } as MythicPlusRunner;
- *     }));
- *     results.push(...fetched.filter((x): x is MythicPlusRunner => x !== null));
- *     if (i + 5 < members.length) await new Promise((r) => setTimeout(r, 300));
- *   }
- *   return results.sort((a, b) => b.score - a.score).slice(0, 10);
- * }
- */
