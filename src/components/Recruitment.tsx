@@ -6,6 +6,16 @@ import { Shield, Heart, Swords } from "lucide-react";
 
 type RecruitmentRoleData = { role: string; specs: string[]; priority: string }
 
+type RecruitmentSectionProps = {
+  eyebrow: string
+  heading: string
+  description: string
+  footerNote: string
+  ctaLabel: string
+  discordUrl: string
+  roles: RecruitmentRoleData[]
+}
+
 const PRIORITY_STYLE: Record<string, { bg: string; text: string }> = {
   High:   { bg: "rgba(239,68,68,0.15)",   text: "#f87171" },
   Medium: { bg: "rgba(245,158,11,0.12)",  text: "#fbbf24" },
@@ -14,7 +24,7 @@ const PRIORITY_STYLE: Record<string, { bg: string; text: string }> = {
 
 const ROLE_ICONS = { Tank: Shield, Healer: Heart, DPS: Swords };
 
-export function Recruitment({ recruitmentRoles }: { recruitmentRoles: RecruitmentRoleData[] }) {
+export function Recruitment({ section }: { section: RecruitmentSectionProps }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -66,14 +76,13 @@ export function Recruitment({ recruitmentRoles }: { recruitmentRoles: Recruitmen
           className="text-center mb-14"
         >
           <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-md)", color: "var(--accent)", letterSpacing: "0.2em", display: "block", marginBottom: 12 }}>
-            ◆ Join the Ranks ◆
+            {section.eyebrow}
           </span>
           <h2 style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-lg)", color: "var(--text)", textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)", letterSpacing: "0.08em", marginBottom: 12 }}>
-            We&apos;re Recruiting
+            {section.heading}
           </h2>
           <p style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-sm)", color: "var(--muted)", maxWidth: "clamp(380px,44vw,580px)", margin: "0 auto" }}>
-            Looking for dedicated players who can parse, execute mechanics, and still have fun doing it.
-            Semi-hardcore means high standards, low drama.
+            {section.description}
           </p>
         </motion.div>
 
@@ -83,7 +92,7 @@ export function Recruitment({ recruitmentRoles }: { recruitmentRoles: Recruitmen
           <button className="scroll-arrow right" onClick={() => scrollTrack(1)} aria-label="Next">▶</button>
 
           <div className="card-track recruitment-track" ref={trackRef}>
-            {recruitmentRoles.map((r, i) => {
+            {section.roles.map((r, i) => {
               const ps = PRIORITY_STYLE[r.priority] ?? PRIORITY_STYLE.Low;
               const RoleIcon = ROLE_ICONS[r.role as keyof typeof ROLE_ICONS] ?? Swords;
               const isHigh = r.priority === "High";
@@ -150,7 +159,7 @@ export function Recruitment({ recruitmentRoles }: { recruitmentRoles: Recruitmen
           </div>
 
           <div className="scroll-dots">
-            {recruitmentRoles.map((_, i) => (
+            {section.roles.map((_, i) => (
               <div
                 key={i}
                 className={`scroll-dot${i === activeCard ? " active" : ""}`}
@@ -174,16 +183,16 @@ export function Recruitment({ recruitmentRoles }: { recruitmentRoles: Recruitmen
           className="flex flex-col items-center gap-4"
         >
           <a
-            href="https://discord.gg/placeholder"
+            href={section.discordUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="px-btn"
             style={{ fontSize: "var(--px-lg)", padding: "clamp(12px,1.1vw,18px) clamp(24px,2.2vw,36px)" }}
           >
-            Apply via Discord ↗
+            {section.ctaLabel}
           </a>
           <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-sm)", color: "var(--muted)", marginTop: "clamp(10px,1vw,16px)", letterSpacing: "0.1em" }}>
-            Exceptional players of any role are always considered
+            {section.footerNote}
           </p>
         </motion.div>
       </div>

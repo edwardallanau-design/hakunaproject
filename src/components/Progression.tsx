@@ -25,7 +25,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
   const isFullClear = progression.kills === progression.totalBosses;
 
   return (
-    <section id="progression" className="py-24 px-5">
+    <section id="progression" className="py-24 px-5" style={{ borderBottom: "1px solid var(--border)" }}>
       <div className="max-w-4xl mx-auto">
         {/* Heading */}
         <motion.div

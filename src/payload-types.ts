@@ -92,6 +92,8 @@ export interface Config {
   globals: {
     'guild-settings': GuildSettingsGlobal;
     progression: ProgressionGlobal;
+    'officers-section': OfficersSectionGlobal;
+    'recruitment-section': RecruitmentSectionGlobal;
   };
   globalsSelect: {};
   locale: null;
@@ -173,6 +175,42 @@ export interface ProgressionGlobal {
   updatedAt: string;
   createdAt: string;
 }
+
+export interface OfficersSectionGlobal {
+  id: string;
+  eyebrow?: string | null;
+  heading?: string | null;
+  officers?: {
+    id: string;
+    name: string;
+    class: 'Death Knight' | 'Demon Hunter' | 'Druid' | 'Evoker' | 'Hunter' | 'Mage' | 'Monk' | 'Paladin' | 'Priest' | 'Rogue' | 'Shaman' | 'Warlock' | 'Warrior';
+    spec: string;
+    role: 'Tank' | 'Healer' | 'DPS';
+    rank?: string | null;
+    ilvl?: number | null;
+  }[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface RecruitmentSectionGlobal {
+  id: string;
+  eyebrow?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  footerNote?: string | null;
+  ctaLabel?: string | null;
+  discordUrl?: string | null;
+  roles?: {
+    id: string;
+    role: 'Tank' | 'Healer' | 'DPS';
+    specs?: { id: string; spec: string }[] | null;
+    priority?: 'High' | 'Medium' | 'Low' | null;
+  }[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
 export interface UserAuthOperations {
   forgotPassword: {
     email: string;
