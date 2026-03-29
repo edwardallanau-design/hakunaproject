@@ -129,12 +129,13 @@ export interface RecruitmentRole {
 
 export interface GuildSettingsGlobal {
   id: string;
+  eyebrow?: string | null;
+  heading?: string | null;
   name?: string | null;
   tagline?: string | null;
   server?: string | null;
   region?: string | null;
   faction?: string | null;
-  founded?: string | null;
   description?: {
     root: {
       type: string;
@@ -145,7 +146,6 @@ export interface GuildSettingsGlobal {
       version: number;
     };
   } | null;
-  raidSchedule?: { id: string; day: string }[] | null;
   stats?: {
     members?: number | null;
     cuttingEdge?: number | null;
