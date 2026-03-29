@@ -43,9 +43,7 @@ export function About({ guild }: Props) {
           >
             The Guild
           </h2>
-          <p className="mb-8 text-base leading-relaxed" style={{ color: "var(--muted)" }}>
-            {guild.description}
-          </p>
+          <div className="mb-8 text-base leading-relaxed richtext" style={{ color: "var(--muted)" }} dangerouslySetInnerHTML={{ __html: guild.description }} />
 
           {/* Raid schedule */}
           <div

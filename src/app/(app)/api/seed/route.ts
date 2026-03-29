@@ -1,6 +1,23 @@
 import { getPayload } from "payload";
 import config from "@/payload.config";
-import { guild, currentProgression, officers, recruitmentRoles } from "@/lib/guildData";
+import { guild, currentProgression, officers, recruitmentRoles, footerLinks } from "@/lib/guildData";
+
+function makeLexicalParagraph(text: string) {
+  return {
+    root: {
+      type: "root", format: "" as const, indent: 0, version: 1, direction: "ltr" as const,
+      children: [
+        {
+          type: "paragraph", format: "" as const, indent: 0, version: 1, direction: "ltr" as const,
+          textFormat: 0,
+          children: [
+            { type: "text", detail: 0, format: 0, mode: "normal", style: "", text, version: 1 },
+          ],
+        },
+      ],
+    },
+  };
+}
 
 export async function GET() {
   const payload = await getPayload({ config: await config });
@@ -20,9 +37,10 @@ export async function GET() {
       region: guild.region,
       faction: guild.faction,
       founded: guild.founded,
-      description: guild.description,
+      description: makeLexicalParagraph(guild.description),
       raidSchedule: guild.raidSchedule.map((day) => ({ day })),
       stats: guild.stats,
+      footerLinks: footerLinks.map(({ label, href }) => ({ label, href })),
     },
   });
 
@@ -30,8 +48,9 @@ export async function GET() {
     slug: "progression",
     data: {
       tier: currentProgression.tier,
-      season: currentProgression.season,
-      mythicKills: currentProgression.mythicKills,
+      difficulty: currentProgression.difficulty,
+      summary: currentProgression.summary,
+      kills: currentProgression.kills,
       totalBosses: currentProgression.totalBosses,
       bosses: currentProgression.bosses,
     },
