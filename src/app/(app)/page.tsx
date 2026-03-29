@@ -26,10 +26,6 @@ export default async function Home() {
     ? convertLexicalToHTML({ data: guildSettings.description, disableContainer: true })
     : "";
 
-  const descriptionHTML = guildSettings.description
-    ? convertLexicalToHTML({ data: guildSettings.description, disableContainer: true })
-    : "";
-
   const guild = {
     description: descriptionHTML,
     founded: guildSettings.founded ?? "",
