@@ -42,5 +42,48 @@ export const Progression: GlobalConfig = {
       type: 'date',
       admin: { description: 'Last time data was synced from Raider.IO', readOnly: true },
     },
+    {
+      name: 'guildMembers',
+      type: 'json',
+      admin: { hidden: true },
+    },
+    {
+      name: 'mythicPlusPaste',
+      type: 'ui',
+      admin: {
+        components: { Field: '/components/admin/MythicPlusPasteButton' },
+      },
+    },
+    {
+      name: 'mythicPlusRunners',
+      type: 'array',
+      labels: { singular: 'Runner', plural: 'Runners' },
+      admin: {
+        description: 'Top 10 M+ runners — auto-filled by Raider.IO sync or add manually',
+        components: {
+          RowLabel: '/components/admin/MythicPlusRunnerRowLabel',
+        },
+      },
+      fields: [
+        { name: 'name', type: 'text', required: true },
+        {
+          name: 'sync',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: '/components/admin/MythicPlusRunnerSyncButton',
+            },
+          },
+        },
+        { name: 'class', type: 'text', required: true, admin: { readOnly: true } },
+        { name: 'spec', type: 'text', required: true, admin: { readOnly: true } },
+        { name: 'score', type: 'number', required: true, admin: { readOnly: true } },
+      ],
+    },
+    {
+      name: 'mythicPlusSyncedAt',
+      type: 'date',
+      admin: { description: 'Last time M+ data was synced from Raider.IO', readOnly: true },
+    },
   ],
 }

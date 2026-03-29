@@ -8,7 +8,7 @@ export function About({ guild }: Props) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  const isVoid = resolvedTheme !== "light";
+  const isVoid = mounted ? resolvedTheme !== "light" : false;
 
   return (
     <section

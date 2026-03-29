@@ -17,6 +17,13 @@ type RaidProgression = {
   mythic_bosses_killed: number;
 };
 
+export type MythicPlusRunner = {
+  name: string;
+  class: string;
+  spec: string;
+  score: number;
+};
+
 export type ProgressionData = {
   tier: string;
   difficulty: string;
@@ -26,6 +33,7 @@ export type ProgressionData = {
   bosses: { name: string; killed: boolean; pulls?: number; bestPull?: number }[];
   rankings: { world: number; region: number; realm: number } | null;
   profileUrl: string;
+  mythicPlusRunners: MythicPlusRunner[];
 };
 
 function determineDifficulty(prog: RaidProgression): { difficulty: string; kills: number } {
@@ -49,6 +57,21 @@ type RaiderIOGuildMember = {
   rank: number;
   character: { name: string; realm: string };
 };
+
+
+export type GuildMember = { name: string; realm: string };
+
+export async function fetchGuildMembers(): Promise<GuildMember[]> {
+  const res = await fetch(
+    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
+  );
+  if (!res.ok) throw new Error(`Roster fetch failed: ${res.status}`);
+  const data = await res.json();
+  return (data.members ?? []).map((m: RaiderIOGuildMember) => ({
+    name: m.character.name,
+    realm: m.character.realm,
+  }));
+}
 
 const ROLE_MAP: Record<string, 'Tank' | 'Healer' | 'DPS'> = {
   TANK: 'Tank',
@@ -186,5 +209,53 @@ export async function fetchGuildProgression(): Promise<ProgressionData> {
     bosses,
     rankings: raidRank?.[difficulty] ?? null,
     profileUrl: profile.profile_url ?? "",
+    mythicPlusRunners: [],
   };
 }
+
+export type RunnerMatch = {
+  name: string;
+  realm: string;
+  class: string;
+  spec: string;
+  score: number;
+};
+
+export async function fetchRunnerMatches(name: string): Promise<RunnerMatch[]> {
+  const rosterRes = await fetch(
+    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
+  );
+  if (!rosterRes.ok) return [];
+
+  const roster = await rosterRes.json();
+  const members: RaiderIOGuildMember[] = (roster.members ?? []).filter(
+    (m: RaiderIOGuildMember) => m.character.name.toLowerCase() === name.toLowerCase(),
+  );
+  if (members.length === 0) return [];
+
+  const results = await Promise.all(
+    members.map(async (member) => {
+      const realmSlug = member.character.realm.toLowerCase().replace(/\s+/g, "-");
+      const charRes = await fetch(
+        `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realmSlug}&name=${encodeURIComponent(member.character.name)}&fields=mythic_plus_scores_by_season%3Acurrent,spec`,
+      );
+      if (!charRes.ok) return null;
+      const data = await charRes.json() as {
+        class?: string;
+        active_spec_name?: string;
+        mythic_plus_scores_by_season?: { scores: { all: number } }[];
+      };
+      if (!data.class || !data.active_spec_name) return null;
+      return {
+        name: member.character.name,
+        realm: member.character.realm,
+        class: data.class,
+        spec: data.active_spec_name,
+        score: data.mythic_plus_scores_by_season?.[0]?.scores?.all ?? 0,
+      } satisfies RunnerMatch;
+    }),
+  );
+
+  return results.filter((r): r is RunnerMatch => r !== null);
+}
+

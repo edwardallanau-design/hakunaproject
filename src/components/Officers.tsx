@@ -3,13 +3,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, Heart, Swords } from "lucide-react";
-
-const CLASS_COLORS: Record<string, string> = {
-  "Death Knight": "#C41E3A", "Demon Hunter": "#A330C9", Druid: "#FF7C0A",
-  Evoker: "#33937F", Hunter: "#AAD372", Mage: "#3FC7EB", Monk: "#00FF98",
-  Paladin: "#F48CBA", Priest: "#FFFFFF", Rogue: "#FFF468", Shaman: "#0070DD",
-  Warlock: "#8788EE", Warrior: "#C69B3A",
-};
+import { CLASS_COLORS } from "@/lib/wow-constants";
 
 const ROLE_ICONS = { Tank: Shield, Healer: Heart, DPS: Swords };
 
@@ -25,7 +19,7 @@ export function Officers({ section }: { section: OfficersSectionProps }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  const isVoid = resolvedTheme !== "light";
+  const isVoid = mounted ? resolvedTheme !== "light" : false;
 
   const [activeCard, setActiveCard] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);

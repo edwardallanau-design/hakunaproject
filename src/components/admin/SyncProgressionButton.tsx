@@ -19,8 +19,7 @@ const SyncProgressionButton: React.FC = () => {
 
       if (res.ok) {
         setStatus("success");
-        setMessage(`Synced: ${data.summary}`);
-        // Reload after a short delay so the form shows updated data
+        setMessage(`Synced: ${data.summary} · ${data.membersCount} members cached`);
         setTimeout(() => window.location.reload(), 1500);
       } else {
         setStatus("error");
