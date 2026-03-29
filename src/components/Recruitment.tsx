@@ -28,7 +28,7 @@ export function Recruitment({ section }: { section: RecruitmentSectionProps }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  const isVoid = resolvedTheme !== "light";
+  const isVoid = mounted ? resolvedTheme !== "light" : false;
 
   const [activeCard, setActiveCard] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);

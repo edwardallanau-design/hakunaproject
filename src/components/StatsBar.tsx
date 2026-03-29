@@ -68,7 +68,7 @@ export function StatsBar({ stats }: { stats: StatsData }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  const isVoid = resolvedTheme !== "light";
+  const isVoid = mounted ? resolvedTheme !== "light" : false;
 
   const items = [
     { icon: Users,  value: stats.members,      label: "Members",      suffix: "" },
