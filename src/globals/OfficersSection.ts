@@ -27,7 +27,20 @@ export const OfficersSection: GlobalConfig = {
       label: 'Officers',
       labels: { singular: 'Officer', plural: 'Officers' },
       fields: [
-        { name: 'name', type: 'text', required: true },
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'sync',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: '/components/admin/OfficerSyncButton',
+            },
+          },
+        },
         {
           name: 'class',
           type: 'select',

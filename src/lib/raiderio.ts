@@ -38,6 +38,39 @@ function prettifyDifficulty(d: string): string {
   return d.charAt(0).toUpperCase() + d.slice(1);
 }
 
+type RaiderIOCharacter = {
+  class: string;
+  active_spec_name: string;
+  active_spec_role: 'TANK' | 'HEALING' | 'DPS';
+  gear: { item_level_equipped: number };
+};
+
+const ROLE_MAP: Record<string, 'Tank' | 'Healer' | 'DPS'> = {
+  TANK: 'Tank',
+  HEALING: 'Healer',
+  DPS: 'DPS',
+};
+
+export async function fetchCharacterData(name: string): Promise<{
+  class: string;
+  spec: string;
+  role: 'Tank' | 'Healer' | 'DPS';
+  ilvl: number;
+} | null> {
+  const res = await fetch(
+    `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(name)}&fields=gear,spec`,
+  );
+  if (!res.ok) return null;
+  const data: RaiderIOCharacter = await res.json();
+  if (!data.class || !data.active_spec_name) return null;
+  return {
+    class: data.class,
+    spec: data.active_spec_name,
+    role: ROLE_MAP[data.active_spec_role] ?? 'DPS',
+    ilvl: data.gear?.item_level_equipped ?? 0,
+  };
+}
+
 // No Next.js caching — this is called from sync endpoints, not page renders
 const fetchOptions: RequestInit = {};
 
