@@ -14,12 +14,13 @@ import { Footer } from "@/components/Footer";
 export default async function Home() {
   const payload = await getPayload({ config: await config });
 
-  const [guildSettings, progression, officersData, recruitmentData] = await Promise.all([
-    payload.findGlobal({ slug: "guild-settings" }),
-    payload.findGlobal({ slug: "progression" }),
-    payload.find({ collection: "officers", sort: "order", limit: 100 }),
-    payload.find({ collection: "recruitment-roles", sort: "order", limit: 100 }),
-  ]);
+  const [guildSettings, progression, officersSection, recruitmentSection] =
+    await Promise.all([
+      payload.findGlobal({ slug: "guild-settings" }),
+      payload.findGlobal({ slug: "progression" }),
+      payload.findGlobal({ slug: "officers-section" }),
+      payload.findGlobal({ slug: "recruitment-section" }),
+    ]);
 
   const descriptionHTML = guildSettings.description
     ? convertLexicalToHTML({ data: guildSettings.description, disableContainer: true })
@@ -60,21 +61,33 @@ export default async function Home() {
       : null,
   };
 
-  const officers = officersData.docs.map((o) => ({
-    id: o.id,
-    name: o.name,
-    class: o.class,
-    spec: o.spec,
-    role: o.role,
-    rank: o.rank ?? "Officer",
-    ilvl: o.ilvl ?? 0,
-  }));
+  const officersSectionData = {
+    eyebrow: officersSection.eyebrow ?? "◆ The Vanguard ◆",
+    heading: officersSection.heading ?? "Guild Officers",
+    officers: (officersSection.officers ?? []).map((o) => ({
+      id: o.id,
+      name: o.name,
+      class: o.class,
+      spec: o.spec,
+      role: o.role,
+      rank: o.rank ?? "Officer",
+      ilvl: o.ilvl ?? 0,
+    })),
+  };
 
-  const recruitmentRoles = recruitmentData.docs.map((r) => ({
-    role: r.role,
-    specs: (r.specs ?? []).map((s) => s.spec),
-    priority: r.priority ?? "Medium",
-  }));
+  const recruitmentSectionData = {
+    eyebrow: recruitmentSection.eyebrow ?? "◆ Join the Ranks ◆",
+    heading: recruitmentSection.heading ?? "We're Recruiting",
+    description: recruitmentSection.description ?? "Looking for dedicated players who can parse, execute mechanics, and still have fun doing it. Semi-hardcore means high standards, low drama.",
+    footerNote: recruitmentSection.footerNote ?? "Exceptional players of any role are always considered",
+    ctaLabel: recruitmentSection.ctaLabel ?? "Apply via Discord ↗",
+    discordUrl: recruitmentSection.discordUrl ?? "https://discord.gg/placeholder",
+    roles: (recruitmentSection.roles ?? []).map((r) => ({
+      role: r.role,
+      specs: (r.specs ?? []).map((s) => s.spec),
+      priority: r.priority ?? "Medium",
+    })),
+  };
 
   return (
     <>
@@ -84,8 +97,8 @@ export default async function Home() {
         <StatsBar stats={guild.stats} />
         <Progression progression={prog} />
         <About guild={guild} />
-        <Officers officers={officers} />
-        <Recruitment recruitmentRoles={recruitmentRoles} />
+        <Officers section={officersSectionData} />
+        <Recruitment section={recruitmentSectionData} />
       </main>
       <Footer links={footerLinks} />
     </>

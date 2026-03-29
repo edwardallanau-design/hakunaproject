@@ -15,7 +15,13 @@ const ROLE_ICONS = { Tank: Shield, Healer: Heart, DPS: Swords };
 
 type OfficerData = { id: string; name: string; class: string; spec: string; role: string; rank: string; ilvl: number }
 
-export function Officers({ officers }: { officers: OfficerData[] }) {
+type OfficersSectionProps = {
+  eyebrow: string
+  heading: string
+  officers: OfficerData[]
+}
+
+export function Officers({ section }: { section: OfficersSectionProps }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -74,7 +80,7 @@ export function Officers({ officers }: { officers: OfficerData[] }) {
             letterSpacing: "0.2em",
             display: "block",
             marginBottom: 12,
-          }}>◆ The Vanguard ◆</span>
+          }}>{section.eyebrow}</span>
           <h2 style={{
             fontFamily: "'VT323', monospace",
             fontSize: "var(--vt-lg)",
@@ -82,7 +88,7 @@ export function Officers({ officers }: { officers: OfficerData[] }) {
             textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)",
             letterSpacing: "0.08em",
           }}>
-            Guild Officers
+            {section.heading}
           </h2>
         </motion.div>
 
@@ -93,7 +99,7 @@ export function Officers({ officers }: { officers: OfficerData[] }) {
 
           {/* Track */}
           <div className="card-track officers-track" ref={trackRef}>
-            {officers.map((member, i) => {
+            {section.officers.map((member, i) => {
               const classColor = CLASS_COLORS[member.class] ?? "#9ca3af";
               const RoleIcon = ROLE_ICONS[member.role as keyof typeof ROLE_ICONS] ?? Swords;
               return (
@@ -184,7 +190,7 @@ export function Officers({ officers }: { officers: OfficerData[] }) {
 
           {/* Position dots */}
           <div className="scroll-dots">
-            {officers.map((_, i) => (
+            {section.officers.map((_, i) => (
               <div
                 key={i}
                 className={`scroll-dot${i === activeCard ? " active" : ""}`}
