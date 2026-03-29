@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   const character = await fetchCharacterData(name)
   if (!character) {
     return Response.json(
-      { error: `"${name}" not found on Barthilas` },
+      { error: `"${name}" not found in guild roster` },
       { status: 404 },
     )
   }

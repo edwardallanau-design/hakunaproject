@@ -45,6 +45,11 @@ type RaiderIOCharacter = {
   gear: { item_level_equipped: number };
 };
 
+type RaiderIOGuildMember = {
+  rank: number;
+  character: { name: string; realm: string };
+};
+
 const ROLE_MAP: Record<string, 'Tank' | 'Healer' | 'DPS'> = {
   TANK: 'Tank',
   HEALING: 'Healer',
@@ -57,12 +62,31 @@ export async function fetchCharacterData(name: string): Promise<{
   role: 'Tank' | 'Healer' | 'DPS';
   ilvl: number;
 } | null> {
-  const res = await fetch(
-    `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(name)}&fields=gear,spec`,
+  // Step 1: find the character in the guild roster to get their actual realm
+  // (characters may have transferred from another realm but still be in the guild)
+  const rosterRes = await fetch(
+    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
   );
-  if (!res.ok) return null;
-  const data: RaiderIOCharacter = await res.json();
+  if (!rosterRes.ok) return null;
+
+  const roster = await rosterRes.json();
+  const member: RaiderIOGuildMember | undefined = (roster.members ?? []).find(
+    (m: RaiderIOGuildMember) => m.character.name.toLowerCase() === name.toLowerCase(),
+  );
+  if (!member) return null;
+
+  // Raider.IO may return realm as a display name ("Frostmourne") — normalise to slug
+  const realmSlug = member.character.realm.toLowerCase().replace(/\s+/g, '-');
+
+  // Step 2: fetch full character profile with the correct realm
+  const charRes = await fetch(
+    `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realmSlug}&name=${encodeURIComponent(member.character.name)}&fields=gear,spec`,
+  );
+  if (!charRes.ok) return null;
+
+  const data: RaiderIOCharacter = await charRes.json();
   if (!data.class || !data.active_spec_name) return null;
+
   return {
     class: data.class,
     spec: data.active_spec_name,
