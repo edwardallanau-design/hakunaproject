@@ -22,6 +22,8 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_4fc8ed5ee606df9676afae5844bad997 } from '../../../components/admin/SyncProgressionButton'
+import { default as default_69ae5086db9342b129573dc8b5e22d32 } from '../../../components/admin/OfficerSyncButton'
+import { default as default_90ae37741d642c49a54ed2c8d811cea0 } from '../../../components/admin/OfficerRowLabel'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -49,5 +51,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/SyncProgressionButton#default": default_4fc8ed5ee606df9676afae5844bad997,
+  "/components/admin/OfficerSyncButton#default": default_69ae5086db9342b129573dc8b5e22d32,
+  "/components/admin/OfficerRowLabel#default": default_90ae37741d642c49a54ed2c8d811cea0,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

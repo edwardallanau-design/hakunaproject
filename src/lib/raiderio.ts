@@ -38,6 +38,70 @@ function prettifyDifficulty(d: string): string {
   return d.charAt(0).toUpperCase() + d.slice(1);
 }
 
+type RaiderIOCharacter = {
+  class: string;
+  active_spec_name: string;
+  active_spec_role: 'TANK' | 'HEALING' | 'DPS';
+  gear: { item_level_equipped: number };
+};
+
+type RaiderIOGuildMember = {
+  rank: number;
+  character: { name: string; realm: string };
+};
+
+const ROLE_MAP: Record<string, 'Tank' | 'Healer' | 'DPS'> = {
+  TANK: 'Tank',
+  HEALING: 'Healer',
+  DPS: 'DPS',
+};
+
+export type CharacterMatch = {
+  name: string;
+  realm: string;
+  class: string;
+  spec: string;
+  role: 'Tank' | 'Healer' | 'DPS';
+  ilvl: number;
+};
+
+export async function fetchGuildCharacterMatches(name: string): Promise<CharacterMatch[]> {
+  // Fetch guild roster to find all members matching the name across all realms
+  const rosterRes = await fetch(
+    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
+  );
+  if (!rosterRes.ok) return [];
+
+  const roster = await rosterRes.json();
+  const members: RaiderIOGuildMember[] = (roster.members ?? []).filter(
+    (m: RaiderIOGuildMember) => m.character.name.toLowerCase() === name.toLowerCase(),
+  );
+  if (members.length === 0) return [];
+
+  // Fetch full profile for each match in parallel
+  const results = await Promise.all(
+    members.map(async (member) => {
+      const realmSlug = member.character.realm.toLowerCase().replace(/\s+/g, '-');
+      const charRes = await fetch(
+        `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realmSlug}&name=${encodeURIComponent(member.character.name)}&fields=gear,spec`,
+      );
+      if (!charRes.ok) return null;
+      const data: RaiderIOCharacter = await charRes.json();
+      if (!data.class || !data.active_spec_name) return null;
+      return {
+        name: member.character.name,
+        realm: member.character.realm,
+        class: data.class,
+        spec: data.active_spec_name,
+        role: ROLE_MAP[data.active_spec_role] ?? 'DPS',
+        ilvl: data.gear?.item_level_equipped ?? 0,
+      } satisfies CharacterMatch;
+    }),
+  );
+
+  return results.filter((r): r is CharacterMatch => r !== null);
+}
+
 // No Next.js caching — this is called from sync endpoints, not page renders
 const fetchOptions: RequestInit = {};
 

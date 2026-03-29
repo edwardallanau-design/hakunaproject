@@ -26,23 +26,41 @@ export const OfficersSection: GlobalConfig = {
       type: 'array',
       label: 'Officers',
       labels: { singular: 'Officer', plural: 'Officers' },
+      admin: {
+        components: {
+          RowLabel: '/components/admin/OfficerRowLabel',
+        },
+      },
       fields: [
-        { name: 'name', type: 'text', required: true },
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'sync',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: '/components/admin/OfficerSyncButton',
+            },
+          },
+        },
         {
           name: 'class',
           type: 'select',
-          required: true,
           options: WOW_CLASSES.map(c => ({ label: c, value: c })),
+          admin: { readOnly: true },
         },
-        { name: 'spec', type: 'text', required: true },
+        { name: 'spec', type: 'text', admin: { readOnly: true } },
         {
           name: 'role',
           type: 'select',
-          required: true,
           options: ['Tank', 'Healer', 'DPS'].map(r => ({ label: r, value: r })),
+          admin: { readOnly: true },
         },
+        { name: 'ilvl', type: 'number', defaultValue: 0, admin: { readOnly: true } },
         { name: 'rank', type: 'text', defaultValue: 'Officer' },
-        { name: 'ilvl', type: 'number', defaultValue: 0 },
       ],
     },
   ],

@@ -1,6 +1,6 @@
 import { getPayload } from "payload";
 import config from "@/payload.config";
-import { guild, currentProgression, officers, recruitmentRoles, footerLinks } from "@/lib/guildData";
+import { guild, currentProgression, recruitmentRoles, footerLinks } from "@/lib/guildData";
 
 function makeLexicalParagraph(text: string) {
   return {
@@ -22,8 +22,8 @@ function makeLexicalParagraph(text: string) {
 export async function GET() {
   const payload = await getPayload({ config: await config });
 
-  // Prevent re-seeding if officers already exist
-  const existing = await payload.find({ collection: "officers", limit: 1 });
+  // Prevent re-seeding if recruitment roles already exist
+  const existing = await payload.find({ collection: "recruitment-roles", limit: 1 });
   if (existing.totalDocs > 0) {
     return Response.json({ message: "Already seeded — skipping." });
   }
@@ -55,21 +55,6 @@ export async function GET() {
       bosses: currentProgression.bosses,
     },
   });
-
-  for (const [i, officer] of officers.entries()) {
-    await payload.create({
-      collection: "officers",
-      data: {
-        name: officer.name,
-        class: officer.class,
-        spec: officer.spec,
-        role: officer.role,
-        rank: officer.rank,
-        ilvl: officer.ilvl,
-        order: i,
-      },
-    });
-  }
 
   for (const [i, r] of recruitmentRoles.entries()) {
     await payload.create({
