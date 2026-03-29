@@ -1,11 +1,9 @@
 "use client";
-import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import type { ProgressionData } from "@/lib/raiderio";
 
-type ProgressionData = { tier: string; season: string; mythicKills: number; totalBosses: number; bosses: { name: string; mythic: boolean }[] }
-
-function ProgressBar({ pct, isVoid }: { pct: number; isVoid: boolean }) {
+function ProgressBar({ pct }: { pct: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
@@ -23,12 +21,8 @@ function ProgressBar({ pct, isVoid }: { pct: number; isVoid: boolean }) {
 }
 
 export function Progression({ progression }: { progression: ProgressionData }) {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  const isVoid = resolvedTheme !== "light";
-  const pct = Math.round((progression.mythicKills / progression.totalBosses) * 100);
-  const isFullClear = progression.mythicKills === progression.totalBosses;
+  const pct = Math.round((progression.kills / progression.totalBosses) * 100);
+  const isFullClear = progression.kills === progression.totalBosses;
 
   return (
     <section id="progression" className="py-24 px-5">
@@ -66,7 +60,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
             marginTop: 8,
             letterSpacing: "0.1em",
           }}>
-            {progression.season}
+            {progression.summary}
           </p>
         </motion.div>
 
@@ -115,7 +109,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                 textShadow: "0 0 20px color-mix(in srgb,var(--glow) 60%,transparent)",
                 lineHeight: 1,
               }}>
-                {progression.mythicKills}/{progression.totalBosses}
+                {progression.kills}/{progression.totalBosses}
               </span>
               <span style={{
                 fontFamily: "'Press Start 2P', monospace",
@@ -124,7 +118,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                 marginLeft: 10,
                 verticalAlign: "middle",
               }}>
-                Mythic
+                {progression.difficulty}
               </span>
             </div>
             <span style={{
@@ -141,10 +135,10 @@ export function Progression({ progression }: { progression: ProgressionData }) {
 
           {/* Bar */}
           <div className="mb-8">
-            <ProgressBar pct={pct} isVoid={mounted ? isVoid : true} />
+            <ProgressBar pct={pct} />
           </div>
 
-          {/* Boss list — numbered badges replace icon+text-number */}
+          {/* Boss list */}
           <div className="grid sm:grid-cols-2 gap-1.5">
             {progression.bosses.map((boss, i) => (
               <motion.div
@@ -158,8 +152,8 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                   alignItems: "center",
                   gap: "clamp(8px,0.7vw,12px)",
                   padding: "clamp(6px,0.55vw,10px) clamp(10px,0.9vw,16px)",
-                  borderLeft: boss.mythic ? "2px solid var(--accent2)" : "2px solid transparent",
-                  background: boss.mythic ? "color-mix(in srgb,var(--accent2) 4%,transparent)" : "transparent",
+                  borderLeft: boss.killed ? "2px solid var(--accent2)" : "2px solid transparent",
+                  background: boss.killed ? "color-mix(in srgb,var(--accent2) 4%,transparent)" : "transparent",
                 }}
               >
                 {/* Number badge */}
@@ -169,9 +163,9 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                   flexShrink: 0,
                   fontFamily: "'Press Start 2P', monospace",
                   fontSize: "var(--px-sm)",
-                  border: `1px solid ${boss.mythic ? "color-mix(in srgb,var(--accent2) 50%,transparent)" : "color-mix(in srgb,var(--muted) 20%,transparent)"}`,
-                  color: boss.mythic ? "var(--accent2)" : "var(--muted)",
-                  background: boss.mythic ? "color-mix(in srgb,var(--accent2) 8%,transparent)" : "transparent",
+                  border: `1px solid ${boss.killed ? "color-mix(in srgb,var(--accent2) 50%,transparent)" : "color-mix(in srgb,var(--muted) 20%,transparent)"}`,
+                  color: boss.killed ? "var(--accent2)" : "var(--muted)",
+                  background: boss.killed ? "color-mix(in srgb,var(--accent2) 8%,transparent)" : "transparent",
                 }}>
                   {i + 1}
                 </div>
@@ -180,14 +174,14 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                   fontFamily: "'VT323', monospace",
                   fontSize: "var(--vt-sm)",
                   flex: 1,
-                  color: boss.mythic ? "var(--text)" : "var(--muted)",
-                  opacity: boss.mythic ? 1 : 0.5,
+                  color: boss.killed ? "var(--text)" : "var(--muted)",
+                  opacity: boss.killed ? 1 : 0.5,
                   letterSpacing: "0.04em",
                 }}>
                   {boss.name}
                 </span>
-                {/* Mythic tag */}
-                {boss.mythic && (
+                {/* Kill / progress tag */}
+                {boss.killed ? (
                   <span style={{
                     fontFamily: "'Press Start 2P', monospace",
                     fontSize: "var(--px-xs)",
@@ -197,12 +191,45 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                     padding: "clamp(2px,0.2vw,4px) clamp(6px,0.55vw,10px)",
                     flexShrink: 0,
                   }}>
-                    Mythic
+                    {progression.difficulty}
                   </span>
-                )}
+                ) : boss.bestPull != null && boss.bestPull > 0 ? (
+                  <span style={{
+                    fontFamily: "'Press Start 2P', monospace",
+                    fontSize: "var(--px-xs)",
+                    color: "var(--muted)",
+                    background: "color-mix(in srgb,var(--muted) 8%,transparent)",
+                    border: "1px solid color-mix(in srgb,var(--muted) 20%,transparent)",
+                    padding: "clamp(2px,0.2vw,4px) clamp(6px,0.55vw,10px)",
+                    flexShrink: 0,
+                  }}>
+                    {boss.bestPull.toFixed(1)}%
+                  </span>
+                ) : null}
               </motion.div>
             ))}
           </div>
+
+          {/* Raider.IO attribution */}
+          {progression.profileUrl && (
+            <div style={{ marginTop: "clamp(16px,1.4vw,24px)", textAlign: "center" }}>
+              <a
+                href={progression.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "var(--px-xs)",
+                  color: "var(--muted)",
+                  opacity: 0.6,
+                  textDecoration: "none",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                Data from Raider.IO
+              </a>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

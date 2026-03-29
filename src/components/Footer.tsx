@@ -3,14 +3,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronUp } from "lucide-react";
 
-const links = [
-  { label: "Raider.IO",    href: "https://raider.io/guilds/us/zuljin/Hakuna%20Muh%20Nagga" },
-  { label: "WoWProgress",  href: "https://www.wowprogress.com/guild/us/zuljin/Hakuna+Muh+Nagga" },
-  { label: "Discord",      href: "https://discord.gg/placeholder" },
-  { label: "WarcraftLogs", href: "https://www.warcraftlogs.com/guild/us/zuljin/hakuna%20muh%20nagga" },
-];
-
-export function Footer() {
+export function Footer({ links }: { links: { label: string; href: string }[] }) {
   const [mounted, setMounted]   = useState(false);
   const [showTop, setShowTop]   = useState(false);
 
@@ -97,7 +90,7 @@ export function Footer() {
 
           {/* Copyright */}
           <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)", opacity: 0.4, letterSpacing: "0.08em" }}>
-            © {new Date().getFullYear()} Hakuna Muh Nagga · Zul&apos;jin US · World of Warcraft
+            © {new Date().getFullYear()} Hakuna Muh Nagga · Barthilas US · World of Warcraft
           </p>
           <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", opacity: 0.25, color: "var(--muted)" }}>
             World of Warcraft is a trademark of Blizzard Entertainment

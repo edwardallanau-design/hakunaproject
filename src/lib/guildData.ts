@@ -1,12 +1,12 @@
 export const guild = {
   name: "Hakuna Muh Nagga",
   tagline: "Don't Worry, Be Raiding",
-  server: "Zul'jin",
+  server: "Barthilas",
   region: "US",
   faction: "Horde",
   founded: "September 2021",
   description:
-    "We are a semi-hardcore Mythic progression guild on Zul'jin-US. We take our kills seriously but keep the atmosphere loose. If you can parse and laugh at the same time, you'll fit right in.",
+    "We are a semi-hardcore Mythic progression guild on Barthilas-US. We take our kills seriously but keep the atmosphere loose. If you can parse and laugh at the same time, you'll fit right in.",
   raidSchedule: ["Tuesday 8–11 PM EST", "Thursday 8–11 PM EST", "Sunday 7–11 PM EST"],
   stats: {
     members: 24,
@@ -40,21 +40,30 @@ export const officers = [
 ] as const;
 
 export const currentProgression = {
-  tier: "Azj-Kahet Nexus",
-  season: "Season 3 — The War Within",
-  mythicKills: 5,
-  totalBosses: 8,
+  tier: "MN Tier 1 (VS / DR / MQD)",
+  difficulty: "Heroic" as const,
+  summary: "6/9 H",
+  kills: 6,
+  totalBosses: 9,
   bosses: [
-    { name: "Zkarn the Amalgamation", mythic: true },
-    { name: "Void Empress Xalathos", mythic: true },
-    { name: "The Sunken Court", mythic: true },
-    { name: "Anub'arash the Devourer", mythic: true },
-    { name: "Weaver of Chains", mythic: true },
-    { name: "Kel'thuzak Prime", mythic: false },
-    { name: "The Void Convergence", mythic: false },
-    { name: "Xa'kizax, Herald of Nothing", mythic: false },
+    { name: "Imperator Averzian", killed: true },
+    { name: "Vorasius", killed: true },
+    { name: "Fallen-King Salhadaar", killed: true },
+    { name: "Vaelgor & Ezzorak", killed: true },
+    { name: "Lightblinded Vanguard", killed: true },
+    { name: "Crown of the Cosmos", killed: false },
+    { name: "Chimaerus the Undreamt God", killed: true },
+    { name: "Belo'ren, Child of Al'ar", killed: false },
+    { name: "Midnight Falls", killed: false },
   ],
 };
+
+export const footerLinks = [
+  { label: "Raider.IO",    href: "https://raider.io/guilds/us/barthilas/Hakuna%20Muh%20Nagga" },
+  { label: "WoWProgress",  href: "https://www.wowprogress.com/guild/us/barthilas/Hakuna+Muh+Nagga" },
+  { label: "Discord",      href: "https://discord.gg/placeholder" },
+  { label: "WarcraftLogs", href: "https://www.warcraftlogs.com/guild/us/barthilas/hakuna%20muh%20nagga" },
+] as const;
 
 export const recruitmentRoles = [
   { role: "Tank", specs: ["Blood DK", "Prot Warrior"], priority: "Low" },

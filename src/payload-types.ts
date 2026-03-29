@@ -133,7 +133,16 @@ export interface GuildSettingsGlobal {
   region?: string | null;
   faction?: string | null;
   founded?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: { type: string; version: number; [k: string]: unknown }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+  } | null;
   raidSchedule?: { id: string; day: string }[] | null;
   stats?: {
     members?: number | null;
@@ -141,17 +150,26 @@ export interface GuildSettingsGlobal {
     keystoneRuns?: number | null;
     worldRank?: number | null;
   } | null;
+  footerLinks?: { id: string; label: string; href: string }[] | null;
   updatedAt: string;
   createdAt: string;
 }
 
 export interface ProgressionGlobal {
   id: string;
-  tier?: string | null;
-  season?: string | null;
-  mythicKills?: number | null;
+  tier: string;
+  difficulty?: ('Normal' | 'Heroic' | 'Mythic') | null;
+  summary?: string | null;
+  kills?: number | null;
   totalBosses?: number | null;
-  bosses?: { id: string; name: string; mythic?: boolean | null }[] | null;
+  profileUrl?: string | null;
+  rankings?: {
+    world?: number | null;
+    region?: number | null;
+    realm?: number | null;
+  } | null;
+  bosses?: { id: string; name: string; killed?: boolean | null; pulls?: number | null; bestPull?: number | null }[] | null;
+  lastSyncedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }

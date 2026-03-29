@@ -394,3 +394,13 @@ body {
 @media (max-width: 399px) {
   .hidden-below-400 { display: none; }
 }
+
+/* ── Rich text (About description) ── */
+.richtext p { margin-bottom: 0.75em; }
+.richtext p:last-child { margin-bottom: 0; }
+.richtext strong { color: var(--text); font-weight: 600; }
+.richtext em { font-style: italic; }
+.richtext a { color: var(--accent); text-underline-offset: 3px; }
+.richtext ul { list-style: disc; padding-left: 1.25em; margin-bottom: 0.75em; }
+.richtext ol { list-style: decimal; padding-left: 1.25em; margin-bottom: 0.75em; }
+.richtext li { margin-bottom: 0.25em; }
