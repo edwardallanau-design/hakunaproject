@@ -42,5 +42,22 @@ export const Progression: GlobalConfig = {
       type: 'date',
       admin: { description: 'Last time data was synced from Raider.IO', readOnly: true },
     },
+    {
+      name: 'mythicPlusRunners',
+      type: 'array',
+      labels: { singular: 'Runner', plural: 'Runners' },
+      admin: { description: 'Top 10 M+ runners — auto-filled by Raider.IO sync' },
+      fields: [
+        { name: 'name', type: 'text', required: true },
+        { name: 'class', type: 'text', required: true },
+        { name: 'spec', type: 'text', required: true },
+        { name: 'score', type: 'number', required: true },
+      ],
+    },
+    {
+      name: 'mythicPlusSyncedAt',
+      type: 'date',
+      admin: { description: 'Last time M+ data was synced from Raider.IO', readOnly: true },
+    },
   ],
 }

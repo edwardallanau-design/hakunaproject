@@ -1,5 +1,7 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { CLASS_COLORS, CLASS_COLORS_LIGHT } from "@/lib/wow-constants";
 import { motion, useInView } from "framer-motion";
 import type { ProgressionData } from "@/lib/raiderio";
 
@@ -23,6 +25,11 @@ function ProgressBar({ pct }: { pct: number }) {
 export function Progression({ progression }: { progression: ProgressionData }) {
   const pct = Math.round((progression.kills / progression.totalBosses) * 100);
   const isFullClear = progression.kills === progression.totalBosses;
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isVoid = mounted ? resolvedTheme !== "light" : false;
+  const classColorMap = isVoid ? CLASS_COLORS : CLASS_COLORS_LIGHT;
 
   return (
     <section id="progression" className="py-24 px-5" style={{ borderBottom: "1px solid var(--border)" }}>
@@ -231,6 +238,116 @@ export function Progression({ progression }: { progression: ProgressionData }) {
             </div>
           )}
         </motion.div>
+
+        {/* M+ Runners card */}
+        {progression.mythicPlusRunners && progression.mythicPlusRunners.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="px-card"
+            style={{ padding: "clamp(18px,1.6vw,28px)", marginTop: "clamp(16px,1.4vw,24px)" }}
+          >
+            <div className="px-gem tl" /><div className="px-gem tr" />
+            <div className="px-gem bl" /><div className="px-gem br" />
+
+            {/* Header */}
+            <div style={{ marginBottom: "clamp(12px,1.1vw,18px)" }}>
+              <span style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "var(--px-md)",
+                color: "var(--muted)",
+                letterSpacing: "0.2em",
+              }}>
+                ◆ Top M+ Runners ◆
+              </span>
+            </div>
+
+            {/* Runner rows */}
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {progression.mythicPlusRunners.map((runner, i) => {
+                const classColor = classColorMap[runner.class] ?? (isVoid ? "#9ca3af" : "#6b7280");
+                const isLast = i === progression.mythicPlusRunners.length - 1;
+                return (
+                  <motion.div
+                    key={`${runner.name}-${i}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05, duration: 0.4 }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "clamp(6px,0.55vw,10px)",
+                      padding: "clamp(5px,0.45vw,8px) clamp(8px,0.7vw,12px)",
+                      borderBottom: isLast ? "none" : "1px solid var(--border-dim)",
+                    }}
+                  >
+                    {/* Rank badge */}
+                    <div style={{
+                      width: "clamp(22px,1.8vw,30px)", height: "clamp(22px,1.8vw,30px)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0,
+                      fontFamily: "'Press Start 2P', monospace",
+                      fontSize: "var(--px-sm)",
+                      border: `1px solid ${i === 0
+                        ? "color-mix(in srgb,var(--accent2) 50%,transparent)"
+                        : "color-mix(in srgb,var(--muted) 20%,transparent)"}`,
+                      color: i === 0 ? "var(--accent2)" : "var(--muted)",
+                      background: i === 0
+                        ? "color-mix(in srgb,var(--accent2) 10%,transparent)"
+                        : "transparent",
+                    }}>
+                      {i + 1}
+                    </div>
+
+                    {/* Character name */}
+                    <span style={{
+                      fontFamily: "'VT323', monospace",
+                      fontSize: "var(--vt-sm)",
+                      color: "var(--text)",
+                      flex: 1,
+                      letterSpacing: "0.04em",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                      {runner.name}
+                    </span>
+
+                    {/* Spec + Class badge */}
+                    <span style={{
+                      fontFamily: "'Press Start 2P', monospace",
+                      fontSize: "var(--px-xs)",
+                      padding: "clamp(2px,0.2vw,3px) clamp(5px,0.45vw,8px)",
+                      border: `1px solid ${classColor}44`,
+                      background: `${classColor}18`,
+                      color: classColor,
+                      flexShrink: 0,
+                      whiteSpace: "nowrap",
+                    }}>
+                      {runner.spec} {runner.class}
+                    </span>
+
+                    {/* Score badge */}
+                    <span style={{
+                      fontFamily: "'Press Start 2P', monospace",
+                      fontSize: "var(--px-sm)",
+                      color: "var(--accent2)",
+                      border: "1px solid color-mix(in srgb,var(--accent2) 30%,transparent)",
+                      padding: "clamp(2px,0.2vw,4px) clamp(6px,0.55vw,10px)",
+                      background: "color-mix(in srgb,var(--accent2) 8%,transparent)",
+                      flexShrink: 0,
+                    }}>
+                      {Math.round(runner.score).toLocaleString()}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );

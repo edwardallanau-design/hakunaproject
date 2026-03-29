@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { getPayload } from "payload";
 import config from "@/payload.config";
 import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
+import type { MythicPlusRunner } from "@/lib/raiderio";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { StatsBar } from "@/components/StatsBar";
@@ -59,6 +60,12 @@ export default async function Home() {
     rankings: progression.rankings
       ? { world: progression.rankings.world ?? 0, region: progression.rankings.region ?? 0, realm: progression.rankings.realm ?? 0 }
       : null,
+    mythicPlusRunners: (progression.mythicPlusRunners ?? []).map((r): MythicPlusRunner => ({
+      name: r.name,
+      class: r.class,
+      spec: r.spec,
+      score: r.score ?? 0,
+    })),
   };
 
   const officersSectionData = {
