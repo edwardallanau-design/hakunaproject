@@ -27,6 +27,8 @@ export default async function Home() {
     : "";
 
   const guild = {
+    eyebrow: guildSettings.eyebrow ?? "About Us",
+    heading: guildSettings.heading ?? "The Guild",
     description: descriptionHTML,
     founded: guildSettings.founded ?? "",
     raidSchedule: (guildSettings.raidSchedule ?? []).map((r) => r.day),

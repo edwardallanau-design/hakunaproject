@@ -3,7 +3,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Shield, Clock } from "lucide-react";
-type Props = { guild: { description: string; raidSchedule: string[]; founded: string } }
+type Props = { guild: { eyebrow: string; heading: string; description: string; raidSchedule: string[]; founded: string } }
 
 export function About({ guild }: Props) {
   const { resolvedTheme } = useTheme();
@@ -32,7 +32,7 @@ export function About({ guild }: Props) {
         >
           <p className="text-xs tracking-[0.3em] uppercase mb-3"
             style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--accent)" }}>
-            About Us
+            {guild.eyebrow}
           </p>
           <h2
             className="mb-5 glow-text"
@@ -42,7 +42,7 @@ export function About({ guild }: Props) {
               color: "var(--text)",
             }}
           >
-            The Guild
+            {guild.heading}
           </h2>
           <div className="mb-8 text-base leading-relaxed richtext" style={{ color: "var(--muted)" }} dangerouslySetInnerHTML={{ __html: guild.description }} />
 
