@@ -56,43 +56,50 @@ const ROLE_MAP: Record<string, 'Tank' | 'Healer' | 'DPS'> = {
   DPS: 'DPS',
 };
 
-export async function fetchCharacterData(name: string): Promise<{
+export type CharacterMatch = {
+  name: string;
+  realm: string;
   class: string;
   spec: string;
   role: 'Tank' | 'Healer' | 'DPS';
   ilvl: number;
-} | null> {
-  // Step 1: find the character in the guild roster to get their actual realm
-  // (characters may have transferred from another realm but still be in the guild)
+};
+
+export async function fetchGuildCharacterMatches(name: string): Promise<CharacterMatch[]> {
+  // Fetch guild roster to find all members matching the name across all realms
   const rosterRes = await fetch(
     `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
   );
-  if (!rosterRes.ok) return null;
+  if (!rosterRes.ok) return [];
 
   const roster = await rosterRes.json();
-  const member: RaiderIOGuildMember | undefined = (roster.members ?? []).find(
+  const members: RaiderIOGuildMember[] = (roster.members ?? []).filter(
     (m: RaiderIOGuildMember) => m.character.name.toLowerCase() === name.toLowerCase(),
   );
-  if (!member) return null;
+  if (members.length === 0) return [];
 
-  // Raider.IO may return realm as a display name ("Frostmourne") — normalise to slug
-  const realmSlug = member.character.realm.toLowerCase().replace(/\s+/g, '-');
-
-  // Step 2: fetch full character profile with the correct realm
-  const charRes = await fetch(
-    `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realmSlug}&name=${encodeURIComponent(member.character.name)}&fields=gear,spec`,
+  // Fetch full profile for each match in parallel
+  const results = await Promise.all(
+    members.map(async (member) => {
+      const realmSlug = member.character.realm.toLowerCase().replace(/\s+/g, '-');
+      const charRes = await fetch(
+        `https://raider.io/api/v1/characters/profile?region=${REGION}&realm=${realmSlug}&name=${encodeURIComponent(member.character.name)}&fields=gear,spec`,
+      );
+      if (!charRes.ok) return null;
+      const data: RaiderIOCharacter = await charRes.json();
+      if (!data.class || !data.active_spec_name) return null;
+      return {
+        name: member.character.name,
+        realm: member.character.realm,
+        class: data.class,
+        spec: data.active_spec_name,
+        role: ROLE_MAP[data.active_spec_role] ?? 'DPS',
+        ilvl: data.gear?.item_level_equipped ?? 0,
+      } satisfies CharacterMatch;
+    }),
   );
-  if (!charRes.ok) return null;
 
-  const data: RaiderIOCharacter = await charRes.json();
-  if (!data.class || !data.active_spec_name) return null;
-
-  return {
-    class: data.class,
-    spec: data.active_spec_name,
-    role: ROLE_MAP[data.active_spec_role] ?? 'DPS',
-    ilvl: data.gear?.item_level_equipped ?? 0,
-  };
+  return results.filter((r): r is CharacterMatch => r !== null);
 }
 
 // No Next.js caching — this is called from sync endpoints, not page renders

@@ -1,6 +1,6 @@
 import { getPayload } from "payload"
 import config from "@/payload.config"
-import { fetchCharacterData } from "@/lib/raiderio"
+import { fetchGuildCharacterMatches } from "@/lib/raiderio"
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config: await config })
@@ -17,13 +17,13 @@ export async function GET(request: Request) {
 
   if (!name) return Response.json({ error: "Name is required" }, { status: 400 })
 
-  const character = await fetchCharacterData(name)
-  if (!character) {
+  const matches = await fetchGuildCharacterMatches(name)
+  if (matches.length === 0) {
     return Response.json(
       { error: `"${name}" not found in guild roster` },
       { status: 404 },
     )
   }
 
-  return Response.json(character)
+  return Response.json(matches)
 }

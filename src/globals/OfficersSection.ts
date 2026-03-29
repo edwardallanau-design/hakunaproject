@@ -26,6 +26,11 @@ export const OfficersSection: GlobalConfig = {
       type: 'array',
       label: 'Officers',
       labels: { singular: 'Officer', plural: 'Officers' },
+      admin: {
+        components: {
+          RowLabel: '/components/admin/OfficerRowLabel',
+        },
+      },
       fields: [
         {
           name: 'name',
