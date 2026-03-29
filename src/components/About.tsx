@@ -2,8 +2,7 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Shield, Clock } from "lucide-react";
-type Props = { guild: { eyebrow: string; heading: string; description: string; raidSchedule: string[]; founded: string } }
+type Props = { guild: { eyebrow: string; heading: string; description: string } }
 
 export function About({ guild }: Props) {
   const { resolvedTheme } = useTheme();
@@ -46,31 +45,6 @@ export function About({ guild }: Props) {
           </h2>
           <div className="mb-8 text-base leading-relaxed richtext" style={{ color: "var(--muted)" }} dangerouslySetInnerHTML={{ __html: guild.description }} />
 
-          {/* Raid schedule */}
-          <div
-            className="glass-card rounded-xl p-5 space-y-3"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Clock size={14} style={{ color: "var(--accent)" }} />
-              <span className="text-xs tracking-[0.25em] uppercase" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
-                Raid Schedule
-              </span>
-            </div>
-            {guild.raidSchedule.map((s) => (
-              <div key={s} className="flex items-center gap-3">
-                <Calendar size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />
-                <span className="text-sm" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--text)" }}>
-                  {s}
-                </span>
-              </div>
-            ))}
-            <div className="flex items-center gap-3 pt-1">
-              <Shield size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />
-              <span className="text-sm" style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--muted)" }}>
-                Founded {guild.founded}
-              </span>
-            </div>
-          </div>
         </motion.div>
 
         {/* Right: decorative arcane panel */}

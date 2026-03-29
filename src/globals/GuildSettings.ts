@@ -21,17 +21,10 @@ export const GuildSettings: GlobalConfig = {
     { name: 'server', type: 'text' },
     { name: 'region', type: 'text' },
     { name: 'faction', type: 'text' },
-    { name: 'founded', type: 'text' },
     {
       name: 'description',
       type: 'richText',
       admin: { description: 'Guild description shown on the About section. Supports bold, italic, lists, links.' },
-    },
-    {
-      name: 'raidSchedule',
-      type: 'array',
-      labels: { singular: 'Day', plural: 'Days' },
-      fields: [{ name: 'day', type: 'text', required: true }],
     },
     {
       name: 'stats',

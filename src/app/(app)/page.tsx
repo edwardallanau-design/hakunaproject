@@ -30,8 +30,6 @@ export default async function Home() {
     eyebrow: guildSettings.eyebrow ?? "About Us",
     heading: guildSettings.heading ?? "The Guild",
     description: descriptionHTML,
-    founded: guildSettings.founded ?? "",
-    raidSchedule: (guildSettings.raidSchedule ?? []).map((r) => r.day),
     stats: {
       members: guildSettings.stats?.members ?? 0,
       cuttingEdge: guildSettings.stats?.cuttingEdge ?? 0,
