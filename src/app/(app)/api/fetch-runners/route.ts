@@ -2,8 +2,14 @@ import { getPayload } from "payload";
 import config from "@/payload.config";
 import type { MythicPlusRunner } from "@/lib/raiderio";
 
+// Strip invisible unicode characters that web copy-paste can introduce
+// (zero-width spaces, non-breaking spaces, BOM, directional marks, etc.)
+function sanitizeName(s: string): string {
+  return s.replace(/[\u0000-\u001f\u007f-\u009f\u00a0\u200b-\u200f\u2028\u2029\ufeff]/g, "").trim();
+}
+
 function parsePasteNames(text: string): string[] {
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const lines = text.split("\n").map((l) => sanitizeName(l)).filter(Boolean);
   const names: string[] = [];
   for (let i = 0; i < lines.length; i += 5) {
     if (lines[i]) names.push(lines[i]);
@@ -44,11 +50,11 @@ export async function POST(request: Request) {
     (global.guildMembers as { name: string; realm: string }[] | null) ?? [];
 
   const memberMap = new Map(
-    storedMembers.map((m) => [m.name.toLowerCase(), m]),
+    storedMembers.map((m) => [sanitizeName(m.name).toLowerCase(), m]),
   );
 
   const resolved = parsedNames
-    .map((n) => memberMap.get(n.toLowerCase()))
+    .map((n) => memberMap.get(sanitizeName(n).toLowerCase()))
     .filter((m): m is { name: string; realm: string } => !!m);
 
   const notFound = parsedNames.length - resolved.length;
@@ -60,7 +66,7 @@ export async function POST(request: Request) {
     const batch = resolved.slice(i, i + 5);
     const fetched = await Promise.all(
       batch.map(async (member) => {
-        const realmSlug = member.realm.toLowerCase().replace(/\s+/g, "-");
+        const realmSlug = member.realm.toLowerCase().replace(/['\u2019]/g, "").replace(/\s+/g, "-");
         const res = await fetch(
           `https://raider.io/api/v1/characters/profile?region=us&realm=${realmSlug}&name=${encodeURIComponent(member.name)}&fields=mythic_plus_scores_by_season%3Acurrent,spec`,
         );
@@ -102,7 +108,7 @@ export async function POST(request: Request) {
   });
 
   return Response.json({
-    message: `Saved ${topRunners.length} runners`,
+    message:  `Saved ${topRunners.length} runners`,
     count:    topRunners.length,
     notFound,
   });
