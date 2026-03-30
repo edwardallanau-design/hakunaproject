@@ -27,15 +27,20 @@ export function Footer({ links }: { links: { label: string; href: string }[] }) 
             transition={{ duration: 0.2 }}
             whileHover={{ y: -2 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="px-card fixed bottom-6 right-6 z-40 cursor-pointer"
+            className="px-card"
             style={{
+              position: "fixed",
+              bottom: "1.5rem",
+              right: "1.5rem",
+              zIndex: 40,
               width: 40, height: 40,
               display: "flex", alignItems: "center", justifyContent: "center",
               padding: 0,
+              cursor: "pointer",
             }}
             aria-label="Back to top"
           >
-            <div className="px-gem tl" style={{ width: 5, height: 5 }} />
+            <div className="px-gem tl" style={{ width: 5, height: 5, position: "absolute", top: 0, left: 0 }} />
             <ChevronUp size={16} style={{ color: "var(--accent)" }} />
           </motion.button>
         )}
