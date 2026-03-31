@@ -31,6 +31,7 @@ export const Progression: GlobalConfig = {
       name: 'bosses',
       type: 'array',
       labels: { singular: 'Boss', plural: 'Bosses' },
+      admin: { initCollapsed: true },
       fields: [
         { name: 'name', type: 'text', required: true },
         { name: 'killed', type: 'checkbox', defaultValue: false },
@@ -60,6 +61,7 @@ export const Progression: GlobalConfig = {
       type: 'array',
       labels: { singular: 'Runner', plural: 'Runners' },
       admin: {
+        initCollapsed: true,
         description: 'Top 10 M+ runners — auto-filled by Raider.IO sync or add manually',
         components: {
           RowLabel: '/components/admin/MythicPlusRunnerRowLabel',
@@ -67,15 +69,6 @@ export const Progression: GlobalConfig = {
       },
       fields: [
         { name: 'name', type: 'text', required: true },
-        {
-          name: 'sync',
-          type: 'ui',
-          admin: {
-            components: {
-              Field: '/components/admin/MythicPlusRunnerSyncButton',
-            },
-          },
-        },
         { name: 'class', type: 'text', required: true, admin: { readOnly: true } },
         { name: 'spec', type: 'text', required: true, admin: { readOnly: true } },
         { name: 'score', type: 'number', required: true, admin: { readOnly: true } },

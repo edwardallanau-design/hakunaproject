@@ -22,7 +22,6 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_4e81ef5bbd826578fd066050a373dde7 } from '../../../components/admin/SyncMythicRunnersButton'
-import { default as default_799ffc35cc49db15f1b9b0cdbc74c2cc } from '../../../components/admin/MythicPlusRunnerSyncButton'
 import { default as default_22494b6131442370509eea0f7ce28fc0 } from '../../../components/admin/MythicPlusRunnerRowLabel'
 import { default as default_4fc8ed5ee606df9676afae5844bad997 } from '../../../components/admin/SyncProgressionButton'
 import { default as default_69ae5086db9342b129573dc8b5e22d32 } from '../../../components/admin/OfficerSyncButton'
@@ -55,7 +54,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/SyncMythicRunnersButton#default": default_4e81ef5bbd826578fd066050a373dde7,
-  "/components/admin/MythicPlusRunnerSyncButton#default": default_799ffc35cc49db15f1b9b0cdbc74c2cc,
   "/components/admin/MythicPlusRunnerRowLabel#default": default_22494b6131442370509eea0f7ce28fc0,
   "/components/admin/SyncProgressionButton#default": default_4fc8ed5ee606df9676afae5844bad997,
   "/components/admin/OfficerSyncButton#default": default_69ae5086db9342b129573dc8b5e22d32,
