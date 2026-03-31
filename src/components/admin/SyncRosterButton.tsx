@@ -16,7 +16,7 @@ const SyncRosterButton: React.FC = () => {
 
       if (res.ok) {
         setStatus("idle");
-        setMessage(data.message ?? "Done");
+        setMessage(data.message ?? `Saved ${data.count} members`);
       } else {
         setStatus("error");
         setMessage(data.error ?? "Fetch failed");

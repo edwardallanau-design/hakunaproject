@@ -16,7 +16,21 @@ export async function GET(request: Request) {
 
   try {
     const members = await fetchAndTransformRoster();
-    return Response.json({ count: members.length, members });
+    const syncedAt = new Date().toISOString();
+
+    await payload.updateGlobal({
+      slug: 'roster',
+      data: {
+        members,
+        lastSyncedAt: syncedAt,
+      },
+    });
+
+    return Response.json({
+      count: members.length,
+      message: `Saved ${members.length} members to database`,
+      syncedAt,
+    });
   } catch (err) {
     console.error("Roster preview failed:", err);
     return Response.json(
