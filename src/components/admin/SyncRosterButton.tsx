@@ -11,7 +11,7 @@ const SyncRosterButton: React.FC = () => {
     setMessage("");
 
     try {
-      const res = await fetch("/api/preview-roster", { credentials: "include" });
+      const res = await fetch("/api/sync-roster", { credentials: "include" });
       const data = await res.json();
 
       if (res.ok) {
@@ -44,7 +44,7 @@ const SyncRosterButton: React.FC = () => {
           fontWeight: 500,
         }}
       >
-        {status === "loading" ? "Syncing..." : "Sync Roster"}
+        {status === "loading" ? "Syncing..." : "Sync Roster from Raider.IO"}
       </button>
       {message && (
         <span style={{ fontSize: 13, color: status === "error" ? "#ef4444" : "#22c55e" }}>

@@ -2,7 +2,7 @@ import { getPayload } from "payload";
 import config from "@/payload.config";
 import { fetchAndTransformRoster } from "@/lib/raiderio";
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   const payload = await getPayload({ config: await config });
 
   try {
@@ -15,8 +15,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const syncedAt = new Date().toISOString();
     const members = await fetchAndTransformRoster();
+    const syncedAt = new Date().toISOString();
 
     await payload.updateGlobal({
       slug: 'roster',
@@ -27,8 +27,8 @@ export async function POST(request: Request) {
     });
 
     return Response.json({
-      message: "Roster synced successfully",
-      membersCount: members.length,
+      count: members.length,
+      message: `Saved ${members.length} members to database`,
       syncedAt,
     });
   } catch (err) {
