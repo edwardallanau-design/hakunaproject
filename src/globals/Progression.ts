@@ -56,13 +56,6 @@ export const Progression: GlobalConfig = {
       },
     },
     {
-      name: 'mythicPlusPaste',
-      type: 'ui',
-      admin: {
-        components: { Field: '/components/admin/MythicPlusPasteButton' },
-      },
-    },
-    {
       name: 'mythicPlusRunners',
       type: 'array',
       labels: { singular: 'Runner', plural: 'Runners' },
