@@ -49,6 +49,13 @@ export const Progression: GlobalConfig = {
       admin: { hidden: true },
     },
     {
+      name: 'mythicPlusSync',
+      type: 'ui',
+      admin: {
+        components: { Field: '/components/admin/SyncMythicRunnersButton' },
+      },
+    },
+    {
       name: 'mythicPlusPaste',
       type: 'ui',
       admin: {
