@@ -1,7 +1,6 @@
 const GUILD_NAME = "Hakuna Muh Nagga";
 const REALM = "barthilas";
 const REGION = "us";
-
 // Midnight = expansion_id 11
 const EXPANSION_ID = 11;
 
@@ -220,4 +219,92 @@ export type RunnerMatch = {
   spec: string;
   score: number;
 };
+
+// ─── Guild Roster ─────────────────────────────────────────────────────────────
+
+export type RosterMember = {
+  character: {
+    name: string;
+    level: number;
+    race: { id: number; name: string; slug: string; faction: string };
+    class: { id: number; name: string; slug: string };
+    spec: { id: number; name: string; slug: string; role: string; is_melee: boolean };
+    gender: string;
+    thumbnail: string;
+    itemLevelEquipped: number;
+    realm: { id: number; name: string; slug: string; isConnected: boolean; realmType: string };
+    region: { name: string; slug: string; short_name: string };
+  };
+  raidProgress: {
+    raid: {
+      type: string;
+      id: number;
+      difficulty: string;
+      name: string;
+      slug: string;
+      expansion_id: number;
+    };
+    totalBosses: number;
+    progress: { normal: number; heroic: number; mythic: number };
+  };
+  keystoneScores: { allScore: number; allScoreColor: string };
+  rank: number;
+};
+
+// Extends the clean output type so the spread in the transform is type-safe
+type RawRosterCharacter = RosterMember['character'] & {
+  items?: unknown;
+  expansionData?: unknown;
+  talentsDetails?: unknown[];
+  talents?: string;
+  patronLevel?: unknown;
+};
+
+type RawRosterEntry = {
+  character: RawRosterCharacter;
+  raidProgress: RosterMember['raidProgress'];
+  keystoneScores: RosterMember['keystoneScores'];
+  rank: number;
+  stream?: unknown;
+};
+
+async function fetchRosterWithRetry(): Promise<Response> {
+  const url = `https://raider.io/api/guilds/roster?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
+  const MAX_ATTEMPTS = 3;
+  let lastError = "Unknown error";
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const res = await fetch(url);
+    if (res.status === 504 || res.status === 502 || res.status === 503) {
+      lastError = `Roster fetch failed: ${res.status}`;
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+        continue;
+      }
+    } else {
+      return res;
+    }
+  }
+  throw new Error(lastError);
+}
+
+export async function fetchAndTransformRoster(): Promise<RosterMember[]> {
+  const res = await fetchRosterWithRetry();
+  if (!res.ok) throw new Error(`Roster fetch failed: ${res.status}`);
+  const data = await res.json();
+
+  return ((data.guildRoster?.roster ?? data.roster) ?? [])
+    .filter((entry: RawRosterEntry) => entry.character?.level === 90)
+    .map((entry: RawRosterEntry): RosterMember => {
+    const { character, raidProgress, keystoneScores, rank } = entry;
+    const { expansionData: _expansion, talentsDetails: _talentsDetails, items: _items, talents: _talents, patronLevel: _patronLevel, ...characterRest } = character;
+
+    return {
+      character: characterRest,
+      raidProgress,
+      keystoneScores,
+      rank,
+    };
+  });
+}
 
