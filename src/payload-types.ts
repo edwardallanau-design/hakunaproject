@@ -70,7 +70,6 @@ export interface Config {
     users: User;
     media: Media;
     officers: Officer;
-    'recruitment-roles': RecruitmentRole;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -117,16 +116,6 @@ export interface Officer {
   createdAt: string;
 }
 
-export interface RecruitmentRole {
-  id: string;
-  role: 'Tank' | 'Healer' | 'DPS';
-  specs?: { id: string; spec: string }[] | null;
-  priority?: 'High' | 'Medium' | 'Low' | null;
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
 export interface GuildSettingsGlobal {
   id: string;
   eyebrow?: string | null;
@@ -145,12 +134,6 @@ export interface GuildSettingsGlobal {
       indent: number;
       version: number;
     };
-  } | null;
-  stats?: {
-    members?: number | null;
-    cuttingEdge?: number | null;
-    keystoneRuns?: number | null;
-    worldRank?: number | null;
   } | null;
   footerLinks?: { id: string; label: string; href: string }[] | null;
   updatedAt: string;

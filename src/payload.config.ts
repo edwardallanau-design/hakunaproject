@@ -7,7 +7,6 @@ import sharp from "sharp";
 
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
-import { RecruitmentRoles } from "./collections/RecruitmentRoles";
 import { GuildSettings } from "./globals/GuildSettings";
 import { Progression } from "./globals/Progression";
 import { OfficersSection } from "./globals/OfficersSection";
@@ -23,7 +22,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, RecruitmentRoles],
+  collections: [Users, Media],
   globals: [GuildSettings, Progression, OfficersSection, RecruitmentSection],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
