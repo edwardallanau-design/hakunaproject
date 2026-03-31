@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         kills:       progression.kills,
         totalBosses: progression.totalBosses,
         profileUrl:  progression.profileUrl,
-        rankings:    progression.rankings ?? { world: 0, region: 0, realm: 0 },
+        rankings:    { ...(progression.rankings ?? { world: 0, region: 0, realm: 0 }), members: members.length },
         bosses:      progression.bosses.map((b) => ({
           name:     b.name,
           killed:   b.killed,

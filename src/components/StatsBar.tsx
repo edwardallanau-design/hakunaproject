@@ -2,7 +2,7 @@
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Users, Trophy, Swords, Globe } from "lucide-react";
+import { Users, Globe, Map, Landmark } from "lucide-react";
 function useCountUp(target: number, active: boolean, duration = 1600) {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -19,7 +19,7 @@ function useCountUp(target: number, active: boolean, duration = 1600) {
   return val;
 }
 
-type StatsData = { members: number; cuttingEdge: number; keystoneRuns: number; worldRank: number }
+type StatsData = { members: number; world: number; region: number; realm: number }
 
 function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }: {
   icon: typeof Users; value: number; label: string; prefix?: string; suffix?: string; isVoid: boolean;
@@ -71,10 +71,10 @@ export function StatsBar({ stats }: { stats: StatsData }) {
   const isVoid = mounted ? resolvedTheme !== "light" : false;
 
   const items = [
-    { icon: Users,  value: stats.members,      label: "Members",      suffix: "" },
-    { icon: Trophy, value: stats.cuttingEdge,   label: "Cutting Edge", suffix: "" },
-    { icon: Swords, value: stats.keystoneRuns,  label: "M+ Runs",      suffix: "" },
-    { icon: Globe,  value: stats.worldRank,     label: "World Rank",   prefix: "#" },
+    { icon: Users, value: stats.members, label: "Members", suffix: "" },
+    { icon: Globe, value: stats.world, label: "World", prefix: "" },
+    { icon: Map, value: stats.region, label: "Region", prefix: "" },
+    { icon: Landmark, value: stats.realm, label: "Realm", prefix: "" },
   ];
 
   return (

@@ -21,6 +21,7 @@ export const Progression: GlobalConfig = {
       name: 'rankings',
       type: 'group',
       fields: [
+        { name: 'members', type: 'number', defaultValue: 0, admin: { description: 'Auto-filled by sync — total guild member count' } },
         { name: 'world', type: 'number', defaultValue: 0 },
         { name: 'region', type: 'number', defaultValue: 0 },
         { name: 'realm', type: 'number', defaultValue: 0 },
