@@ -69,7 +69,6 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
-    officers: Officer;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -85,119 +84,33 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {
-    'guild-settings': GuildSettingsGlobal;
-    progression: ProgressionGlobal;
-    'officers-section': OfficersSectionGlobal;
-    'recruitment-section': RecruitmentSectionGlobal;
+    'guild-settings': GuildSetting;
+    progression: Progression;
+    'officers-section': OfficersSection;
+    'recruitment-section': RecruitmentSection;
+    roster: Roster;
   };
-  globalsSelect: {};
+  globalsSelect: {
+    'guild-settings': GuildSettingsSelect<false> | GuildSettingsSelect<true>;
+    progression: ProgressionSelect<false> | ProgressionSelect<true>;
+    'officers-section': OfficersSectionSelect<false> | OfficersSectionSelect<true>;
+    'recruitment-section': RecruitmentSectionSelect<false> | RecruitmentSectionSelect<true>;
+    roster: RosterSelect<false> | RosterSelect<true>;
+  };
   locale: null;
+  widgets: {
+    collections: CollectionsWidget;
+  };
   user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
-
-export interface Officer {
-  id: string;
-  name: string;
-  class: 'Death Knight' | 'Demon Hunter' | 'Druid' | 'Evoker' | 'Hunter' | 'Mage' | 'Monk' | 'Paladin' | 'Priest' | 'Rogue' | 'Shaman' | 'Warlock' | 'Warrior';
-  spec: string;
-  role: 'Tank' | 'Healer' | 'DPS';
-  rank?: string | null;
-  ilvl?: number | null;
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
-export interface GuildSettingsGlobal {
-  id: string;
-  eyebrow?: string | null;
-  heading?: string | null;
-  name?: string | null;
-  tagline?: string | null;
-  server?: string | null;
-  region?: string | null;
-  faction?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: { type: string; version: number; [k: string]: unknown }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-  } | null;
-  footerLinks?: { id: string; label: string; href: string }[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
-export interface ProgressionGlobal {
-  id: string;
-  tier: string;
-  difficulty?: ('Normal' | 'Heroic' | 'Mythic') | null;
-  summary?: string | null;
-  kills?: number | null;
-  totalBosses?: number | null;
-  profileUrl?: string | null;
-  rankings?: {
-    members?: number | null;
-    world?: number | null;
-    region?: number | null;
-    realm?: number | null;
-  } | null;
-  bosses?: { id: string; name: string; killed?: boolean | null; pulls?: number | null; bestPull?: number | null }[] | null;
-  lastSyncedAt?: string | null;
-  guildMembers?: { name: string; realm: string }[] | null;
-  mythicPlusRunners?: { id: string; name: string; class: string; spec: string; score: number }[] | null;
-  mythicPlusSyncedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
-export interface OfficersSectionGlobal {
-  id: string;
-  eyebrow?: string | null;
-  heading?: string | null;
-  officers?: {
-    id: string;
-    name: string;
-    class: 'Death Knight' | 'Demon Hunter' | 'Druid' | 'Evoker' | 'Hunter' | 'Mage' | 'Monk' | 'Paladin' | 'Priest' | 'Rogue' | 'Shaman' | 'Warlock' | 'Warrior';
-    spec: string;
-    role: 'Tank' | 'Healer' | 'DPS';
-    rank?: string | null;
-    ilvl?: number | null;
-  }[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
-export interface RecruitmentSectionGlobal {
-  id: string;
-  eyebrow?: string | null;
-  heading?: string | null;
-  description?: string | null;
-  footerNote?: string | null;
-  ctaLabel?: string | null;
-  discordUrl?: string | null;
-  roles?: {
-    id: string;
-    role: 'Tank' | 'Healer' | 'DPS';
-    specs?: { id: string; spec: string }[] | null;
-    priority?: 'High' | 'Medium' | 'Low' | null;
-  }[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-
 export interface UserAuthOperations {
   forgotPassword: {
     email: string;
@@ -221,7 +134,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -246,7 +159,7 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -265,7 +178,7 @@ export interface Media {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -282,20 +195,20 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -305,10 +218,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -328,7 +241,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -413,6 +326,381 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "guild-settings".
+ */
+export interface GuildSetting {
+  id: number;
+  /**
+   * Small label above the About section heading.
+   */
+  eyebrow?: string | null;
+  /**
+   * Main heading of the About section.
+   */
+  heading?: string | null;
+  name: string;
+  tagline?: string | null;
+  server?: string | null;
+  region?: string | null;
+  faction?: string | null;
+  /**
+   * Guild description shown on the About section. Supports bold, italic, lists, links.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Links shown in the site footer.
+   */
+  footerLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "progression".
+ */
+export interface Progression {
+  id: number;
+  tier: string;
+  difficulty?: ('Normal' | 'Heroic' | 'Mythic') | null;
+  /**
+   * e.g. "6/9 H" — auto-filled by Raider.IO sync
+   */
+  summary?: string | null;
+  kills?: number | null;
+  totalBosses?: number | null;
+  /**
+   * Raider.IO profile URL
+   */
+  profileUrl?: string | null;
+  rankings?: {
+    /**
+     * Auto-filled by sync — total guild member count
+     */
+    members?: number | null;
+    world?: number | null;
+    region?: number | null;
+    realm?: number | null;
+  };
+  bosses?:
+    | {
+        name: string;
+        killed?: boolean | null;
+        /**
+         * Number of pulls (for in-progress bosses)
+         */
+        pulls?: number | null;
+        /**
+         * Best pull % (for in-progress bosses)
+         */
+        bestPull?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Last time data was synced from Raider.IO
+   */
+  lastSyncedAt?: string | null;
+  guildMembers?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Top 10 M+ runners — auto-filled by Raider.IO sync or add manually
+   */
+  mythicPlusRunners?:
+    | {
+        name: string;
+        class: string;
+        spec: string;
+        score: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Last time M+ data was synced from Raider.IO
+   */
+  mythicPlusSyncedAt?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "officers-section".
+ */
+export interface OfficersSection {
+  id: number;
+  /**
+   * Small label above the section heading.
+   */
+  eyebrow?: string | null;
+  /**
+   * Main section heading.
+   */
+  heading?: string | null;
+  officers?:
+    | {
+        name: string;
+        class?:
+          | (
+              | 'Death Knight'
+              | 'Demon Hunter'
+              | 'Druid'
+              | 'Evoker'
+              | 'Hunter'
+              | 'Mage'
+              | 'Monk'
+              | 'Paladin'
+              | 'Priest'
+              | 'Rogue'
+              | 'Shaman'
+              | 'Warlock'
+              | 'Warrior'
+            )
+          | null;
+        spec?: string | null;
+        role?: ('Tank' | 'Healer' | 'DPS') | null;
+        ilvl?: number | null;
+        rank?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recruitment-section".
+ */
+export interface RecruitmentSection {
+  id: number;
+  /**
+   * Small label above the section heading.
+   */
+  eyebrow?: string | null;
+  /**
+   * Main section heading.
+   */
+  heading?: string | null;
+  /**
+   * Paragraph shown below the heading.
+   */
+  description?: string | null;
+  /**
+   * Small text shown below the Apply button.
+   */
+  footerNote?: string | null;
+  /**
+   * Label on the Apply button.
+   */
+  ctaLabel?: string | null;
+  /**
+   * Discord invite link for the Apply button.
+   */
+  discordUrl?: string | null;
+  roles?:
+    | {
+        role: 'Tank' | 'Healer' | 'DPS';
+        specs?:
+          | {
+              spec: string;
+              id?: string | null;
+            }[]
+          | null;
+        priority?: ('High' | 'Medium' | 'Low') | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roster".
+ */
+export interface Roster {
+  id: number;
+  members?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Last time roster was synced from Raider.IO
+   */
+  lastSyncedAt?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "guild-settings_select".
+ */
+export interface GuildSettingsSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  name?: T;
+  tagline?: T;
+  server?: T;
+  region?: T;
+  faction?: T;
+  description?: T;
+  footerLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "progression_select".
+ */
+export interface ProgressionSelect<T extends boolean = true> {
+  tier?: T;
+  difficulty?: T;
+  summary?: T;
+  kills?: T;
+  totalBosses?: T;
+  profileUrl?: T;
+  rankings?:
+    | T
+    | {
+        members?: T;
+        world?: T;
+        region?: T;
+        realm?: T;
+      };
+  bosses?:
+    | T
+    | {
+        name?: T;
+        killed?: T;
+        pulls?: T;
+        bestPull?: T;
+        id?: T;
+      };
+  lastSyncedAt?: T;
+  guildMembers?: T;
+  mythicPlusRunners?:
+    | T
+    | {
+        name?: T;
+        class?: T;
+        spec?: T;
+        score?: T;
+        id?: T;
+      };
+  mythicPlusSyncedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "officers-section_select".
+ */
+export interface OfficersSectionSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  officers?:
+    | T
+    | {
+        name?: T;
+        class?: T;
+        spec?: T;
+        role?: T;
+        ilvl?: T;
+        rank?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recruitment-section_select".
+ */
+export interface RecruitmentSectionSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  description?: T;
+  footerNote?: T;
+  ctaLabel?: T;
+  discordUrl?: T;
+  roles?:
+    | T
+    | {
+        role?: T;
+        specs?:
+          | T
+          | {
+              spec?: T;
+              id?: T;
+            };
+        priority?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roster_select".
+ */
+export interface RosterSelect<T extends boolean = true> {
+  members?: T;
+  lastSyncedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
