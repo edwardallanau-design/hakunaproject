@@ -44,7 +44,7 @@ const SyncRosterButton: React.FC = () => {
           fontWeight: 500,
         }}
       >
-        {status === "loading" ? "Fetching..." : "Preview Roster from Raider.IO"}
+        {status === "loading" ? "Syncing..." : "Sync Roster"}
       </button>
       {message && (
         <span style={{ fontSize: 13, color: status === "error" ? "#ef4444" : "#22c55e" }}>
