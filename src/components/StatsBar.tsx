@@ -72,9 +72,9 @@ export function StatsBar({ stats }: { stats: StatsData }) {
 
   const items = [
     { icon: Users, value: stats.members, label: "Members", suffix: "" },
-    { icon: Globe, value: stats.world, label: "World", prefix: "#" },
-    { icon: Map, value: stats.region, label: "Region", prefix: "#" },
-    { icon: Landmark, value: stats.realm, label: "Realm", prefix: "#" },
+    { icon: Globe, value: stats.world, label: "World", prefix: "" },
+    { icon: Map, value: stats.region, label: "Region", prefix: "" },
+    { icon: Landmark, value: stats.realm, label: "Realm", prefix: "" },
   ];
 
   return (
