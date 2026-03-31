@@ -262,30 +262,31 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Scroll hint — cascading chevrons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
-          aria-hidden
-        >
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              animate={{ opacity: [0.15, 0.7, 0.15] }}
-              transition={{ duration: 1.8, delay: i * 0.25, repeat: Infinity }}
-              style={{
-                width: 8,
-                height: 8,
-                borderRight: "1.5px solid var(--accent)",
-                borderBottom: "1.5px solid var(--accent)",
-                transform: "rotate(45deg)",
-              }}
-            />
-          ))}
-        </motion.div>
       </div>
+
+      {/* Scroll hint — cascading chevrons */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1"
+        aria-hidden
+      >
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={i}
+            animate={{ opacity: [0.15, 0.7, 0.15] }}
+            transition={{ duration: 1.8, delay: i * 0.25, repeat: Infinity }}
+            style={{
+              width: 8,
+              height: 8,
+              borderRight: "1.5px solid var(--accent)",
+              borderBottom: "1.5px solid var(--accent)",
+              transform: "rotate(45deg)",
+            }}
+          />
+        ))}
+      </motion.div>
     </section>
   );
 }
