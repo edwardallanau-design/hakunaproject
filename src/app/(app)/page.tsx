@@ -23,76 +23,77 @@ export default async function Home() {
       payload.findGlobal({ slug: "recruitment-section" }),
     ]);
 
-  const descriptionHTML = guildSettings.description
-    ? convertLexicalToHTML({ data: guildSettings.description, disableContainer: true })
-    : "";
+  const descriptionHTML = convertLexicalToHTML({ data: guildSettings.description!, disableContainer: true });
 
   const guild = {
-    eyebrow: guildSettings.eyebrow ?? "About Us",
-    heading: guildSettings.heading ?? "The Guild",
+    eyebrow: guildSettings.eyebrow!,
+    heading: guildSettings.heading!,
     description: descriptionHTML,
-    stats: {
-      members: guildSettings.stats?.members ?? 0,
-      cuttingEdge: guildSettings.stats?.cuttingEdge ?? 0,
-      keystoneRuns: guildSettings.stats?.keystoneRuns ?? 0,
-      worldRank: guildSettings.stats?.worldRank ?? 0,
-    },
   };
 
-  const footerLinks = (guildSettings.footerLinks ?? []).map((l) => ({
+  const stats = {
+    members: progression.rankings!.members!,
+    world: progression.rankings!.world!,
+    region: progression.rankings!.region!,
+    realm: progression.rankings!.realm!,
+  };
+
+  const footerLinks = guildSettings.footerLinks!.map((l) => ({
     label: l.label,
     href: l.href,
   }));
 
   const prog = {
-    tier: progression.tier ?? "",
-    difficulty: (progression.difficulty as string) ?? "Heroic",
-    kills: progression.kills ?? 0,
-    totalBosses: progression.totalBosses ?? 9,
-    summary: progression.summary ?? "",
-    profileUrl: progression.profileUrl ?? "",
-    bosses: (progression.bosses ?? []).map((b) => ({
+    tier: progression.tier!,
+    difficulty: progression.difficulty as string,
+    kills: progression.kills!,
+    totalBosses: progression.totalBosses!,
+    summary: progression.summary!,
+    profileUrl: progression.profileUrl!,
+    bosses: progression.bosses!.map((b) => ({
       name: b.name,
-      killed: b.killed ?? false,
+      killed: b.killed!,
       pulls: b.pulls ?? undefined,
       bestPull: b.bestPull ?? undefined,
     })),
-    rankings: progression.rankings
-      ? { world: progression.rankings.world ?? 0, region: progression.rankings.region ?? 0, realm: progression.rankings.realm ?? 0 }
-      : null,
-    mythicPlusRunners: (progression.mythicPlusRunners ?? []).map((r): MythicPlusRunner => ({
+    rankings: {
+      world: progression.rankings!.world!,
+      region: progression.rankings!.region!,
+      realm: progression.rankings!.realm!,
+    },
+    mythicPlusRunners: progression.mythicPlusRunners!.map((r): MythicPlusRunner => ({
       name: r.name,
       class: r.class,
       spec: r.spec,
-      score: r.score ?? 0,
+      score: r.score!,
     })),
   };
 
   const officersSectionData = {
-    eyebrow: officersSection.eyebrow ?? "◆ The Vanguard ◆",
-    heading: officersSection.heading ?? "Guild Officers",
-    officers: (officersSection.officers ?? []).map((o) => ({
+    eyebrow: officersSection.eyebrow!,
+    heading: officersSection.heading!,
+    officers: officersSection.officers!.map((o) => ({
       id: o.id,
       name: o.name,
       class: o.class,
       spec: o.spec,
       role: o.role,
-      rank: o.rank ?? "Officer",
-      ilvl: o.ilvl ?? 0,
+      rank: o.rank!,
+      ilvl: o.ilvl!,
     })),
   };
 
   const recruitmentSectionData = {
-    eyebrow: recruitmentSection.eyebrow ?? "◆ Join the Ranks ◆",
-    heading: recruitmentSection.heading ?? "We're Recruiting",
-    description: recruitmentSection.description ?? "Looking for dedicated players who can parse, execute mechanics, and still have fun doing it. Semi-hardcore means high standards, low drama.",
-    footerNote: recruitmentSection.footerNote ?? "Exceptional players of any role are always considered",
-    ctaLabel: recruitmentSection.ctaLabel ?? "Apply via Discord ↗",
-    discordUrl: recruitmentSection.discordUrl ?? "https://discord.gg/placeholder",
-    roles: (recruitmentSection.roles ?? []).map((r) => ({
+    eyebrow: recruitmentSection.eyebrow!,
+    heading: recruitmentSection.heading!,
+    description: recruitmentSection.description!,
+    footerNote: recruitmentSection.footerNote!,
+    ctaLabel: recruitmentSection.ctaLabel!,
+    discordUrl: recruitmentSection.discordUrl!,
+    roles: recruitmentSection.roles!.map((r) => ({
       role: r.role,
-      specs: (r.specs ?? []).map((s) => s.spec),
-      priority: r.priority ?? "Medium",
+      specs: r.specs!.map((s) => s.spec),
+      priority: r.priority!,
     })),
   };
 
@@ -101,7 +102,7 @@ export default async function Home() {
       <Navbar />
       <main>
         <Hero />
-        <StatsBar stats={guild.stats} />
+        <StatsBar stats={stats} />
         <Progression progression={prog} />
         <About guild={guild} />
         <Officers section={officersSectionData} />

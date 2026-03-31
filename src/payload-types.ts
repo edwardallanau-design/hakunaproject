@@ -166,6 +166,7 @@ export interface ProgressionGlobal {
   totalBosses?: number | null;
   profileUrl?: string | null;
   rankings?: {
+    members?: number | null;
     world?: number | null;
     region?: number | null;
     realm?: number | null;
