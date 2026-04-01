@@ -209,6 +209,7 @@ export type GuildDetailsData = {
       }[]
     >;
   }[];
+  members: RosterMember[];
   meta: {
     lastCrawledAt: string | null;
   };
@@ -235,13 +236,30 @@ async function fetchGuildDetailsRaw(): Promise<Response> {
 }
 
 export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData> {
-  const res = await fetchGuildDetailsRaw();
-  if (!res.ok) throw new Error(`Guild details fetch failed: ${res.status}`);
-  const data = await res.json();
+  const [detailsRes, rosterRes] = await Promise.all([
+    fetchGuildDetailsRaw(),
+    fetchRosterWithRetry(),
+  ]);
+  if (!detailsRes.ok) throw new Error(`Guild details fetch failed: ${detailsRes.status}`);
+  if (!rosterRes.ok) throw new Error(`Roster fetch failed: ${rosterRes.status}`);
 
-  const d = data.guildDetails;
+  const [detailsJson, rosterJson] = await Promise.all([
+    detailsRes.json(),
+    rosterRes.json(),
+  ]);
+
+  const d = detailsJson.guildDetails;
+
+  const members = ((rosterJson.guildRoster?.roster ?? rosterJson.roster) ?? [])
+    .filter((entry: RawRosterEntry) => entry.character?.level === 90)
+    .map((entry: RawRosterEntry): RosterMember => {
+      const { character, raidProgress, keystoneScores } = entry;
+      const { expansionData: _expansion, talentsDetails: _talentsDetails, items: _items, talents: _talents, patronLevel: _patronLevel, ...characterRest } = character;
+      return { character: characterRest, raidProgress, keystoneScores };
+    });
 
   return {
+    members,
     guild: {
       id: d.guild.id,
       name: d.guild.name,

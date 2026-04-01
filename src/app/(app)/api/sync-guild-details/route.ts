@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     });
 
     return Response.json({
-      message: `Synced guild details for ${details.guild.name}`,
+      message: `Synced guild details for ${details.guild.name} (${details.members.length} members)`,
       syncedAt,
     });
   } catch (err) {
