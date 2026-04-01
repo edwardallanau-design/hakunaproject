@@ -234,9 +234,28 @@ export type GuildDetailsData = {
   };
 };
 
-export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData> {
+async function fetchGuildDetailsRaw(): Promise<Response> {
   const url = `https://raider.io/api/guilds/details?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
-  const res = await fetch(url);
+  const MAX_ATTEMPTS = 3;
+  let lastError = "Unknown error";
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const res = await fetch(url);
+    if (res.status === 504 || res.status === 502 || res.status === 503) {
+      lastError = `Guild details fetch failed: ${res.status}`;
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+        continue;
+      }
+    } else {
+      return res;
+    }
+  }
+  throw new Error(lastError);
+}
+
+export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData> {
+  const res = await fetchGuildDetailsRaw();
   if (!res.ok) throw new Error(`Guild details fetch failed: ${res.status}`);
   const data = await res.json();
 
