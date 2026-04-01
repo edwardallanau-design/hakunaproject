@@ -93,6 +93,7 @@ export interface Config {
     'officers-section': OfficersSection;
     'recruitment-section': RecruitmentSection;
     roster: Roster;
+    'guild-details': GuildDetail;
   };
   globalsSelect: {
     'guild-settings': GuildSettingsSelect<false> | GuildSettingsSelect<true>;
@@ -100,6 +101,7 @@ export interface Config {
     'officers-section': OfficersSectionSelect<false> | OfficersSectionSelect<true>;
     'recruitment-section': RecruitmentSectionSelect<false> | RecruitmentSectionSelect<true>;
     roster: RosterSelect<false> | RosterSelect<true>;
+    'guild-details': GuildDetailSelect<false> | GuildDetailSelect<true>;
   };
   locale: null;
   widgets: {
@@ -565,6 +567,28 @@ export interface Roster {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "guild-details".
+ */
+export interface GuildDetail {
+  id: number;
+  details?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Last time guild details were synced from Raider.IO
+   */
+  lastSyncedAt?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "guild-settings_select".
  */
 export interface GuildSettingsSelect<T extends boolean = true> {
@@ -687,6 +711,17 @@ export interface RecruitmentSectionSelect<T extends boolean = true> {
  */
 export interface RosterSelect<T extends boolean = true> {
   members?: T;
+  lastSyncedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "guild-details_select".
+ */
+export interface GuildDetailSelect<T extends boolean = true> {
+  details?: T;
   lastSyncedAt?: T;
   updatedAt?: T;
   createdAt?: T;
