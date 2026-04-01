@@ -34,7 +34,7 @@ const SyncMythicRunnersButton: React.FC = () => {
   return (
     <div style={{ padding: "12px 0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
       <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-500, #888)" }}>
-        Pull top 10 M+ runners from the synced Guild Roster data (by keystone score).
+        Pull top 10 M+ runners from the synced Guild Details data (by keystone score).
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button
@@ -52,7 +52,7 @@ const SyncMythicRunnersButton: React.FC = () => {
             fontWeight: 500,
           }}
         >
-          {status === "loading" ? "Syncing..." : "Sync M+ Runners from Roster"}
+          {status === "loading" ? "Syncing..." : "Sync M+ Runners from Guild Details"}
         </button>
         {message && (
           <span style={{ fontSize: 13, color: status === "error" ? "#ef4444" : "#22c55e" }}>

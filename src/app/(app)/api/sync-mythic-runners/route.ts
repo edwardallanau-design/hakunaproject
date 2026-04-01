@@ -13,12 +13,13 @@ export async function POST(request: Request) {
   }
 
   try {
-    const roster = await payload.findGlobal({ slug: "roster" });
-    const members: RosterMember[] = (roster.members as RosterMember[] | null) ?? [];
+    const guildDetails = await payload.findGlobal({ slug: "guild-details" });
+    const details = guildDetails.details as { members?: RosterMember[] } | null;
+    const members: RosterMember[] = details?.members ?? [];
 
     if (members.length === 0) {
       return Response.json(
-        { error: "No roster data found — sync the Guild Roster first" },
+        { error: "No roster data found — sync Guild Details first" },
         { status: 400 },
       );
     }
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
     });
 
     return Response.json({
-      message: `Saved top ${topRunners.length} M+ runners from roster`,
+      message: `Saved top ${topRunners.length} M+ runners from guild details`,
       count: topRunners.length,
       syncedAt,
     });
