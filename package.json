@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "generate:importmap": "node --import tsx/esm node_modules/payload/bin.js generate:importmap"
+    "generate:importmap": "node --no-strip-types --import tsx/esm node_modules/payload/bin.js generate:importmap",
+    "generate:types": "node --no-strip-types --import tsx/esm node_modules/payload/bin.js generate:types"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.79.1",
