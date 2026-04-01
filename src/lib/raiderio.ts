@@ -170,6 +170,145 @@ export type RunnerMatch = {
   score: number;
 };
 
+// ─── Guild Details ────────────────────────────────────────────────────────────
+
+export type GuildDetailsData = {
+  guild: {
+    id: number;
+    name: string;
+    faction: string;
+    realm: { id: number; name: string; slug: string };
+    region: { name: string; slug: string; short_name: string };
+    path: string;
+    logo: string;
+  };
+  raidRankings: {
+    raid: string;
+    ranks: Record<string, { world: number; region: number; realm: number }>;
+  }[];
+  raidProgress: {
+    raid: string;
+    aotc: string | null;
+    cuttingEdge: string | null;
+    encountersDefeated: Record<
+      string,
+      { slug: string; firstDefeated: string }[]
+    >;
+  }[];
+  raidAttempt: {
+    raid: string;
+    encounters: Record<
+      string,
+      {
+        slug: string;
+        name: string;
+        bestPercent: number;
+        pullCount: number;
+        pullStartedAt: string;
+        lastPullAt: string;
+      }[]
+    >;
+  }[];
+  leaders: {
+    character: {
+      id: number;
+      name: string;
+      class: { id: number; name: string; slug: string };
+      race: { id: number; name: string; slug: string; faction: string };
+      path: string;
+      realm: { id: number; name: string; slug: string };
+    };
+    rank: number;
+  }[];
+  customizations: {
+    biography: string | null;
+    biography_updated_at: string | null;
+    profile_banner: string | null;
+    facebook_profile: string;
+    twitch_profile: string;
+    youtube_profile: string;
+    twitter_profile: string;
+  };
+  meta: {
+    lastCrawledAt: string | null;
+  };
+};
+
+export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData> {
+  const url = `https://raider.io/api/guilds/details?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Guild details fetch failed: ${res.status}`);
+  const data = await res.json();
+
+  const d = data.guildDetails;
+
+  return {
+    guild: {
+      id: d.guild.id,
+      name: d.guild.name,
+      faction: d.guild.faction,
+      realm: { id: d.guild.realm.id, name: d.guild.realm.name, slug: d.guild.realm.slug },
+      region: d.guild.region,
+      path: d.guild.path,
+      logo: d.guild.logo,
+    },
+    raidRankings: (d.raidRankings ?? []).map((r: { raid: string; ranks: Record<string, { world: number; region: number; realm: number }> }) => ({
+      raid: r.raid,
+      ranks: r.ranks,
+    })),
+    raidProgress: (d.raidProgress ?? []).map((p: { raid: string; aotc: string | null; cuttingEdge: string | null; encountersDefeated: Record<string, { slug: string; firstDefeated: string; itemLevelAvg: number; artifactPowerAvg: number }[]> }) => ({
+      raid: p.raid,
+      aotc: p.aotc,
+      cuttingEdge: p.cuttingEdge,
+      encountersDefeated: Object.fromEntries(
+        Object.entries(p.encountersDefeated).map(([diff, bosses]) => [
+          diff,
+          bosses.map((b) => ({ slug: b.slug, firstDefeated: b.firstDefeated })),
+        ]),
+      ),
+    })),
+    raidAttempt: (d.raidAttempt ?? []).map((a: { raid: string; encounters: Record<string, { slug: string; name: string; bestPercent: number; pullCount: number; pullStartedAt: string; lastPullAt: string; isAttempt: boolean }[]> }) => ({
+      raid: a.raid,
+      encounters: Object.fromEntries(
+        Object.entries(a.encounters).map(([diff, bosses]) => [
+          diff,
+          bosses.map((b) => ({
+            slug: b.slug,
+            name: b.name,
+            bestPercent: b.bestPercent,
+            pullCount: b.pullCount,
+            pullStartedAt: b.pullStartedAt,
+            lastPullAt: b.lastPullAt,
+          })),
+        ]),
+      ),
+    })),
+    leaders: (d.leaders ?? []).map((l: { character: { id: number; name: string; class: { id: number; name: string; slug: string }; race: { id: number; name: string; slug: string; faction: string }; path: string; realm: { id: number; name: string; slug: string } }; rank: number }) => ({
+      character: {
+        id: l.character.id,
+        name: l.character.name,
+        class: l.character.class,
+        race: l.character.race,
+        path: l.character.path,
+        realm: { id: l.character.realm.id, name: l.character.realm.name, slug: l.character.realm.slug },
+      },
+      rank: l.rank,
+    })),
+    customizations: {
+      biography: d.guildCustomizations?.biography ?? null,
+      biography_updated_at: d.guildCustomizations?.biography_updated_at ?? null,
+      profile_banner: d.guildCustomizations?.profile_banner ?? null,
+      facebook_profile: d.guildCustomizations?.facebook_profile ?? "",
+      twitch_profile: d.guildCustomizations?.twitch_profile ?? "",
+      youtube_profile: d.guildCustomizations?.youtube_profile ?? "",
+      twitter_profile: d.guildCustomizations?.twitter_profile ?? "",
+    },
+    meta: {
+      lastCrawledAt: d.meta?.lastCrawledAt ?? null,
+    },
+  };
+}
+
 // ─── Guild Roster ─────────────────────────────────────────────────────────────
 
 export type RosterMember = {
