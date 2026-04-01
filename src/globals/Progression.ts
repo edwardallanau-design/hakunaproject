@@ -31,13 +31,18 @@ export const Progression: GlobalConfig = {
       name: 'bosses',
       type: 'array',
       labels: { singular: 'Boss', plural: 'Bosses' },
-      admin: { initCollapsed: true },
+      admin: {
+        initCollapsed: true,
+        components: {
+          RowLabel: '/components/admin/BossRowLabel',
+        },
+      },
       fields: [
         { name: 'name', type: 'text', required: true },
-        { name: 'killed', type: 'checkbox', defaultValue: false },
-        { name: 'firstDefeated', type: 'date', admin: { description: 'Date the boss was first killed on mythic' } },
-        { name: 'pulls', type: 'number', admin: { description: 'Number of pulls (for in-progress bosses)' } },
-        { name: 'bestPull', type: 'number', admin: { description: 'Best pull % (for in-progress bosses)' } },
+        { name: 'killed', type: 'checkbox', defaultValue: false, admin: { readOnly: true } },
+        { name: 'firstDefeated', type: 'date', admin: { description: 'Date the boss was first killed on mythic', readOnly: true } },
+        { name: 'pulls', type: 'number', admin: { description: 'Number of pulls (for in-progress bosses)', readOnly: true } },
+        { name: 'bestPull', type: 'number', admin: { description: 'Best pull % (for in-progress bosses)', readOnly: true } },
       ],
     },
     {
