@@ -3,18 +3,13 @@ import type { GlobalConfig } from 'payload'
 export const Progression: GlobalConfig = {
   slug: 'progression',
   label: 'Progression',
-  admin: {
-    components: {
-      elements: {
-        beforeDocumentControls: ['/components/admin/SyncProgressionButton'],
-      },
-    },
-  },
+  admin: {},
   fields: [
     { name: 'tier', type: 'text', required: true },
     { name: 'difficulty', type: 'select', options: ['Normal', 'Heroic', 'Mythic'], defaultValue: 'Heroic' },
     { name: 'summary', type: 'text', admin: { description: 'e.g. "6/9 H" — auto-filled by Raider.IO sync' } },
     { name: 'profileUrl', type: 'text', admin: { description: 'Raider.IO profile URL' } },
+    { name: 'lastSyncedAt', type: 'date', admin: { description: 'Last time data was synced from Raider.IO', readOnly: true, date: { pickerAppearance: 'dayAndTime' } } },
     { name: 'kills', type: 'number', defaultValue: 0, admin: { readOnly: true } },
     { name: 'totalBosses', type: 'number', defaultValue: 9, admin: { readOnly: true } },
     {
@@ -46,11 +41,6 @@ export const Progression: GlobalConfig = {
       ],
     },
     {
-      name: 'lastSyncedAt',
-      type: 'date',
-      admin: { description: 'Last time data was synced from Raider.IO', readOnly: true },
-    },
-    {
       name: 'guildMembers',
       type: 'json',
       admin: { hidden: true },
@@ -72,11 +62,6 @@ export const Progression: GlobalConfig = {
         { name: 'spec', type: 'text', required: true, admin: { readOnly: true } },
         { name: 'score', type: 'number', required: true, admin: { readOnly: true } },
       ],
-    },
-    {
-      name: 'mythicPlusSyncedAt',
-      type: 'date',
-      admin: { description: 'Last time M+ data was synced from Raider.IO', readOnly: true },
     },
   ],
 }

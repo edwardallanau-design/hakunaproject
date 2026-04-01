@@ -108,7 +108,6 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
         ? { ...mythicRanks, members: activeCount }
         : { world: 0, region: 0, realm: 0, members: activeCount },
       mythicPlusRunners: topRunners,
-      mythicPlusSyncedAt: syncedAt,
       lastSyncedAt: syncedAt,
     },
   });
