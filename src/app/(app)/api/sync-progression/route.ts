@@ -89,10 +89,16 @@ export async function POST(request: Request) {
       (r) => r.raid === details.raidProgress?.[0]?.raid,
     );
     const mythicRanks = raidRanking?.ranks["mythic"] ?? null;
-    const memberCount = details.members?.length ?? 0;
 
     // ── M+ Runners ─────────────────────────────────────────────────────────────
     const members: RosterMember[] = details.members ?? [];
+    const activeCount = members.filter(
+      (m) =>
+        m.keystoneScores?.allScore > 0 ||
+        m.raidProgress?.progress?.normal > 0 ||
+        m.raidProgress?.progress?.heroic > 0 ||
+        m.raidProgress?.progress?.mythic > 0,
+    ).length;
     const topRunners: MythicPlusRunner[] = members
       .filter((m) => m.keystoneScores?.allScore > 0)
       .sort((a, b) => b.keystoneScores.allScore - a.keystoneScores.allScore)
@@ -114,8 +120,8 @@ export async function POST(request: Request) {
         totalBosses,
         bosses,
         rankings: mythicRanks
-          ? { ...mythicRanks, members: memberCount }
-          : { world: 0, region: 0, realm: 0, members: memberCount },
+          ? { ...mythicRanks, members: activeCount }
+          : { world: 0, region: 0, realm: 0, members: activeCount },
         mythicPlusRunners: topRunners,
         mythicPlusSyncedAt: syncedAt,
         lastSyncedAt: syncedAt,
@@ -123,7 +129,7 @@ export async function POST(request: Request) {
     });
 
     return Response.json({
-      message: `Synced: ${kills}/${totalBosses} bosses · ${topRunners.length} M+ runners · ${memberCount} members`,
+      message: `Synced: ${kills}/${totalBosses} bosses · ${topRunners.length} M+ runners · ${activeCount} active members`,
       runnersCount: topRunners.length,
       syncedAt,
     });
