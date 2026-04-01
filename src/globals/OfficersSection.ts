@@ -33,11 +33,6 @@ export const OfficersSection: GlobalConfig = {
       },
       fields: [
         {
-          name: 'name',
-          type: 'text',
-          required: true,
-        },
-        {
           name: 'sync',
           type: 'ui',
           admin: {
@@ -47,19 +42,24 @@ export const OfficersSection: GlobalConfig = {
           },
         },
         {
+          name: 'name',
+          type: 'text',
+          admin: { hidden: true },
+        },
+        {
           name: 'class',
           type: 'select',
           options: WOW_CLASSES.map(c => ({ label: c, value: c })),
-          admin: { readOnly: true },
+          admin: { hidden: true },
         },
-        { name: 'spec', type: 'text', admin: { readOnly: true } },
+        { name: 'spec', type: 'text', admin: { hidden: true } },
         {
           name: 'role',
           type: 'select',
           options: ['Tank', 'Healer', 'DPS'].map(r => ({ label: r, value: r })),
-          admin: { readOnly: true },
+          admin: { hidden: true },
         },
-        { name: 'ilvl', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+        { name: 'ilvl', type: 'number', defaultValue: 0, admin: { hidden: true } },
         { name: 'rank', type: 'text', defaultValue: 'Officer' },
       ],
     },
