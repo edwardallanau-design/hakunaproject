@@ -28,13 +28,6 @@ export const Progression: GlobalConfig = {
       ],
     },
     {
-      name: 'bossSync',
-      type: 'ui',
-      admin: {
-        components: { Field: '/components/admin/SyncBossesButton' },
-      },
-    },
-    {
       name: 'bosses',
       type: 'array',
       labels: { singular: 'Boss', plural: 'Bosses' },
@@ -56,13 +49,6 @@ export const Progression: GlobalConfig = {
       name: 'guildMembers',
       type: 'json',
       admin: { hidden: true },
-    },
-    {
-      name: 'mythicPlusSync',
-      type: 'ui',
-      admin: {
-        components: { Field: '/components/admin/SyncMythicRunnersButton' },
-      },
     },
     {
       name: 'mythicPlusRunners',

@@ -19,7 +19,7 @@ const SyncProgressionButton: React.FC = () => {
 
       if (res.ok) {
         setStatus("success");
-        setMessage(`Synced: ${data.summary} · ${data.membersCount} members cached`);
+        setMessage(data.message ?? `Synced: ${data.summary}`);
         setTimeout(() => window.location.reload(), 1500);
       } else {
         setStatus("error");
@@ -48,7 +48,7 @@ const SyncProgressionButton: React.FC = () => {
           fontWeight: 500,
         }}
       >
-        {status === "syncing" ? "Syncing..." : "Sync from Raider.IO"}
+        {status === "syncing" ? "Syncing..." : "Sync from Guild Details"}
       </button>
       {message && (
         <span style={{ fontSize: 13, color: status === "error" ? "#ef4444" : "#22c55e" }}>
