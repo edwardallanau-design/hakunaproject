@@ -41,11 +41,6 @@ export const Progression: GlobalConfig = {
       ],
     },
     {
-      name: 'guildMembers',
-      type: 'json',
-      admin: { hidden: true },
-    },
-    {
       name: 'mythicPlusRunners',
       type: 'array',
       labels: { singular: 'Runner', plural: 'Runners' },
