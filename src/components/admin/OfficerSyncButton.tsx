@@ -13,6 +13,24 @@ type CharacterMatch = {
   ilvl: number
 }
 
+type RosterMember = {
+  character: {
+    name: string
+    realm: { name: string }
+    class: { name: string }
+    spec: { name: string; role: string }
+    itemLevelEquipped: number
+  }
+}
+
+const ROLE_MAP: Record<string, "Tank" | "Healer" | "DPS"> = {
+  tank: "Tank",
+  healer: "Healer",
+  dps: "DPS",
+  melee: "DPS",
+  ranged: "DPS",
+}
+
 const OfficerSyncButton: React.FC<{ path: string }> = ({ path }) => {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
   const [msg, setMsg] = useState("")
@@ -79,26 +97,48 @@ const OfficerSyncButton: React.FC<{ path: string }> = ({ path }) => {
   }
 
   const handleSearch = async () => {
-    const query = search.trim()
+    const query = search.trim().toLowerCase()
     if (!query) return
     setStatus("loading")
     setMsg("")
     setMatches([])
 
     try {
-      const res = await fetch(
-        `/api/lookup-character?name=${encodeURIComponent(query)}`,
-        { credentials: "include" },
-      )
+      const res = await fetch("/api/globals/guild-details", { credentials: "include" })
       const data = await res.json()
 
       if (!res.ok) {
         setStatus("error")
-        setMsg(data.error ?? "Character not found")
+        setMsg(data.errors?.[0]?.message ?? "Failed to fetch guild details")
         return
       }
 
-      setMatches(data)
+      const members: RosterMember[] = data.details?.members ?? []
+
+      if (members.length === 0) {
+        setStatus("error")
+        setMsg("No roster data found — sync Guild Details first")
+        return
+      }
+
+      const results: CharacterMatch[] = members
+        .filter((m) => m.character.name.toLowerCase().includes(query))
+        .map((m) => ({
+          name: m.character.name,
+          realm: m.character.realm.name,
+          class: m.character.class.name,
+          spec: m.character.spec.name,
+          role: ROLE_MAP[m.character.spec.role.toLowerCase()] ?? "DPS",
+          ilvl: m.character.itemLevelEquipped,
+        }))
+
+      if (results.length === 0) {
+        setStatus("error")
+        setMsg(`"${search.trim()}" not found in guild roster`)
+        return
+      }
+
+      setMatches(results)
       setStatus("idle")
     } catch {
       setStatus("error")

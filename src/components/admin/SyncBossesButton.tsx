@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 
-const SyncMythicRunnersButton: React.FC = () => {
+const SyncBossesButton: React.FC = () => {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
   const [message, setMessage] = useState("")
 
@@ -11,7 +11,7 @@ const SyncMythicRunnersButton: React.FC = () => {
     setMessage("")
 
     try {
-      const res = await fetch("/api/sync-mythic-runners", {
+      const res = await fetch("/api/sync-bosses", {
         method: "POST",
         credentials: "include",
       })
@@ -19,7 +19,7 @@ const SyncMythicRunnersButton: React.FC = () => {
 
       if (res.ok) {
         setStatus("idle")
-        setMessage(data.message ?? `Saved ${data.count} runners`)
+        setMessage(data.message ?? `Synced: ${data.summary}`)
         setTimeout(() => window.location.reload(), 1500)
       } else {
         setStatus("error")
@@ -34,7 +34,7 @@ const SyncMythicRunnersButton: React.FC = () => {
   return (
     <div style={{ padding: "12px 0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
       <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-500, #888)" }}>
-        Pull top 10 M+ runners from the synced Guild Details data (by keystone score).
+        Pull mythic boss progression from the synced Guild Details data (kills, pulls, best %).
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button
@@ -52,7 +52,7 @@ const SyncMythicRunnersButton: React.FC = () => {
             fontWeight: 500,
           }}
         >
-          {status === "loading" ? "Syncing..." : "Sync M+ Runners from Guild Details"}
+          {status === "loading" ? "Syncing..." : "Sync Boss Progression from Guild Details"}
         </button>
         {message && (
           <span style={{ fontSize: 13, color: status === "error" ? "#ef4444" : "#22c55e" }}>
@@ -64,4 +64,4 @@ const SyncMythicRunnersButton: React.FC = () => {
   )
 }
 
-export default SyncMythicRunnersButton
+export default SyncBossesButton
