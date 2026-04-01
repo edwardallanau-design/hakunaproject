@@ -316,7 +316,6 @@ export type RosterMember = {
     progress: { normal: number; heroic: number; mythic: number };
   };
   keystoneScores: { allScore: number; allScoreColor: string };
-  rank: number;
 };
 
 // Extends the clean output type so the spread in the transform is type-safe
@@ -332,7 +331,6 @@ type RawRosterEntry = {
   character: RawRosterCharacter;
   raidProgress: RosterMember['raidProgress'];
   keystoneScores: RosterMember['keystoneScores'];
-  rank: number;
   stream?: unknown;
 };
 
@@ -364,14 +362,13 @@ export async function fetchAndTransformRoster(): Promise<RosterMember[]> {
   return ((data.guildRoster?.roster ?? data.roster) ?? [])
     .filter((entry: RawRosterEntry) => entry.character?.level === 90)
     .map((entry: RawRosterEntry): RosterMember => {
-    const { character, raidProgress, keystoneScores, rank } = entry;
+    const { character, raidProgress, keystoneScores } = entry;
     const { expansionData: _expansion, talentsDetails: _talentsDetails, items: _items, talents: _talents, patronLevel: _patronLevel, ...characterRest } = character;
 
     return {
       character: characterRest,
       raidProgress,
       keystoneScores,
-      rank,
     };
   });
 }
