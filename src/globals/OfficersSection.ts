@@ -22,6 +22,11 @@ export const OfficersSection: GlobalConfig = {
       admin: { description: 'Main section heading.' },
     },
     {
+      name: 'lastSyncedAt',
+      type: 'date',
+      admin: { description: 'Last time officer data was synced from Guild Details', readOnly: true, date: { pickerAppearance: 'dayAndTime' } },
+    },
+    {
       name: 'officers',
       type: 'array',
       label: 'Officers',

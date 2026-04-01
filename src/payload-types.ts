@@ -467,6 +467,10 @@ export interface OfficersSection {
    * Main section heading.
    */
   heading?: string | null;
+  /**
+   * Last time officer data was synced from Guild Details
+   */
+  lastSyncedAt?: string | null;
   officers?:
     | {
         name: string;
@@ -662,6 +666,7 @@ export interface ProgressionSelect<T extends boolean = true> {
 export interface OfficersSectionSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
+  lastSyncedAt?: T;
   officers?:
     | T
     | {

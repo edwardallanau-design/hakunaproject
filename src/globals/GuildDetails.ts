@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload'
 import { syncProgressionFromDetails } from '@/lib/syncProgression'
+import { syncOfficersFromDetails } from '@/lib/syncOfficers'
 
 export const GuildDetails: GlobalConfig = {
   slug: 'guild-details',
@@ -8,9 +9,12 @@ export const GuildDetails: GlobalConfig = {
     afterChange: [
       async ({ req }) => {
         try {
-          await syncProgressionFromDetails(req.payload);
+          await Promise.all([
+            syncProgressionFromDetails(req.payload),
+            syncOfficersFromDetails(req.payload),
+          ]);
         } catch (err) {
-          req.payload.logger.error(`Auto-sync progression failed: ${err instanceof Error ? err.message : String(err)}`);
+          req.payload.logger.error(`Auto-sync failed: ${err instanceof Error ? err.message : String(err)}`);
         }
       },
     ],
@@ -31,7 +35,7 @@ export const GuildDetails: GlobalConfig = {
     {
       name: 'lastSyncedAt',
       type: 'date',
-      admin: { description: 'Last time guild details were synced from Raider.IO', readOnly: true },
+      admin: { description: 'Last time guild details were synced from Raider.IO', readOnly: true, date: { pickerAppearance: 'dayAndTime' } },
     },
   ],
 }
