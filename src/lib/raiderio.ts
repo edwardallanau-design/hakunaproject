@@ -209,26 +209,6 @@ export type GuildDetailsData = {
       }[]
     >;
   }[];
-  leaders: {
-    character: {
-      id: number;
-      name: string;
-      class: { id: number; name: string; slug: string };
-      race: { id: number; name: string; slug: string; faction: string };
-      path: string;
-      realm: { id: number; name: string; slug: string };
-    };
-    rank: number;
-  }[];
-  customizations: {
-    biography: string | null;
-    biography_updated_at: string | null;
-    profile_banner: string | null;
-    facebook_profile: string;
-    twitch_profile: string;
-    youtube_profile: string;
-    twitter_profile: string;
-  };
   meta: {
     lastCrawledAt: string | null;
   };
@@ -302,26 +282,6 @@ export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData>
         ]),
       ),
     })),
-    leaders: (d.leaders ?? []).map((l: { character: { id: number; name: string; class: { id: number; name: string; slug: string }; race: { id: number; name: string; slug: string; faction: string }; path: string; realm: { id: number; name: string; slug: string } }; rank: number }) => ({
-      character: {
-        id: l.character.id,
-        name: l.character.name,
-        class: l.character.class,
-        race: l.character.race,
-        path: l.character.path,
-        realm: { id: l.character.realm.id, name: l.character.realm.name, slug: l.character.realm.slug },
-      },
-      rank: l.rank,
-    })),
-    customizations: {
-      biography: d.guildCustomizations?.biography ?? null,
-      biography_updated_at: d.guildCustomizations?.biography_updated_at ?? null,
-      profile_banner: d.guildCustomizations?.profile_banner ?? null,
-      facebook_profile: d.guildCustomizations?.facebook_profile ?? "",
-      twitch_profile: d.guildCustomizations?.twitch_profile ?? "",
-      youtube_profile: d.guildCustomizations?.youtube_profile ?? "",
-      twitter_profile: d.guildCustomizations?.twitter_profile ?? "",
-    },
     meta: {
       lastCrawledAt: d.meta?.lastCrawledAt ?? null,
     },
