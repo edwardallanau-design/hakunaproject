@@ -64,7 +64,7 @@ export type GuildDetailsData = {
   };
 };
 
-async function fetchGuildDetailsRaw(): Promise<Response> {
+async function fetchGuildDetails(): Promise<Response> {
   const url = `https://raider.io/api/guilds/details?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
   const MAX_ATTEMPTS = 3;
   let lastError = "Unknown error";
@@ -86,11 +86,11 @@ async function fetchGuildDetailsRaw(): Promise<Response> {
 
 export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData> {
   const [detailsRes, rosterRes] = await Promise.all([
-    fetchGuildDetailsRaw(),
-    fetchRosterWithRetry(),
+    fetchGuildDetails(),
+    fetchRosterDetails(),
   ]);
   if (!detailsRes.ok) throw new Error(`Guild details fetch failed: ${detailsRes.status}`);
-  if (!rosterRes.ok) throw new Error(`Roster fetch failed: ${rosterRes.status}`);
+  if (!rosterRes.ok) throw new Error(`Guild roster fetch failed: ${rosterRes.status}`);
 
   const [detailsJson, rosterJson] = await Promise.all([
     detailsRes.json(),
@@ -199,7 +199,7 @@ type RawRosterEntry = {
   stream?: unknown;
 };
 
-async function fetchRosterWithRetry(): Promise<Response> {
+async function fetchRosterDetails(): Promise<Response> {
   const url = `https://raider.io/api/guilds/roster?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
   const MAX_ATTEMPTS = 3;
   let lastError = "Unknown error";
