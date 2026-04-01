@@ -45,26 +45,6 @@ function prettifyDifficulty(d: string): string {
   return d.charAt(0).toUpperCase() + d.slice(1);
 }
 
-type RaiderIOGuildMember = {
-  rank: number;
-  character: { name: string; realm: string };
-};
-
-
-export type GuildMember = { name: string; realm: string };
-
-export async function fetchGuildMembers(): Promise<GuildMember[]> {
-  const res = await fetch(
-    `https://raider.io/api/v1/guilds/profile?region=${REGION}&realm=${REALM}&name=${encodeURIComponent(GUILD_NAME)}&fields=members`,
-  );
-  if (!res.ok) throw new Error(`Roster fetch failed: ${res.status}`);
-  const data = await res.json();
-  return (data.members ?? []).map((m: RaiderIOGuildMember) => ({
-    name: m.character.name,
-    realm: m.character.realm,
-  }));
-}
-
 export type CharacterMatch = {
   name: string;
   realm: string;
@@ -306,8 +286,6 @@ export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData>
   };
 }
 
-// ─── Guild Roster ─────────────────────────────────────────────────────────────
-
 export type RosterMember = {
   character: {
     name: string;
@@ -372,22 +350,4 @@ async function fetchRosterWithRetry(): Promise<Response> {
   throw new Error(lastError);
 }
 
-export async function fetchAndTransformRoster(): Promise<RosterMember[]> {
-  const res = await fetchRosterWithRetry();
-  if (!res.ok) throw new Error(`Roster fetch failed: ${res.status}`);
-  const data = await res.json();
-
-  return ((data.guildRoster?.roster ?? data.roster) ?? [])
-    .filter((entry: RawRosterEntry) => entry.character?.level === 90)
-    .map((entry: RawRosterEntry): RosterMember => {
-    const { character, raidProgress, keystoneScores } = entry;
-    const { expansionData: _expansion, talentsDetails: _talentsDetails, items: _items, talents: _talents, patronLevel: _patronLevel, ...characterRest } = character;
-
-    return {
-      character: characterRest,
-      raidProgress,
-      keystoneScores,
-    };
-  });
-}
 

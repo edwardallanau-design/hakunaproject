@@ -25,7 +25,6 @@ import { default as default_00765b09214755cfebc4bc7b9338ee1d } from '../../../co
 import { default as default_22494b6131442370509eea0f7ce28fc0 } from '../../../components/admin/MythicPlusRunnerRowLabel'
 import { default as default_69ae5086db9342b129573dc8b5e22d32 } from '../../../components/admin/OfficerSyncButton'
 import { default as default_90ae37741d642c49a54ed2c8d811cea0 } from '../../../components/admin/OfficerRowLabel'
-import { default as default_6f0c311c23854661bafdade0133c8b4f } from '../../../components/admin/SyncRosterButton'
 import { default as default_1e19e96780d57bff0696432a7afa110e } from '../../../components/admin/SyncGuildDetailsButton'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -57,7 +56,6 @@ export const importMap = {
   "/components/admin/MythicPlusRunnerRowLabel#default": default_22494b6131442370509eea0f7ce28fc0,
   "/components/admin/OfficerSyncButton#default": default_69ae5086db9342b129573dc8b5e22d32,
   "/components/admin/OfficerRowLabel#default": default_90ae37741d642c49a54ed2c8d811cea0,
-  "/components/admin/SyncRosterButton#default": default_6f0c311c23854661bafdade0133c8b4f,
   "/components/admin/SyncGuildDetailsButton#default": default_1e19e96780d57bff0696432a7afa110e,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

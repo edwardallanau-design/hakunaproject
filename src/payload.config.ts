@@ -11,7 +11,6 @@ import { GuildSettings } from "./globals/GuildSettings";
 import { Progression } from "./globals/Progression";
 import { OfficersSection } from "./globals/OfficersSection";
 import { RecruitmentSection } from "./globals/RecruitmentSection";
-import { RosterSection } from "./globals/RosterSection";
 import { GuildDetails } from "./globals/GuildDetails";
 
 const filename = fileURLToPath(import.meta.url);
@@ -25,7 +24,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media],
-  globals: [GuildSettings, Progression, OfficersSection, RecruitmentSection, RosterSection, GuildDetails],
+  globals: [GuildSettings, Progression, OfficersSection, RecruitmentSection, GuildDetails],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
