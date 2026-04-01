@@ -28,6 +28,13 @@ export const Progression: GlobalConfig = {
       ],
     },
     {
+      name: 'bossSync',
+      type: 'ui',
+      admin: {
+        components: { Field: '/components/admin/SyncBossesButton' },
+      },
+    },
+    {
       name: 'bosses',
       type: 'array',
       labels: { singular: 'Boss', plural: 'Bosses' },
@@ -35,6 +42,7 @@ export const Progression: GlobalConfig = {
       fields: [
         { name: 'name', type: 'text', required: true },
         { name: 'killed', type: 'checkbox', defaultValue: false },
+        { name: 'firstDefeated', type: 'date', admin: { description: 'Date the boss was first killed on mythic' } },
         { name: 'pulls', type: 'number', admin: { description: 'Number of pulls (for in-progress bosses)' } },
         { name: 'bestPull', type: 'number', admin: { description: 'Best pull % (for in-progress bosses)' } },
       ],
