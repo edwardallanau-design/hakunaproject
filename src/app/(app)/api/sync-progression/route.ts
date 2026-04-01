@@ -105,14 +105,11 @@ export async function POST(request: Request) {
       }));
 
     // ── Update ─────────────────────────────────────────────────────────────────
-    const summary = `${kills}/${totalBosses} M`;
     const syncedAt = new Date().toISOString();
 
     await payload.updateGlobal({
       slug: "progression",
       data: {
-        difficulty: "Mythic",
-        summary,
         kills,
         totalBosses,
         bosses,
@@ -126,8 +123,7 @@ export async function POST(request: Request) {
     });
 
     return Response.json({
-      message: `Synced: ${summary} · ${topRunners.length} M+ runners · ${memberCount} members`,
-      summary,
+      message: `Synced: ${kills}/${totalBosses} bosses · ${topRunners.length} M+ runners · ${memberCount} members`,
       runnersCount: topRunners.length,
       syncedAt,
     });

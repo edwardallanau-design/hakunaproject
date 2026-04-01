@@ -14,17 +14,17 @@ export const Progression: GlobalConfig = {
     { name: 'tier', type: 'text', required: true },
     { name: 'difficulty', type: 'select', options: ['Normal', 'Heroic', 'Mythic'], defaultValue: 'Heroic' },
     { name: 'summary', type: 'text', admin: { description: 'e.g. "6/9 H" — auto-filled by Raider.IO sync' } },
-    { name: 'kills', type: 'number', defaultValue: 0 },
-    { name: 'totalBosses', type: 'number', defaultValue: 9 },
+    { name: 'kills', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    { name: 'totalBosses', type: 'number', defaultValue: 9, admin: { readOnly: true } },
     { name: 'profileUrl', type: 'text', admin: { description: 'Raider.IO profile URL' } },
     {
       name: 'rankings',
       type: 'group',
       fields: [
-        { name: 'members', type: 'number', defaultValue: 0, admin: { description: 'Auto-filled by sync — total guild member count' } },
-        { name: 'world', type: 'number', defaultValue: 0 },
-        { name: 'region', type: 'number', defaultValue: 0 },
-        { name: 'realm', type: 'number', defaultValue: 0 },
+        { name: 'members', type: 'number', defaultValue: 0, admin: { description: 'Auto-filled by sync — level 90 characters only', readOnly: true } },
+        { name: 'world', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+        { name: 'region', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+        { name: 'realm', type: 'number', defaultValue: 0, admin: { readOnly: true } },
       ],
     },
     {
