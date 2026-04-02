@@ -5,13 +5,19 @@ import { fetchAndTransformGuildDetails } from "@/lib/raiderio";
 export async function GET(request: Request) {
   const payload = await getPayload({ config: await config });
 
-  try {
-    const { user } = await payload.auth({ headers: request.headers });
-    if (!user) {
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get("authorization");
+  const isCronRequest = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  if (!isCronRequest) {
+    try {
+      const { user } = await payload.auth({ headers: request.headers });
+      if (!user) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    } catch {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-  } catch {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
