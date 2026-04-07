@@ -198,7 +198,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                     padding: "clamp(2px,0.2vw,4px) clamp(6px,0.55vw,10px)",
                     flexShrink: 0,
                   }}>
-                    {progression.difficulty}
+                    DEAD
                   </span>
                 ) : boss.bestPull != null && boss.bestPull > 0 ? (
                   <span style={{
