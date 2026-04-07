@@ -117,9 +117,14 @@ export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData>
     throw new Error("Guild details API returned no guild data — guild may not exist or was renamed");
   }
 
-  const members = ((rosterJson.guildRoster?.roster ?? rosterJson.roster) ?? [])
-    .filter((entry: RawRosterEntry) => entry.character?.level === 90)
-    .map((entry: RawRosterEntry): RosterMember => {
+  const rosterList = rosterJson.guildRoster?.roster ?? rosterJson.roster;
+  if (!rosterList) {
+    throw new Error("Guild roster API returned no roster data — guild may not exist or was renamed");
+  }
+
+  const members = (rosterList as RawRosterEntry[])
+    .filter((entry) => entry.character?.level === 90)
+    .map((entry): RosterMember => {
       const { character, raidProgress, keystoneScores } = entry;
       const { expansionData: _expansion, talentsDetails: _talentsDetails, items: _items, talents: _talents, patronLevel: _patronLevel, ...characterRest } = character;
       return { character: characterRest, raidProgress, keystoneScores };
