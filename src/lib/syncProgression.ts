@@ -63,7 +63,7 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
         name: boss.name,
         killed,
         firstDefeated: mythicDefeated.get(slug) ?? null,
-        pulls: pull && pull.pullCount > 0 && !killed ? pull.pullCount : null,
+        pulls: pull && pull.pullCount > 0 ? pull.pullCount : null,
         bestPull: pull && pull.pullCount > 0 && !killed ? pull.bestPercent : null,
       };
     });

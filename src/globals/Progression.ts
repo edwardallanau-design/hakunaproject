@@ -36,8 +36,8 @@ export const Progression: GlobalConfig = {
         { name: 'name', type: 'text', required: true },
         { name: 'killed', type: 'checkbox', defaultValue: false, admin: { readOnly: true } },
         { name: 'firstDefeated', type: 'date', admin: { description: 'Date the boss was first killed on mythic', readOnly: true } },
-        { name: 'pulls', type: 'number', admin: { description: 'Number of pulls (for in-progress bosses)', readOnly: true } },
-        { name: 'bestPull', type: 'number', admin: { description: 'Best pull % (for in-progress bosses)', readOnly: true } },
+        { name: 'pulls', type: 'number', admin: { description: 'Total pulls — auto-set at time of kill and frozen, or live pull count while in progress', readOnly: true } },
+        { name: 'bestPull', type: 'number', admin: { description: 'Best pull % (in-progress bosses only — auto-updated by sync until killed)', readOnly: true } },
       ],
     },
     {
