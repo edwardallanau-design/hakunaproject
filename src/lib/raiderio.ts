@@ -1,6 +1,12 @@
-const GUILD_NAME = "Hakuna Muh Nagga";
-const REALM = "barthilas";
-const REGION = "us";
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
+}
+
+const GUILD_NAME = requireEnv("GUILD_NAME");
+const REALM = requireEnv("GUILD_REALM");
+const REGION = requireEnv("GUILD_REGION");
 
 export type MythicPlusRunner = {
   name: string;
@@ -64,15 +70,24 @@ export type GuildDetailsData = {
   };
 };
 
-async function fetchGuildDetails(): Promise<Response> {
-  const url = `https://raider.io/api/guilds/details?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
+async function fetchWithRetry(url: string): Promise<Response> {
   const MAX_ATTEMPTS = 3;
   let lastError = "Unknown error";
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const res = await fetch(url);
+    let res: Response;
+    try {
+      res = await fetch(url);
+    } catch (err) {
+      lastError = `Network error: ${err instanceof Error ? err.message : String(err)}`;
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+        continue;
+      }
+      break;
+    }
     if (res.status === 504 || res.status === 502 || res.status === 503) {
-      lastError = `Guild details fetch failed: ${res.status}`;
+      lastError = `Fetch failed: ${res.status}`;
       if (attempt < MAX_ATTEMPTS) {
         await new Promise((r) => setTimeout(r, attempt * 2000));
         continue;
@@ -85,9 +100,10 @@ async function fetchGuildDetails(): Promise<Response> {
 }
 
 export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData> {
+  const guildName = encodeURIComponent(GUILD_NAME);
   const [detailsRes, rosterRes] = await Promise.all([
-    fetchGuildDetails(),
-    fetchRosterDetails(),
+    fetchWithRetry(`https://raider.io/api/guilds/details?region=${REGION}&realm=${REALM}&guild=${guildName}`),
+    fetchWithRetry(`https://raider.io/api/guilds/roster?region=${REGION}&realm=${REALM}&guild=${guildName}`),
   ]);
   if (!detailsRes.ok) throw new Error(`Guild details fetch failed: ${detailsRes.status}`);
   if (!rosterRes.ok) throw new Error(`Guild roster fetch failed: ${rosterRes.status}`);
@@ -97,7 +113,9 @@ export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData>
     rosterRes.json(),
   ]);
 
-  const d = detailsJson.guildDetails;
+  if (!detailsJson?.guildDetails?.guild) {
+    throw new Error("Guild details API returned no guild data — guild may not exist or was renamed");
+  }
 
   const members = ((rosterJson.guildRoster?.roster ?? rosterJson.roster) ?? [])
     .filter((entry: RawRosterEntry) => entry.character?.level === 90)
@@ -107,51 +125,62 @@ export async function fetchAndTransformGuildDetails(): Promise<GuildDetailsData>
       return { character: characterRest, raidProgress, keystoneScores };
     });
 
+  if (members.length === 0) {
+    throw new Error("Guild roster returned no members — guild name or realm may be wrong");
+  }
+
+  const { guild: rawGuild, raidRankings, raidProgress, raidAttempt, meta } = detailsJson.guildDetails;
+  const { isConnected: _isConnected, realmType: _realmType, ...realm } = rawGuild.realm;
+
+  const guild: GuildDetailsData["guild"] = {
+    id: rawGuild.id,
+    name: rawGuild.name,
+    faction: rawGuild.faction,
+    realm,
+    region: rawGuild.region,
+    path: rawGuild.path,
+    logo: rawGuild.logo,
+  };
+
+  const mappedRaidRankings: GuildDetailsData["raidRankings"] = (raidRankings ?? []).map(({ raid, ranks }: {
+    raid: string;
+    ranks: Record<string, {
+      world: number;
+      region: number;
+      realm: number
+    }>
+  }) => ({
+    raid,
+    ranks
+  }));
+
+  const mappedRaidProgress: GuildDetailsData["raidProgress"] = (raidProgress ?? []).map(({ raid, aotc, cuttingEdge, encountersDefeated }: { raid: string; aotc: string | null; cuttingEdge: string | null; encountersDefeated: Record<string, { slug: string; firstDefeated: string; itemLevelAvg: number; artifactPowerAvg: number }[]> }) => ({
+    raid, aotc, cuttingEdge,
+    encountersDefeated: Object.fromEntries(
+      Object.entries(encountersDefeated).map(([diff, bosses]) => [
+        diff,
+        (bosses as { slug: string; firstDefeated: string }[]).map(({ slug, firstDefeated }) => ({ slug, firstDefeated })),
+      ]),
+    ),
+  }));
+
+  const mappedRaidAttempt: GuildDetailsData["raidAttempt"] = (raidAttempt ?? []).map(({ raid, encounters }: { raid: string; encounters: Record<string, { slug: string; name: string; bestPercent: number; pullCount: number; pullStartedAt: string; lastPullAt: string; isAttempt: boolean }[]> }) => ({
+    raid,
+    encounters: Object.fromEntries(
+      Object.entries(encounters).map(([diff, bosses]) => [
+        diff,
+        (bosses as { slug: string; name: string; bestPercent: number; pullCount: number; pullStartedAt: string; lastPullAt: string }[]).map(({ slug, name, bestPercent, pullCount, pullStartedAt, lastPullAt }) => ({ slug, name, bestPercent, pullCount, pullStartedAt, lastPullAt })),
+      ]),
+    ),
+  }));
+
   return {
     members,
-    guild: {
-      id: d.guild.id,
-      name: d.guild.name,
-      faction: d.guild.faction,
-      realm: { id: d.guild.realm.id, name: d.guild.realm.name, slug: d.guild.realm.slug },
-      region: d.guild.region,
-      path: d.guild.path,
-      logo: d.guild.logo,
-    },
-    raidRankings: (d.raidRankings ?? []).map((r: { raid: string; ranks: Record<string, { world: number; region: number; realm: number }> }) => ({
-      raid: r.raid,
-      ranks: r.ranks,
-    })),
-    raidProgress: (d.raidProgress ?? []).map((p: { raid: string; aotc: string | null; cuttingEdge: string | null; encountersDefeated: Record<string, { slug: string; firstDefeated: string; itemLevelAvg: number; artifactPowerAvg: number }[]> }) => ({
-      raid: p.raid,
-      aotc: p.aotc,
-      cuttingEdge: p.cuttingEdge,
-      encountersDefeated: Object.fromEntries(
-        Object.entries(p.encountersDefeated).map(([diff, bosses]) => [
-          diff,
-          bosses.map((b) => ({ slug: b.slug, firstDefeated: b.firstDefeated })),
-        ]),
-      ),
-    })),
-    raidAttempt: (d.raidAttempt ?? []).map((a: { raid: string; encounters: Record<string, { slug: string; name: string; bestPercent: number; pullCount: number; pullStartedAt: string; lastPullAt: string; isAttempt: boolean }[]> }) => ({
-      raid: a.raid,
-      encounters: Object.fromEntries(
-        Object.entries(a.encounters).map(([diff, bosses]) => [
-          diff,
-          bosses.map((b) => ({
-            slug: b.slug,
-            name: b.name,
-            bestPercent: b.bestPercent,
-            pullCount: b.pullCount,
-            pullStartedAt: b.pullStartedAt,
-            lastPullAt: b.lastPullAt,
-          })),
-        ]),
-      ),
-    })),
-    meta: {
-      lastCrawledAt: d.meta?.lastCrawledAt ?? null,
-    },
+    guild,
+    raidRankings: mappedRaidRankings,
+    raidProgress: mappedRaidProgress,
+    raidAttempt: mappedRaidAttempt,
+    meta: { lastCrawledAt: meta?.lastCrawledAt ?? null },
   };
 }
 
@@ -188,7 +217,7 @@ type RawRosterCharacter = RosterMember['character'] & {
   items?: unknown;
   expansionData?: unknown;
   talentsDetails?: unknown[];
-  talents?: string;
+  talents?: unknown;
   patronLevel?: unknown;
 };
 
@@ -198,23 +227,3 @@ type RawRosterEntry = {
   keystoneScores: RosterMember['keystoneScores'];
   stream?: unknown;
 };
-
-async function fetchRosterDetails(): Promise<Response> {
-  const url = `https://raider.io/api/guilds/roster?region=${REGION}&realm=${REALM}&guild=${encodeURIComponent(GUILD_NAME)}`;
-  const MAX_ATTEMPTS = 3;
-  let lastError = "Unknown error";
-
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const res = await fetch(url);
-    if (res.status === 504 || res.status === 502 || res.status === 503) {
-      lastError = `Roster fetch failed: ${res.status}`;
-      if (attempt < MAX_ATTEMPTS) {
-        await new Promise((r) => setTimeout(r, attempt * 2000));
-        continue;
-      }
-    } else {
-      return res;
-    }
-  }
-  throw new Error(lastError);
-}
