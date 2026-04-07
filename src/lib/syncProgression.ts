@@ -51,6 +51,9 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
     }
 
     bosses = existingBosses.map((boss) => {
+      // Kill data is final — once a boss is killed, its date and pull count are never overwritten
+      if (boss.killed) return boss;
+
       const slug =
         nameToSlug.get(boss.name.toLowerCase()) ??
         boss.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -75,6 +78,8 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
   );
   const mythicRanks = raidRanking?.ranks["mythic"] ?? null;
 
+  const existingRankings = progression.rankings as { world: number; region: number; realm: number; members: number } | null;
+
   // ── M+ Runners ─────────────────────────────────────────────────────────────
   const members: RosterMember[] = details.members ?? [];
   const activeCount = members.filter(
@@ -84,7 +89,7 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
       m.raidProgress?.progress?.heroic > 0 ||
       m.raidProgress?.progress?.mythic > 0,
   ).length;
-  const topRunners: MythicPlusRunner[] = members
+  const freshRunners: MythicPlusRunner[] = members
     .filter((m) => m.keystoneScores?.allScore > 0)
     .sort((a, b) => b.keystoneScores.allScore - a.keystoneScores.allScore)
     .slice(0, 10)
@@ -95,6 +100,17 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
       score: m.keystoneScores.allScore,
     }));
 
+  // Preserve existing rankings/runners if the new profile has no data yet (e.g. after a guild rename)
+  const rankings = mythicRanks
+    ? { ...mythicRanks, members: activeCount }
+    : existingRankings
+      ? { ...existingRankings, members: activeCount }
+      : { world: 0, region: 0, realm: 0, members: activeCount };
+
+  const mythicPlusRunners = freshRunners.length > 0
+    ? freshRunners
+    : (progression.mythicPlusRunners as MythicPlusRunner[] | null) ?? [];
+
   // ── Update ─────────────────────────────────────────────────────────────────
   const syncedAt = new Date().toISOString();
 
@@ -104,13 +120,11 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
       kills,
       totalBosses,
       bosses,
-      rankings: mythicRanks
-        ? { ...mythicRanks, members: activeCount }
-        : { world: 0, region: 0, realm: 0, members: activeCount },
-      mythicPlusRunners: topRunners,
+      rankings,
+      mythicPlusRunners,
       lastSyncedAt: syncedAt,
     },
   });
 
-  return { kills, totalBosses, runnersCount: topRunners.length, activeCount };
+  return { kills, totalBosses, runnersCount: mythicPlusRunners.length, activeCount };
 }
