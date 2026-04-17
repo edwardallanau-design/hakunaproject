@@ -61,7 +61,7 @@ export function Footer({ links }: { links: { label: string; href: string }[] }) 
             textShadow: "0 0 16px color-mix(in srgb,var(--glow) 40%,transparent)",
             letterSpacing: "0.1em",
           }}>
-            Hakuna Muh Nagga
+            Potato Corner
           </p>
 
           {/* Links */}
@@ -95,7 +95,7 @@ export function Footer({ links }: { links: { label: string; href: string }[] }) 
 
           {/* Copyright */}
           <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)", opacity: 0.4, letterSpacing: "0.08em" }}>
-            © {new Date().getFullYear()} Hakuna Muh Nagga · Barthilas US · World of Warcraft
+            © {new Date().getFullYear()} Potato Corner · Barthilas US · World of Warcraft
           </p>
           <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", opacity: 0.25, color: "var(--muted)" }}>
             World of Warcraft is a trademark of Blizzard Entertainment

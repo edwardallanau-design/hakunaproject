@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "Hakuna Muh Nagga — Barthilas US Horde",
-  description: "Semi-hardcore Mythic progression guild on Barthilas-US. Don't worry, be raiding.",
+  title: "Potato Corner — Barthilas US Horde",
+  description: "Semi-hardcore Mythic progression guild on Barthilas-US.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
