@@ -231,7 +231,7 @@ export function Hero() {
                 textShadow: "0 0 20px color-mix(in srgb,var(--glow) 80%,transparent), 0 0 60px color-mix(in srgb,var(--accent) 40%,transparent)",
               }}
             >
-              Hakuna Muh Nagga
+              Potato Corner
             </h1>
             <p style={{
               fontFamily: "'Press Start 2P', monospace",

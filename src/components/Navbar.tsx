@@ -87,7 +87,7 @@ export function Navbar() {
               textOverflow: "ellipsis",
             }}
           >
-            HAKUNA MUH NAGGA
+            POTATO CORNER
           </span>
         </a>
 
