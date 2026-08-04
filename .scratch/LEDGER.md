@@ -12,6 +12,25 @@ This file is committed. Keep it accurate; it is the only durable record — `doc
 
 Known issues, not yet actioned. Oldest first.
 
+### ⚠️ The project has no migrations — schema changes break production
+
+There is no `migrations/` directory and no `push: false` in the `postgresAdapter` config. Every schema change so far has landed only via Payload's **dev-mode auto-push**, which introspects and syncs the schema on boot. Production does not do this.
+
+This surfaced on 2026-08-04. Adding the `lastSyncError` field to the `guild-details` global worked locally (auto-push created the column) and broke production, where the column was never created. Payload generates `select "id", "details", "last_synced_at", "last_sync_error", ... from "guild_details"` — selecting a column that doesn't exist fails the **entire document read**, so:
+
+- the admin page rendered its Sync button (UI config, no DB) but showed "nothing found" (the document fetch 500'd)
+- every hourly sync failed with `stage: "write"`, turning the GitHub Actions schedule red
+
+Fixed by hand with `ALTER TABLE guild_details ADD COLUMN IF NOT EXISTS last_sync_error varchar;` — the exact statement a generated migration would have contained (Payload maps `textarea` → `varchar`, per `@payloadcms/drizzle` `traverseFields.js`). Reproduced and verified locally first, against a Docker Postgres with the column dropped to mirror production.
+
+**Why it matters:** this was the first schema change to meet a database that already had data. It will not be the last. The next field added to any global or collection breaks production the same way, with the same confusing symptom — a page that half-renders and a red schedule, with nothing in the code diff to suggest a database cause.
+
+**Fix direction:** adopt migrations properly — `payload migrate:create` committed to the repo, `payload migrate` run as part of the Vercel build. Set `push: false` explicitly so dev stops diverging from prod silently.
+
+**Blocker to be aware of:** Payload's migration CLI does not currently run in this environment. Three invocations all fail with Node 24 + `tsx` ESM/CJS interop errors inside Payload's own `bin.js` (`npm run dev` and `npm run build` are unaffected — it is CLI-tooling-specific). `generate:types` fails the same way, which is why `payload-types.ts` was hand-edited for `lastSyncError`. Resolving this — likely a Node 20/22 runtime for CLI tasks — is a prerequisite for adopting migrations.
+
+---
+
 ### ⚠️ Season 1 data is destroyed by the Season 2 rollover
 
 There is one `progression` global: one `bosses` array, one `rankings` group, one `tier`. The site renders that single record. Editing it for Season 2 **overwrites Season 1 permanently** — kill dates, Rotmire, final world/region/realm ranks.
