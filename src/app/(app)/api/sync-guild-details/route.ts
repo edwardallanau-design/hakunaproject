@@ -5,7 +5,7 @@ import { deriveProgression, type ProgressionState } from "@/lib/syncProgression"
 import { deriveOfficers, type Officer } from "@/lib/syncOfficers";
 import type { MythicPlusRunner } from "@/lib/raiderio";
 
-type SyncStage = "fetch" | "derivation";
+type SyncStage = "fetch" | "derivation" | "write";
 
 class SyncStageError extends Error {
   stage: SyncStage;
@@ -38,13 +38,13 @@ export async function GET(request: Request) {
       throw new SyncStageError("fetch", err instanceof Error ? err.message : String(err));
     });
 
-    const [progressionGlobal, officersGlobal] = await Promise.all([
-      payload.findGlobal({ slug: "progression" }),
-      payload.findGlobal({ slug: "officers-section" }),
-    ]);
-
     let derivedProgression, derivedOfficers;
     try {
+      const [progressionGlobal, officersGlobal] = await Promise.all([
+        payload.findGlobal({ slug: "progression" }),
+        payload.findGlobal({ slug: "officers-section" }),
+      ]);
+
       const currentProgression: ProgressionState = {
         bosses: (progressionGlobal.bosses ?? []) as ProgressionState["bosses"],
         kills: (progressionGlobal.kills as number) ?? 0,
@@ -62,34 +62,38 @@ export async function GET(request: Request) {
 
     const syncedAt = new Date().toISOString();
 
-    // Sequential, not Promise.all: if one write fails partway, the others must not
-    // race ahead and land independently — see ADR 0001's accepted partial-write risk.
-    await payload.updateGlobal({
-      slug: "guild-details",
-      data: { details, lastSyncedAt: syncedAt, lastSyncError: null },
-    });
-    await payload.updateGlobal({
-      slug: "progression",
-      data: {
-        kills: derivedProgression.kills,
-        totalBosses: derivedProgression.totalBosses,
-        bosses: derivedProgression.bosses,
-        rankings: derivedProgression.rankings,
-        mythicPlusRunners: derivedProgression.mythicPlusRunners,
-        lastSyncedAt: syncedAt,
-      },
-    });
-    await payload.updateGlobal({
-      slug: "officers-section",
-      data: { officers: derivedOfficers, lastSyncedAt: syncedAt },
-    });
+    try {
+      // Sequential, not Promise.all: if one write fails partway, the others must not
+      // race ahead and land independently — see ADR 0001's accepted partial-write risk.
+      await payload.updateGlobal({
+        slug: "guild-details",
+        data: { details, lastSyncedAt: syncedAt, lastSyncError: null },
+      });
+      await payload.updateGlobal({
+        slug: "progression",
+        data: {
+          kills: derivedProgression.kills,
+          totalBosses: derivedProgression.totalBosses,
+          bosses: derivedProgression.bosses,
+          rankings: derivedProgression.rankings,
+          mythicPlusRunners: derivedProgression.mythicPlusRunners,
+          lastSyncedAt: syncedAt,
+        },
+      });
+      await payload.updateGlobal({
+        slug: "officers-section",
+        data: { officers: derivedOfficers, lastSyncedAt: syncedAt },
+      });
+    } catch (err) {
+      throw new SyncStageError("write", err instanceof Error ? err.message : String(err));
+    }
 
     return Response.json({
       message: `Synced guild details for ${details.guild.name} (${details.members.length} members)`,
       syncedAt,
     });
   } catch (err) {
-    const stage: SyncStage = err instanceof SyncStageError ? err.stage : "fetch";
+    const stage: SyncStage = err instanceof SyncStageError ? err.stage : "write";
     const message = err instanceof Error ? err.message : String(err);
 
     console.error(`Guild details sync failed at stage "${stage}":`, message);
