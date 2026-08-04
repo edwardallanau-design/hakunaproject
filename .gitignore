@@ -40,8 +40,11 @@ yarn-error.log*
 .claude/
 .superpowers/
 
-# docs
-docs/
+# docs — ignore contents, but keep the agent skill config tracked.
+# Git won't descend into an excluded directory, so docs/ itself must stay
+# walkable: exclude its children instead, then re-include docs/agents/.
+docs/*
+!docs/agents/
 
 # typescript
 *.tsbuildinfo
