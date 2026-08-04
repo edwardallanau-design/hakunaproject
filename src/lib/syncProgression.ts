@@ -1,4 +1,3 @@
-import type { Payload } from "payload";
 import type { GuildDetailsData, RosterMember, MythicPlusRunner } from "@/lib/raiderio";
 
 // Guild rankings are reported per-raid and can't be merged, so one raid has to be
@@ -7,34 +6,41 @@ import type { GuildDetailsData, RosterMember, MythicPlusRunner } from "@/lib/rai
 // a one-boss side raid (e.g. sporefall) has its own rank that isn't guild-wide.
 // Update this each season. If the slug is absent from the API response, rankings
 // are left at their last known values rather than silently switching raids.
-const PRIMARY_RAID_SLUG = "tier-mn-1";
+export const PRIMARY_RAID_SLUG = "tier-mn-1";
 
-export async function syncProgressionFromDetails(payload: Payload): Promise<{
+type Boss = {
+  name: string;
+  killed: boolean;
+  firstDefeated?: string | null;
+  pulls?: number | null;
+  bestPull?: number | null;
+};
+
+type Rankings = { world: number; region: number; realm: number; members: number };
+
+export type ProgressionState = {
+  bosses: Boss[];
   kills: number;
   totalBosses: number;
-  runnersCount: number;
-  activeCount: number;
-}> {
-  const [guildDetailsGlobal, progression] = await Promise.all([
-    payload.findGlobal({ slug: "guild-details" }),
-    payload.findGlobal({ slug: "progression" }),
-  ]);
+  rankings: Rankings | null;
+  mythicPlusRunners: MythicPlusRunner[];
+};
 
-  const details = guildDetailsGlobal.details as GuildDetailsData | null;
-  if (!details) throw new Error("No guild details data found");
+export type DerivedProgression = {
+  kills: number;
+  totalBosses: number;
+  bosses: Boss[];
+  rankings: Rankings;
+  mythicPlusRunners: MythicPlusRunner[];
+};
 
+export function deriveProgression(details: GuildDetailsData, current: ProgressionState): DerivedProgression {
   // ── Bosses ─────────────────────────────────────────────────────────────────
-  const existingBosses = (progression.bosses ?? []) as {
-    name: string;
-    killed: boolean;
-    firstDefeated?: string | null;
-    pulls?: number | null;
-    bestPull?: number | null;
-  }[];
+  const existingBosses = current.bosses ?? [];
 
   let bosses = existingBosses;
-  let kills = (progression.kills as number) ?? 0;
-  let totalBosses = (progression.totalBosses as number) ?? existingBosses.length;
+  let kills = current.kills ?? 0;
+  let totalBosses = current.totalBosses ?? existingBosses.length;
 
   if (existingBosses.length > 0 && details.raidProgress?.length) {
     // The boss list in the CMS spans every raid in the current season, so kill and
@@ -84,10 +90,17 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
   }
 
   // ── Rankings (Mythic) ──────────────────────────────────────────────────────
+  // Absence of the pinned raid is a Derivation failure, NOT the same as no data at
+  // all — an empty raidRankings is the guild-rename case and still preserves below.
+  if (details.raidRankings.length > 0 && !details.raidRankings.some((r) => r.raid === PRIMARY_RAID_SLUG)) {
+    const available = details.raidRankings.map((r) => r.raid).join(", ");
+    throw new Error(`Rank source raid "${PRIMARY_RAID_SLUG}" not found in response. Available: ${available}`);
+  }
+
   const raidRanking = details.raidRankings?.find((r) => r.raid === PRIMARY_RAID_SLUG);
   const mythicRanks = raidRanking?.ranks["mythic"] ?? null;
 
-  const existingRankings = progression.rankings as { world: number; region: number; realm: number; members: number } | null;
+  const existingRankings = current.rankings;
 
   // ── M+ Runners ─────────────────────────────────────────────────────────────
   const members: RosterMember[] = details.members ?? [];
@@ -116,24 +129,7 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
       ? { ...existingRankings, members: activeCount }
       : { world: 0, region: 0, realm: 0, members: activeCount };
 
-  const mythicPlusRunners = freshRunners.length > 0
-    ? freshRunners
-    : (progression.mythicPlusRunners as MythicPlusRunner[] | null) ?? [];
+  const mythicPlusRunners = freshRunners.length > 0 ? freshRunners : current.mythicPlusRunners ?? [];
 
-  // ── Update ─────────────────────────────────────────────────────────────────
-  const syncedAt = new Date().toISOString();
-
-  await payload.updateGlobal({
-    slug: "progression",
-    data: {
-      kills,
-      totalBosses,
-      bosses,
-      rankings,
-      mythicPlusRunners,
-      lastSyncedAt: syncedAt,
-    },
-  });
-
-  return { kills, totalBosses, runnersCount: mythicPlusRunners.length, activeCount };
+  return { kills, totalBosses, bosses, rankings, mythicPlusRunners };
 }

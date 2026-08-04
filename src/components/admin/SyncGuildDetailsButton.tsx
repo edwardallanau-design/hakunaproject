@@ -19,7 +19,8 @@ const SyncGuildDetailsButton: React.FC = () => {
         setMessage(data.message ?? "Synced guild details");
       } else {
         setStatus("error");
-        setMessage(data.error ?? "Fetch failed");
+        const detail = data.stage ? `[${data.stage}] ${data.message ?? data.error}` : (data.error ?? "Fetch failed");
+        setMessage(detail);
       }
     } catch (err) {
       setStatus("error");

@@ -1,0 +1,582 @@
+{
+  "guildDetails": {
+    "guild": {
+      "id": 2345525,
+      "name": "Potato Corner",
+      "faction": "horde",
+      "realm": {
+        "id": 276,
+        "name": "Barthilas",
+        "slug": "barthilas",
+        "isConnected": false,
+        "realmType": "live"
+      },
+      "region": {
+        "name": "United States & Oceania",
+        "slug": "us",
+        "short_name": "US"
+      },
+      "path": "/guilds/us/barthilas/Potato%20Corner",
+      "logo": "https://cdn.raiderio.net/images/site/horde_icon4.png"
+    },
+    "raidRankings": [
+      {
+        "raid": "tier-mn-1",
+        "ranks": {
+          "normal": {
+            "world": 15220,
+            "region": 6762,
+            "subregion": 509,
+            "realm": 93
+          },
+          "heroic": {
+            "world": 3542,
+            "region": 1348,
+            "subregion": 124,
+            "realm": 23
+          },
+          "mythic": {
+            "world": 1375,
+            "region": 450,
+            "subregion": 54,
+            "realm": 6
+          }
+        }
+      },
+      {
+        "raid": "sporefall",
+        "ranks": {
+          "normal": {
+            "world": 0,
+            "region": 0,
+            "subregion": 0,
+            "realm": 0
+          },
+          "heroic": {
+            "world": 2308,
+            "region": 2280,
+            "subregion": 161,
+            "realm": 32
+          },
+          "mythic": {
+            "world": 732,
+            "region": 706,
+            "subregion": 65,
+            "realm": 17
+          }
+        }
+      }
+    ],
+    "raidProgress": [
+      {
+        "raid": "tier-mn-1",
+        "aotc": "2026-05-04T12:18:41.000Z",
+        "cuttingEdge": "2026-07-17T14:25:43.000Z",
+        "encountersDefeated": {
+          "lfr": [],
+          "normal": [
+            {
+              "slug": "chimaerus-the-undreamt-god",
+              "firstDefeated": "2026-04-10T12:20:41.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "beloren-child-of-alar",
+              "firstDefeated": "2026-04-10T15:12:48.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "midnight-falls",
+              "firstDefeated": "2026-04-10T15:24:39.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "vorasius",
+              "firstDefeated": "2026-05-12T18:00:06.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "fallenking-salhadaar",
+              "firstDefeated": "2026-05-12T18:06:50.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "vaelgor-ezzorak",
+              "firstDefeated": "2026-05-12T18:13:15.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "lightblinded-vanguard",
+              "firstDefeated": "2026-05-12T18:19:08.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "crown-of-the-cosmos",
+              "firstDefeated": "2026-05-12T18:27:27.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            }
+          ],
+          "heroic": [
+            {
+              "slug": "vaelgor-ezzorak",
+              "firstDefeated": "2026-04-09T13:00:50.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "crown-of-the-cosmos",
+              "firstDefeated": "2026-04-09T15:00:41.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "chimaerus-the-undreamt-god",
+              "firstDefeated": "2026-04-10T12:11:10.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "imperator-averzian",
+              "firstDefeated": "2026-04-10T12:31:06.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "vorasius",
+              "firstDefeated": "2026-04-10T12:42:54.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "fallenking-salhadaar",
+              "firstDefeated": "2026-04-10T12:53:09.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "lightblinded-vanguard",
+              "firstDefeated": "2026-04-10T13:33:16.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "beloren-child-of-alar",
+              "firstDefeated": "2026-04-15T12:28:45.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "midnight-falls",
+              "firstDefeated": "2026-05-04T12:18:41.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            }
+          ],
+          "mythic": [
+            {
+              "slug": "chimaerus-the-undreamt-god",
+              "firstDefeated": "2026-04-09T11:58:00.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "imperator-averzian",
+              "firstDefeated": "2026-04-11T13:47:49.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "fallenking-salhadaar",
+              "firstDefeated": "2026-04-13T12:12:20.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "vorasius",
+              "firstDefeated": "2026-04-15T14:03:04.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "vaelgor-ezzorak",
+              "firstDefeated": "2026-04-20T14:07:47.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "lightblinded-vanguard",
+              "firstDefeated": "2026-04-30T12:59:30.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "crown-of-the-cosmos",
+              "firstDefeated": "2026-05-20T14:26:26.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "beloren-child-of-alar",
+              "firstDefeated": "2026-06-08T13:22:58.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            },
+            {
+              "slug": "midnight-falls",
+              "firstDefeated": "2026-07-17T14:25:43.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            }
+          ]
+        }
+      },
+      {
+        "raid": "sporefall",
+        "aotc": "2026-06-17T12:51:45.000Z",
+        "cuttingEdge": "2026-06-17T12:24:30.000Z",
+        "encountersDefeated": {
+          "lfr": [],
+          "normal": [],
+          "heroic": [
+            {
+              "slug": "rotmire",
+              "firstDefeated": "2026-06-17T12:51:45.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            }
+          ],
+          "mythic": [
+            {
+              "slug": "rotmire",
+              "firstDefeated": "2026-06-17T12:24:30.000Z",
+              "itemLevelAvg": 0,
+              "artifactPowerAvg": 0
+            }
+          ]
+        }
+      }
+    ],
+    "raidAttempt": [
+      {
+        "raid": "tier-mn-1",
+        "encounters": {
+          "normal": [
+            {
+              "slug": "chimaerus-the-undreamt-god",
+              "name": "Chimaerus the Undreamt God",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 152170,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-10T12:18:10.024Z",
+              "lastPullAt": "2026-04-10T12:18:10.024Z"
+            },
+            {
+              "slug": "crown-of-the-cosmos",
+              "name": "Crown of the Cosmos",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000% P3",
+              "bestAttemptDurationMs": 324777,
+              "pullCount": 1,
+              "pullStartedAt": "2026-05-12T18:22:03.076Z",
+              "lastPullAt": "2026-05-12T18:22:03.076Z"
+            },
+            {
+              "slug": "lightblinded-vanguard",
+              "name": "Lightblinded Vanguard",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 127056,
+              "pullCount": 1,
+              "pullStartedAt": "2026-05-12T18:17:02.043Z",
+              "lastPullAt": "2026-05-12T18:17:02.043Z"
+            },
+            {
+              "slug": "vaelgor-ezzorak",
+              "name": "Vaelgor & Ezzorak",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 207504,
+              "pullCount": 1,
+              "pullStartedAt": "2026-05-12T18:09:47.897Z",
+              "lastPullAt": "2026-05-12T18:09:47.897Z"
+            },
+            {
+              "slug": "fallenking-salhadaar",
+              "name": "Fallen-King Salhadaar",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 133376,
+              "pullCount": 1,
+              "pullStartedAt": "2026-05-12T18:04:37.777Z",
+              "lastPullAt": "2026-05-12T18:04:37.777Z"
+            },
+            {
+              "slug": "vorasius",
+              "name": "Vorasius",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 133950,
+              "pullCount": 1,
+              "pullStartedAt": "2026-05-12T17:57:53.202Z",
+              "lastPullAt": "2026-05-12T17:57:53.202Z"
+            },
+            {
+              "slug": "midnight-falls",
+              "name": "Midnight Falls",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000% P2",
+              "bestAttemptDurationMs": 316502,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-10T15:19:23.673Z",
+              "lastPullAt": "2026-04-10T15:19:23.673Z"
+            },
+            {
+              "slug": "beloren-child-of-alar",
+              "name": "Belo'ren, Child of Al'ar",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 205613,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-10T15:09:23.168Z",
+              "lastPullAt": "2026-04-10T15:09:23.168Z"
+            }
+          ],
+          "heroic": [
+            {
+              "slug": "lightblinded-vanguard",
+              "name": "Lightblinded Vanguard",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 301115,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-10T13:28:15.907Z",
+              "lastPullAt": "2026-04-10T13:28:15.907Z"
+            },
+            {
+              "slug": "midnight-falls",
+              "name": "Midnight Falls",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000% P3",
+              "bestAttemptDurationMs": 331962,
+              "pullCount": 53,
+              "pullStartedAt": "2026-04-24T09:59:16.549Z",
+              "lastPullAt": "2026-05-04T12:13:10.160Z"
+            },
+            {
+              "slug": "beloren-child-of-alar",
+              "name": "Belo'ren, Child of Al'ar",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 200385,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-15T12:25:25.957Z",
+              "lastPullAt": "2026-04-15T12:25:25.957Z"
+            },
+            {
+              "slug": "chimaerus-the-undreamt-god",
+              "name": "Chimaerus the Undreamt God",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 332520,
+              "pullCount": 2,
+              "pullStartedAt": "2026-04-10T12:03:26.050Z",
+              "lastPullAt": "2026-04-10T12:05:38.904Z"
+            },
+            {
+              "slug": "crown-of-the-cosmos",
+              "name": "Crown of the Cosmos",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000% P3",
+              "bestAttemptDurationMs": 508773,
+              "pullCount": 10,
+              "pullStartedAt": "2026-04-10T13:47:14.333Z",
+              "lastPullAt": "2026-04-10T14:37:09.044Z"
+            },
+            {
+              "slug": "vaelgor-ezzorak",
+              "name": "Vaelgor & Ezzorak",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 379883,
+              "pullCount": 2,
+              "pullStartedAt": "2026-04-10T13:06:21.976Z",
+              "lastPullAt": "2026-04-10T13:12:08.013Z"
+            },
+            {
+              "slug": "fallenking-salhadaar",
+              "name": "Fallen-King Salhadaar",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 277976,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-10T12:48:31.937Z",
+              "lastPullAt": "2026-04-10T12:48:31.937Z"
+            },
+            {
+              "slug": "vorasius",
+              "name": "Vorasius",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 283368,
+              "pullCount": 2,
+              "pullStartedAt": "2026-04-10T12:34:58.685Z",
+              "lastPullAt": "2026-04-10T12:38:11.339Z"
+            },
+            {
+              "slug": "imperator-averzian",
+              "name": "Imperator Averzian",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 177387,
+              "pullCount": 1,
+              "pullStartedAt": "2026-04-10T12:28:09.989Z",
+              "lastPullAt": "2026-04-10T12:28:09.989Z"
+            }
+          ],
+          "mythic": [
+            {
+              "slug": "midnight-falls",
+              "name": "Midnight Falls",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000% P4",
+              "bestAttemptDurationMs": 519910,
+              "pullCount": 608,
+              "pullStartedAt": "2026-06-10T11:47:22.350Z",
+              "lastPullAt": "2026-07-17T14:17:03.606Z"
+            },
+            {
+              "slug": "beloren-child-of-alar",
+              "name": "Belo'ren, Child of Al'ar",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 302849,
+              "pullCount": 243,
+              "pullStartedAt": "2026-05-25T11:57:38.969Z",
+              "lastPullAt": "2026-06-08T13:17:56.228Z"
+            },
+            {
+              "slug": "crown-of-the-cosmos",
+              "name": "Crown of the Cosmos",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000% P3",
+              "bestAttemptDurationMs": 489130,
+              "pullCount": 126,
+              "pullStartedAt": "2026-05-04T12:49:28.602Z",
+              "lastPullAt": "2026-05-20T14:18:17.194Z"
+            },
+            {
+              "slug": "lightblinded-vanguard",
+              "name": "Lightblinded Vanguard",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 465801,
+              "pullCount": 65,
+              "pullStartedAt": "2026-04-23T12:48:25.489Z",
+              "lastPullAt": "2026-04-30T12:51:45.227Z"
+            },
+            {
+              "slug": "vaelgor-ezzorak",
+              "name": "Vaelgor & Ezzorak",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 436372,
+              "pullCount": 63,
+              "pullStartedAt": "2026-04-13T12:28:52.121Z",
+              "lastPullAt": "2026-04-20T14:00:31.459Z"
+            },
+            {
+              "slug": "fallenking-salhadaar",
+              "name": "Fallen-King Salhadaar",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 334519,
+              "pullCount": 6,
+              "pullStartedAt": "2026-04-13T11:44:26.359Z",
+              "lastPullAt": "2026-04-13T12:06:46.764Z"
+            },
+            {
+              "slug": "vorasius",
+              "name": "Vorasius",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 318135,
+              "pullCount": 22,
+              "pullStartedAt": "2026-04-13T14:06:16.281Z",
+              "lastPullAt": "2026-04-15T13:57:47.418Z"
+            },
+            {
+              "slug": "imperator-averzian",
+              "name": "Imperator Averzian",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 419805,
+              "pullCount": 16,
+              "pullStartedAt": "2026-04-11T12:06:38.726Z",
+              "lastPullAt": "2026-04-11T13:40:50.063Z"
+            }
+          ]
+        }
+      },
+      {
+        "raid": "sporefall",
+        "encounters": {
+          "normal": [],
+          "heroic": [],
+          "mythic": [
+            {
+              "slug": "rotmire",
+              "name": "Rotmire",
+              "isAttempt": true,
+              "bestPercent": 0,
+              "progressDisplay": "0.0000%",
+              "bestAttemptDurationMs": 447265,
+              "pullCount": 14,
+              "pullStartedAt": "2026-06-17T11:00:14.939Z",
+              "lastPullAt": "2026-06-17T12:17:03.075Z"
+            }
+          ]
+        }
+      }
+    ],
+    "members": [],
+    "meta": {
+      "firstCrawledAt": "2026-04-09T19:24:01.000Z",
+      "lastCrawledAt": "2026-07-31T23:51:36.000Z",
+      "missingAt": null
+    }
+  }
+}

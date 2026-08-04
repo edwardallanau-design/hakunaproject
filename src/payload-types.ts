@@ -588,6 +588,10 @@ export interface GuildDetail {
    * Last time guild details were synced from Raider.IO
    */
   lastSyncedAt?: string | null;
+  /**
+   * Set when the last Sync attempt failed. If present, the data below and in Progression/Officers is stale — it was not updated by that attempt.
+   */
+  lastSyncError?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -728,6 +732,7 @@ export interface RosterSelect<T extends boolean = true> {
 export interface GuildDetailSelect<T extends boolean = true> {
   details?: T;
   lastSyncedAt?: T;
+  lastSyncError?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

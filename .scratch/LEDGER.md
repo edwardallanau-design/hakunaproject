@@ -12,49 +12,42 @@ This file is committed. Keep it accurate; it is the only durable record — `doc
 
 Known issues, not yet actioned. Oldest first.
 
-### Sync failures are invisible in the admin UI
+### ⚠️ Season 1 data is destroyed by the Season 2 rollover
 
-`src/globals/GuildDetails.ts:16-18` — the `afterChange` hook wraps both syncs in a `try/catch` that logs to `payload.logger.error` and swallows the error. The admin shows a successful save regardless. A failed progression sync looks identical to a successful one; the only evidence is in server logs.
+There is one `progression` global: one `bosses` array, one `rankings` group, one `tier`. The site renders that single record. Editing it for Season 2 **overwrites Season 1 permanently** — kill dates, Rotmire, final world/region/realm ranks.
 
-**Why it matters:** the failure mode is silent and the data just goes stale. This is how the Rotmire bug stayed invisible for weeks.
+The kill lock at `syncProgression.ts:66` does **not** protect against this. It stops a *sync* from un-killing a boss; it does nothing to stop the row being *replaced* by hand.
 
-**Fix direction:** surface the failure — store a `lastSyncError` field on the global, or let the hook throw so Payload reports it.
+**Decided (2026-08-04):** Seasons become a collection — one row per Season, `isCurrent` flag, `theme` field for per-Season styling. Same shape every Season; only data and styling differ. Sync writes to the current row. Scoped as **separate work**, not part of the sync fixes.
 
----
+**Deliberately not snapshotting now.** Plan is to re-fetch Season 1 from Raider.IO and snapshot near season end, when the data is final.
 
-### `PRIMARY_RAID_SLUG` needs a manual bump each season
+**The obligation this creates:** the snapshot must be taken **before the first edit made for Season 2**, not before Season 2 launches. The destructive act is the edit, not the patch.
 
-`src/lib/syncProgression.ts:10` — guild rankings can't be merged across raids, so one raid is pinned by slug as the rank source. Currently `tier-mn-1`. When Midnight Season 2 lands, this constant must be updated by hand or rankings freeze at their last known values.
-
-**Why it matters:** it fails quietly. The preserve-on-null path at `syncProgression.ts:104-108` holds old ranks rather than erroring, so the site shows stale numbers indefinitely.
-
-**Fix direction:** move it to a CMS field on the `progression` global so it's changeable without a deploy, or derive "current tier" from the API and document the rule.
-
----
-
-### API fields are silently discarded
-
-`src/lib/syncProgression.ts:104` spreads `mythicRanks` wholesale into `rankings`, but the schema only defines `world`, `region`, `realm`, `members`. Raider.IO also returns `subregion` (currently 54), which Payload strips without complaint.
-
-**Why it matters:** low severity today, but the transform layer in `raiderio.ts` has no schema validation at all. Any upstream shape change fails at runtime, not at the boundary.
-
-**Fix direction:** validate the API response at the fetch boundary rather than trusting its shape.
-
----
-
-### No test framework
-
-No runner, no test files, no `test` script. `src/lib/syncProgression.ts` and `src/lib/raiderio.ts` hold non-trivial data-transform logic that is currently only verifiable by running a live sync and looking at the site.
-
-**Why it matters:** the Rotmire bug was a one-character defect (`[0]`) in exactly this kind of logic, and nothing would have caught it.
-
-**Fix direction:** Vitest, plus extracting the boss-resolution logic out of `syncProgressionFromDetails` into a pure function that doesn't need a `Payload` instance.
-
----
+**Residual risk accepted:** a re-fetch recovers kills and rankings, but `raidAttempt` telemetry — pull counts and best-pull % on bosses left un-killed — may not be retained upstream once the tier is no longer current. If Season 1 ends with a boss at 0.4%, that number may exist only in this database.
 
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-04 — Sync hardening
+
+`.scratch/sync-hardening/spec.md`, tickets `01`–`05`. ADRs `0001`–`0003`. Resolves the four Sync issues that were open above: invisible failures, the silent `PRIMARY_RAID_SLUG` rollover, unvalidated API fields, and no test framework.
+
+**Decisions:**
+
+- **Derive before write, not write-then-derive.** The route now: fetch + validate → read current CMS state → derive Progression and Officers in memory → only then write all three globals, sequentially (not `Promise.all` — a parallel write was tried during review and rejected, since ADR 0001 only accepted *sequential* partial-failure risk, not concurrent). A Derivation failure now writes nothing.
+- **The `afterChange` hook on `guild-details` is gone.** The route is the sole caller of Derivation; `syncProgressionFromDetails`/`syncOfficersFromDetails` (the old hook-driven wrappers) were deleted rather than left dead once nothing called them.
+- **`deriveProgression`/`deriveOfficers` are pure functions**, `(fetched data, current CMS state) → new state`, no `Payload` import. This is the seam the test suite hangs off.
+- **Failures report `{ error, stage: "fetch" | "derivation", message }` with a non-200 status.** The GitHub Actions schedule already checked for exactly this (`if [ "$response" != "200" ]`) — it was the route lying that made it useless, not the workflow.
+- **`lastSyncError` on `guild-details`**, written on failure and cleared on success. Deliberate exception to "write nothing on failure": it's the one thing that *is* written when everything else isn't.
+- **Zod validates the upstream response at the fetch boundary**, scoped to consumed fields only; `GuildDetailsData`/`RosterMember` are now `z.infer`'d rather than hand-declared. Fixtures for the boss-resolution tests came from a real captured Raider.IO response, trimmed.
+- **`PRIMARY_RAID_SLUG` stays a constant.** Its absence from a non-empty `raidRankings` now throws, naming the missing slug and what was returned. An empty `raidRankings` (the guild-rename case) still preserves existing ranks — that fallback was kept, not removed.
+- **Vitest, scoped to three areas**: boss resolution (including a Rotmire regression test — kill in the *second* raid of the response), rank-source selection, and the Zod schema. Deliberately not covering Payload config, React components, or `page.tsx`'s field mapping.
+
+**Note for future syncs:** the `SyncGuildDetailsButton` admin UI now surfaces `stage` and `message` on failure, not just `error` — worth keeping in mind if that response shape changes again.
+
+---
 
 ### 2026-08-04 — Rotmire / multi-raid progression sync
 

@@ -1,0 +1,406 @@
+{
+  "guildRoster": {
+    "roster": [
+      {
+        "character": {
+          "name": "ßelphegor",
+          "level": 90,
+          "race": {
+            "id": 8,
+            "name": "Troll",
+            "slug": "troll",
+            "faction": "horde"
+          },
+          "class": {
+            "id": 3,
+            "name": "Hunter",
+            "slug": "hunter"
+          },
+          "spec": {
+            "id": 253,
+            "name": "Beast Mastery",
+            "slug": "beast-mastery",
+            "class_id": 3,
+            "role": "dps",
+            "is_melee": false,
+            "patch": "1.0.0",
+            "ordinal": 0
+          },
+          "gender": "male",
+          "thumbnail": "bonechewer/6/108349702-avatar.jpg",
+          "itemLevelEquipped": 283,
+          "realm": {
+            "id": 288,
+            "connectedRealmId": 121,
+            "wowRealmId": 83,
+            "wowConnectedRealmId": 1136,
+            "name": "Bonechewer",
+            "altName": null,
+            "slug": "bonechewer",
+            "altSlug": "bonechewer",
+            "locale": "en_US",
+            "isConnected": true,
+            "realmType": "live"
+          },
+          "region": {
+            "name": "United States & Oceania",
+            "slug": "us",
+            "short_name": "US"
+          },
+          "items": {
+            "note": "large nested object present in real responses, stripped by transform"
+          },
+          "expansionData": {
+            "note": "stripped by transform"
+          },
+          "talentsDetails": [],
+          "talents": "",
+          "patronLevel": 0
+        },
+        "raidProgress": {
+          "raid": {
+            "type": "raid",
+            "id": 8062,
+            "difficulty": "heroic",
+            "name": "Sporefall",
+            "short_name": "SF",
+            "wowInstanceId": 1592,
+            "slug": "sporefall",
+            "icon_url": "/images/wow/icons/large/inv_1207_achievement_raid_fungariangiant_fungalgiant.jpg",
+            "expansion_id": 11
+          },
+          "totalBosses": 1,
+          "progress": {
+            "normal": 0,
+            "heroic": 0,
+            "mythic": 0
+          }
+        },
+        "keystoneScores": {
+          "allScore": 3073.3,
+          "allScoreColor": "#2075d8"
+        }
+      },
+      {
+        "character": {
+          "name": "Isami",
+          "level": 90,
+          "race": {
+            "id": 10,
+            "name": "Blood Elf",
+            "slug": "blood-elf",
+            "faction": "horde"
+          },
+          "class": {
+            "id": 6,
+            "name": "Death Knight",
+            "slug": "death-knight"
+          },
+          "spec": {
+            "id": 252,
+            "name": "Unholy",
+            "slug": "unholy",
+            "class_id": 6,
+            "role": "dps",
+            "is_melee": true,
+            "patch": "3.0.0",
+            "ordinal": 2
+          },
+          "gender": "female",
+          "thumbnail": "dathremar/229/160469221-avatar.jpg",
+          "itemLevelEquipped": 282,
+          "realm": {
+            "id": 308,
+            "connectedRealmId": 169,
+            "wowRealmId": 3735,
+            "wowConnectedRealmId": 3726,
+            "name": "Dath'Remar",
+            "altName": null,
+            "slug": "dathremar",
+            "altSlug": "dathremar",
+            "locale": "en_US",
+            "isConnected": true,
+            "realmType": "live"
+          },
+          "region": {
+            "name": "United States & Oceania",
+            "slug": "us",
+            "short_name": "US"
+          },
+          "items": {
+            "note": "large nested object present in real responses, stripped by transform"
+          },
+          "expansionData": {
+            "note": "stripped by transform"
+          },
+          "talentsDetails": [],
+          "talents": "",
+          "patronLevel": 0
+        },
+        "raidProgress": {
+          "raid": {
+            "type": "raid",
+            "id": 8062,
+            "difficulty": "heroic",
+            "name": "Sporefall",
+            "short_name": "SF",
+            "wowInstanceId": 1592,
+            "slug": "sporefall",
+            "icon_url": "/images/wow/icons/large/inv_1207_achievement_raid_fungariangiant_fungalgiant.jpg",
+            "expansion_id": 11
+          },
+          "totalBosses": 1,
+          "progress": {
+            "normal": 0,
+            "heroic": 0,
+            "mythic": 0
+          }
+        },
+        "keystoneScores": {
+          "allScore": 3077.5,
+          "allScoreColor": "#2075d8"
+        }
+      },
+      {
+        "character": {
+          "name": "Libat",
+          "level": 90,
+          "race": {
+            "id": 1,
+            "name": "Human",
+            "slug": "human",
+            "faction": "alliance"
+          },
+          "class": {
+            "id": 3,
+            "name": "Hunter",
+            "slug": "hunter"
+          },
+          "spec": {
+            "id": 253,
+            "name": "Beast Mastery",
+            "slug": "beast-mastery",
+            "class_id": 3,
+            "role": "dps",
+            "is_melee": false,
+            "patch": "1.0.0",
+            "ordinal": 0
+          },
+          "gender": "male",
+          "thumbnail": "frostmourne/171/170421675-avatar.jpg",
+          "itemLevelEquipped": 292,
+          "realm": {
+            "id": 345,
+            "connectedRealmId": 192,
+            "wowRealmId": 3725,
+            "wowConnectedRealmId": 3725,
+            "name": "Frostmourne",
+            "altName": null,
+            "slug": "frostmourne",
+            "altSlug": "frostmourne",
+            "locale": "en_US",
+            "isConnected": true,
+            "realmType": "live"
+          },
+          "region": {
+            "name": "United States & Oceania",
+            "slug": "us",
+            "short_name": "US"
+          },
+          "items": {
+            "note": "large nested object present in real responses, stripped by transform"
+          },
+          "expansionData": {
+            "note": "stripped by transform"
+          },
+          "talentsDetails": [],
+          "talents": "",
+          "patronLevel": 0
+        },
+        "raidProgress": {
+          "raid": {
+            "type": "raid",
+            "id": 8062,
+            "difficulty": "heroic",
+            "name": "Sporefall",
+            "short_name": "SF",
+            "wowInstanceId": 1592,
+            "slug": "sporefall",
+            "icon_url": "/images/wow/icons/large/inv_1207_achievement_raid_fungariangiant_fungalgiant.jpg",
+            "expansion_id": 11
+          },
+          "totalBosses": 1,
+          "progress": {
+            "normal": 0,
+            "heroic": 1,
+            "mythic": 1
+          }
+        },
+        "keystoneScores": {
+          "allScore": 3328.8,
+          "allScoreColor": "#864fe9"
+        }
+      },
+      {
+        "character": {
+          "name": "Xorakk",
+          "level": 90,
+          "race": {
+            "id": 2,
+            "name": "Orc",
+            "slug": "orc",
+            "faction": "horde"
+          },
+          "class": {
+            "id": 1,
+            "name": "Warrior",
+            "slug": "warrior"
+          },
+          "spec": {
+            "id": 72,
+            "name": "Fury",
+            "slug": "fury",
+            "class_id": 1,
+            "role": "dps",
+            "is_melee": true,
+            "patch": "1.0.0",
+            "ordinal": 1
+          },
+          "gender": "male",
+          "thumbnail": "caelestrasz/178/79570098-avatar.jpg",
+          "itemLevelEquipped": 273,
+          "realm": {
+            "id": 294,
+            "connectedRealmId": 161,
+            "wowRealmId": 3721,
+            "wowConnectedRealmId": 3721,
+            "name": "Caelestrasz",
+            "altName": null,
+            "slug": "caelestrasz",
+            "altSlug": "caelestrasz",
+            "locale": "en_US",
+            "isConnected": true,
+            "realmType": "live"
+          },
+          "region": {
+            "name": "United States & Oceania",
+            "slug": "us",
+            "short_name": "US"
+          },
+          "items": {
+            "note": "large nested object present in real responses, stripped by transform"
+          },
+          "expansionData": {
+            "note": "stripped by transform"
+          },
+          "talentsDetails": [],
+          "talents": "",
+          "patronLevel": 0
+        },
+        "raidProgress": {
+          "raid": {
+            "type": "raid",
+            "id": 8062,
+            "difficulty": "heroic",
+            "name": "Sporefall",
+            "short_name": "SF",
+            "wowInstanceId": 1592,
+            "slug": "sporefall",
+            "icon_url": "/images/wow/icons/large/inv_1207_achievement_raid_fungariangiant_fungalgiant.jpg",
+            "expansion_id": 11
+          },
+          "totalBosses": 1,
+          "progress": {
+            "normal": 0,
+            "heroic": 0,
+            "mythic": 0
+          }
+        },
+        "keystoneScores": {
+          "allScore": 0,
+          "allScoreColor": "#aaa"
+        }
+      },
+      {
+        "character": {
+          "name": "Avengers",
+          "level": 82,
+          "race": {
+            "id": 10,
+            "name": "Blood Elf",
+            "slug": "blood-elf",
+            "faction": "horde"
+          },
+          "class": {
+            "id": 2,
+            "name": "Paladin",
+            "slug": "paladin"
+          },
+          "spec": {
+            "id": 70,
+            "name": "Retribution",
+            "slug": "retribution",
+            "class_id": 2,
+            "role": "dps",
+            "is_melee": true,
+            "patch": "1.0.0",
+            "ordinal": 2
+          },
+          "gender": "female",
+          "thumbnail": "barthilas/89/181547097-avatar.jpg",
+          "itemLevelEquipped": 134,
+          "realm": {
+            "id": 276,
+            "connectedRealmId": 146,
+            "wowRealmId": 3723,
+            "wowConnectedRealmId": 3723,
+            "name": "Barthilas",
+            "altName": null,
+            "slug": "barthilas",
+            "altSlug": "barthilas",
+            "locale": "en_US",
+            "isConnected": false,
+            "realmType": "live"
+          },
+          "region": {
+            "name": "United States & Oceania",
+            "slug": "us",
+            "short_name": "US"
+          },
+          "items": {
+            "note": "large nested object present in real responses, stripped by transform"
+          },
+          "expansionData": {
+            "note": "stripped by transform"
+          },
+          "talentsDetails": [],
+          "talents": "",
+          "patronLevel": 0
+        },
+        "raidProgress": {
+          "raid": {
+            "type": "raid",
+            "id": 8062,
+            "difficulty": "heroic",
+            "name": "Sporefall",
+            "short_name": "SF",
+            "wowInstanceId": 1592,
+            "slug": "sporefall",
+            "icon_url": "/images/wow/icons/large/inv_1207_achievement_raid_fungariangiant_fungalgiant.jpg",
+            "expansion_id": 11
+          },
+          "totalBosses": 1,
+          "progress": {
+            "normal": 0,
+            "heroic": 0,
+            "mythic": 0
+          }
+        },
+        "keystoneScores": {
+          "allScore": 0,
+          "allScoreColor": "#aaa"
+        }
+      }
+    ]
+  }
+}

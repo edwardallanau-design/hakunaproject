@@ -1,4 +1,3 @@
-import type { Payload } from "payload";
 import type { GuildDetailsData, RosterMember } from "@/lib/raiderio";
 
 const ROLE_MAP: Record<string, "Tank" | "Healer" | "DPS"> = {
@@ -9,44 +8,34 @@ const ROLE_MAP: Record<string, "Tank" | "Healer" | "DPS"> = {
   ranged: "DPS",
 };
 
-export async function syncOfficersFromDetails(payload: Payload): Promise<number> {
-  const [guildDetailsGlobal, officersGlobal] = await Promise.all([
-    payload.findGlobal({ slug: "guild-details" }),
-    payload.findGlobal({ slug: "officers-section" }),
-  ]);
+type WowClass =
+  | "Death Knight" | "Demon Hunter" | "Druid" | "Evoker" | "Hunter"
+  | "Mage" | "Monk" | "Paladin" | "Priest" | "Rogue" | "Shaman" | "Warlock" | "Warrior";
 
-  const details = guildDetailsGlobal.details as GuildDetailsData | null;
-  if (!details?.members?.length) return 0;
+export type Officer = {
+  name?: string;
+  class?: WowClass;
+  spec?: string;
+  role?: "Tank" | "Healer" | "DPS";
+  ilvl?: number;
+  rank?: string;
+  id?: string;
+};
 
-  type WowClass =
-    | "Death Knight" | "Demon Hunter" | "Druid" | "Evoker" | "Hunter"
-    | "Mage" | "Monk" | "Paladin" | "Priest" | "Rogue" | "Shaman" | "Warlock" | "Warrior";
+export function deriveOfficers(details: GuildDetailsData, currentOfficers: Officer[]): Officer[] {
+  if (currentOfficers.length === 0) return currentOfficers;
+  if (!details.members?.length) return currentOfficers;
 
-  const existingOfficers = (officersGlobal.officers ?? []) as {
-    name?: string;
-    class?: WowClass;
-    spec?: string;
-    role?: "Tank" | "Healer" | "DPS";
-    ilvl?: number;
-    rank?: string;
-    id?: string;
-  }[];
-
-  if (existingOfficers.length === 0) return 0;
-
-  // Build a lookup by lowercase name
   const membersByName = new Map<string, RosterMember>();
   for (const m of details.members) {
     membersByName.set(m.character.name.toLowerCase(), m);
   }
 
-  let updated = 0;
-  const officers = existingOfficers.map((officer) => {
+  return currentOfficers.map((officer) => {
     if (!officer.name) return officer;
     const member = membersByName.get(officer.name.toLowerCase());
     if (!member) return officer;
 
-    updated++;
     return {
       ...officer,
       class: member.character.class.name as WowClass,
@@ -55,13 +44,4 @@ export async function syncOfficersFromDetails(payload: Payload): Promise<number>
       ilvl: member.character.itemLevelEquipped,
     };
   });
-
-  if (updated > 0) {
-    await payload.updateGlobal({
-      slug: "officers-section",
-      data: { officers, lastSyncedAt: new Date().toISOString() },
-    });
-  }
-
-  return updated;
 }
