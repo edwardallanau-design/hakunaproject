@@ -1,6 +1,14 @@
 import type { Payload } from "payload";
 import type { GuildDetailsData, RosterMember, MythicPlusRunner } from "@/lib/raiderio";
 
+// Guild rankings are reported per-raid and can't be merged, so one raid has to be
+// the source for the world/region/realm numbers shown in the StatsBar. Kills are
+// aggregated across every raid, but the rank comes from the main tier only —
+// a one-boss side raid (e.g. sporefall) has its own rank that isn't guild-wide.
+// Update this each season. If the slug is absent from the API response, rankings
+// are left at their last known values rather than silently switching raids.
+const PRIMARY_RAID_SLUG = "tier-mn-1";
+
 export async function syncProgressionFromDetails(payload: Payload): Promise<{
   kills: number;
   totalBosses: number;
@@ -29,24 +37,27 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
   let totalBosses = (progression.totalBosses as number) ?? existingBosses.length;
 
   if (existingBosses.length > 0 && details.raidProgress?.length) {
-    const raidProgress = details.raidProgress[0];
-    const raidAttempt = details.raidAttempt?.find((a) => a.raid === raidProgress.raid);
-
-    const mythicDefeated = new Map(
-      (raidProgress.encountersDefeated["mythic"] ?? []).map((e) => [e.slug, e.firstDefeated]),
-    );
-
-    const mythicPullData = new Map(
-      (raidAttempt?.encounters["mythic"] ?? []).map((enc) => [
-        enc.slug,
-        { pullCount: enc.pullCount, bestPercent: enc.bestPercent },
-      ]),
-    );
-
+    // The boss list in the CMS spans every raid in the current season, so kill and
+    // pull data is collected across all raids the API returns — not just the first.
+    const mythicDefeated = new Map<string, string>();
+    const mythicPullData = new Map<string, { pullCount: number; bestPercent: number }>();
     const nameToSlug = new Map<string, string>();
-    for (const encounters of Object.values(raidAttempt?.encounters ?? {})) {
-      for (const enc of encounters) {
-        nameToSlug.set(enc.name.toLowerCase(), enc.slug);
+
+    for (const raidProgress of details.raidProgress) {
+      const raidAttempt = details.raidAttempt?.find((a) => a.raid === raidProgress.raid);
+
+      for (const encounter of raidProgress.encountersDefeated["mythic"] ?? []) {
+        mythicDefeated.set(encounter.slug, encounter.firstDefeated);
+      }
+
+      for (const enc of raidAttempt?.encounters["mythic"] ?? []) {
+        mythicPullData.set(enc.slug, { pullCount: enc.pullCount, bestPercent: enc.bestPercent });
+      }
+
+      for (const encounters of Object.values(raidAttempt?.encounters ?? {})) {
+        for (const enc of encounters) {
+          nameToSlug.set(enc.name.toLowerCase(), enc.slug);
+        }
       }
     }
 
@@ -73,9 +84,7 @@ export async function syncProgressionFromDetails(payload: Payload): Promise<{
   }
 
   // ── Rankings (Mythic) ──────────────────────────────────────────────────────
-  const raidRanking = details.raidRankings?.find(
-    (r) => r.raid === details.raidProgress?.[0]?.raid,
-  );
+  const raidRanking = details.raidRankings?.find((r) => r.raid === PRIMARY_RAID_SLUG);
   const mythicRanks = raidRanking?.ranks["mythic"] ?? null;
 
   const existingRankings = progression.rankings as { world: number; region: number; realm: number; members: number } | null;
