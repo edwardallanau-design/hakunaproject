@@ -1,0 +1,37 @@
+# Local Postgres for development.
+#
+# The point of this file is that `npm run dev` should never touch production.
+# Payload's dev-mode auto-push is disabled (`push: false` in payload.config.ts),
+# but the app still reads and writes real data through whatever DATABASE_URL
+# points at — and for a long time that was the production Neon database.
+#
+#   docker compose up -d      start it
+#   docker compose down       stop it, keep the data
+#   docker compose down -v    stop it and wipe the data
+#
+# Port 55432 rather than 5432 so this cannot collide with a system Postgres or
+# with another project's container.
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: guild-website-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: guild
+      POSTGRES_PASSWORD: guild
+      POSTGRES_DB: guild_website
+    ports:
+      - "55432:5432"
+    volumes:
+      - guild-db-data:/var/lib/postgresql/data
+    healthcheck:
+      # Without this, `docker compose up -d` returns before Postgres accepts
+      # connections and the first migrate/dev run fails on a cold start.
+      test: ["CMD-SHELL", "pg_isready -U guild -d guild_website"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  guild-db-data:

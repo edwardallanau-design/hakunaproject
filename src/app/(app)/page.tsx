@@ -74,7 +74,7 @@ export default async function Home() {
     heading: officersSection.heading!,
     officers: officersSection.officers!.map((o) => ({
       id: o.id!,
-      name: o.name,
+      name: o.name!,
       class: o.class!,
       spec: o.spec!,
       role: o.role!,

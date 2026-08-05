@@ -1,22 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Next.js + Payload CMS site for the guild.
 
 ## Getting Started
 
-First, run the development server:
+Development runs against a local Postgres in Docker, never against production.
 
 ```bash
+cp .env.example .env.local   # points DATABASE_URL at the local database
+npm install
+npm run db:up                # start Postgres (docker-compose.yml)
+npm run migrate              # create the schema
+npm run seed                 # admin user + required fields
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000), and [/admin](http://localhost:3000/admin) to log in
+(`dev@example.com` / `devpassword` by default).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`npm run seed -- --sync` additionally pulls live guild data from Raider.IO, so the
+site renders real content. The seed script refuses to run against any host that is
+not localhost.
+
+### Database commands
+
+| Command | Effect |
+| --- | --- |
+| `npm run db:up` | Start Postgres. Data persists between restarts. |
+| `npm run db:down` | Stop it, keeping the data. |
+| `npm run db:reset` | Wipe it and rebuild: migrate + seed from scratch. |
+
+## Schema changes
+
+The schema is defined by the migrations in `src/migrations/`, **not** by Payload's
+dev-mode auto-push, which is disabled (`push: false`). After changing a collection
+or global:
+
+```bash
+npm run migrate:create   # generates the migration — commit it
+npm run migrate          # applies it locally
+```
+
+`npm run build` runs `payload migrate` first, so a deploy cannot ship code whose
+schema has not been applied. See [ADR 0004](docs/adr/0004-schema-changes-go-through-committed-migrations.md)
+for why this exists — skipping it previously broke production.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

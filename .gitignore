@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the template, which carries no secrets and is how a fresh clone
+# learns to point at the local database instead of production.
+!.env.example
 
 # vercel
 .vercel
@@ -40,11 +43,14 @@ yarn-error.log*
 .claude/
 .superpowers/
 
-# docs — ignore contents, but keep the agent skill config tracked.
+# docs — ignore contents, but keep the agent skill config and the ADRs tracked.
 # Git won't descend into an excluded directory, so docs/ itself must stay
-# walkable: exclude its children instead, then re-include docs/agents/.
+# walkable: exclude its children instead, then re-include the two we keep.
+# ADRs are the durable record of why decisions were made — they are useless
+# to anyone who clones the repo if they only exist on one machine.
 docs/*
 !docs/agents/
+!docs/adr/
 
 # typescript
 *.tsbuildinfo

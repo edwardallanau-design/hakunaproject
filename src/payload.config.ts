@@ -34,6 +34,11 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
     },
+    // Schema changes go through committed migrations, never dev-mode auto-push.
+    // Auto-push silently diverges dev from prod: it creates columns locally that
+    // production never gets, and a missing column fails the *entire* document
+    // read, not just that field. See docs/adr/0004.
+    push: false,
   }),
   sharp,
   plugins: [],

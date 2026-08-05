@@ -92,7 +92,6 @@ export interface Config {
     progression: Progression;
     'officers-section': OfficersSection;
     'recruitment-section': RecruitmentSection;
-    roster: Roster;
     'guild-details': GuildDetail;
   };
   globalsSelect: {
@@ -100,8 +99,7 @@ export interface Config {
     progression: ProgressionSelect<false> | ProgressionSelect<true>;
     'officers-section': OfficersSectionSelect<false> | OfficersSectionSelect<true>;
     'recruitment-section': RecruitmentSectionSelect<false> | RecruitmentSectionSelect<true>;
-    roster: RosterSelect<false> | RosterSelect<true>;
-    'guild-details': GuildDetailSelect<false> | GuildDetailSelect<true>;
+    'guild-details': GuildDetailsSelect<false> | GuildDetailsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -391,15 +389,19 @@ export interface Progression {
    * e.g. "6/9 H" — auto-filled by Raider.IO sync
    */
   summary?: string | null;
-  kills?: number | null;
-  totalBosses?: number | null;
   /**
    * Raider.IO profile URL
    */
   profileUrl?: string | null;
+  /**
+   * Last time data was synced from Raider.IO
+   */
+  lastSyncedAt?: string | null;
+  kills?: number | null;
+  totalBosses?: number | null;
   rankings?: {
     /**
-     * Auto-filled by sync — total guild member count
+     * Auto-filled by sync — level 90 characters with an IO score or raid kill
      */
     members?: number | null;
     world?: number | null;
@@ -411,28 +413,19 @@ export interface Progression {
         name: string;
         killed?: boolean | null;
         /**
-         * Number of pulls (for in-progress bosses)
+         * Date the boss was first killed on mythic
+         */
+        firstDefeated?: string | null;
+        /**
+         * Total pulls — auto-set at time of kill and frozen, or live pull count while in progress
          */
         pulls?: number | null;
         /**
-         * Best pull % (for in-progress bosses)
+         * Best pull % (in-progress bosses only — auto-updated by sync until killed)
          */
         bestPull?: number | null;
         id?: string | null;
       }[]
-    | null;
-  /**
-   * Last time data was synced from Raider.IO
-   */
-  lastSyncedAt?: string | null;
-  guildMembers?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
     | null;
   /**
    * Top 10 M+ runners — auto-filled by Raider.IO sync or add manually
@@ -446,10 +439,6 @@ export interface Progression {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Last time M+ data was synced from Raider.IO
-   */
-  mythicPlusSyncedAt?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -473,7 +462,7 @@ export interface OfficersSection {
   lastSyncedAt?: string | null;
   officers?:
     | {
-        name: string;
+        name?: string | null;
         class?:
           | (
               | 'Death Knight'
@@ -549,28 +538,6 @@ export interface RecruitmentSection {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "roster".
- */
-export interface Roster {
-  id: number;
-  members?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Last time roster was synced from Raider.IO
-   */
-  lastSyncedAt?: string | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "guild-details".
  */
 export interface GuildDetail {
@@ -627,9 +594,10 @@ export interface ProgressionSelect<T extends boolean = true> {
   tier?: T;
   difficulty?: T;
   summary?: T;
+  profileUrl?: T;
+  lastSyncedAt?: T;
   kills?: T;
   totalBosses?: T;
-  profileUrl?: T;
   rankings?:
     | T
     | {
@@ -643,12 +611,11 @@ export interface ProgressionSelect<T extends boolean = true> {
     | {
         name?: T;
         killed?: T;
+        firstDefeated?: T;
         pulls?: T;
         bestPull?: T;
         id?: T;
       };
-  lastSyncedAt?: T;
-  guildMembers?: T;
   mythicPlusRunners?:
     | T
     | {
@@ -658,7 +625,6 @@ export interface ProgressionSelect<T extends boolean = true> {
         score?: T;
         id?: T;
       };
-  mythicPlusSyncedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -716,20 +682,9 @@ export interface RecruitmentSectionSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "roster_select".
- */
-export interface RosterSelect<T extends boolean = true> {
-  members?: T;
-  lastSyncedAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "guild-details_select".
  */
-export interface GuildDetailSelect<T extends boolean = true> {
+export interface GuildDetailsSelect<T extends boolean = true> {
   details?: T;
   lastSyncedAt?: T;
   lastSyncError?: T;

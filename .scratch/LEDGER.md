@@ -12,25 +12,6 @@ This file is committed. Keep it accurate; it is the only durable record — `doc
 
 Known issues, not yet actioned. Oldest first.
 
-### ⚠️ The project has no migrations — schema changes break production
-
-There is no `migrations/` directory and no `push: false` in the `postgresAdapter` config. Every schema change so far has landed only via Payload's **dev-mode auto-push**, which introspects and syncs the schema on boot. Production does not do this.
-
-This surfaced on 2026-08-04. Adding the `lastSyncError` field to the `guild-details` global worked locally (auto-push created the column) and broke production, where the column was never created. Payload generates `select "id", "details", "last_synced_at", "last_sync_error", ... from "guild_details"` — selecting a column that doesn't exist fails the **entire document read**, so:
-
-- the admin page rendered its Sync button (UI config, no DB) but showed "nothing found" (the document fetch 500'd)
-- every hourly sync failed with `stage: "write"`, turning the GitHub Actions schedule red
-
-Fixed by hand with `ALTER TABLE guild_details ADD COLUMN IF NOT EXISTS last_sync_error varchar;` — the exact statement a generated migration would have contained (Payload maps `textarea` → `varchar`, per `@payloadcms/drizzle` `traverseFields.js`). Reproduced and verified locally first, against a Docker Postgres with the column dropped to mirror production.
-
-**Why it matters:** this was the first schema change to meet a database that already had data. It will not be the last. The next field added to any global or collection breaks production the same way, with the same confusing symptom — a page that half-renders and a red schedule, with nothing in the code diff to suggest a database cause.
-
-**Fix direction:** adopt migrations properly — `payload migrate:create` committed to the repo, `payload migrate` run as part of the Vercel build. Set `push: false` explicitly so dev stops diverging from prod silently.
-
-**Blocker to be aware of:** Payload's migration CLI does not currently run in this environment. Three invocations all fail with Node 24 + `tsx` ESM/CJS interop errors inside Payload's own `bin.js` (`npm run dev` and `npm run build` are unaffected — it is CLI-tooling-specific). `generate:types` fails the same way, which is why `payload-types.ts` was hand-edited for `lastSyncError`. Resolving this — likely a Node 20/22 runtime for CLI tasks — is a prerequisite for adopting migrations.
-
----
-
 ### ⚠️ Season 1 data is destroyed by the Season 2 rollover
 
 There is one `progression` global: one `bosses` array, one `rankings` group, one `tier`. The site renders that single record. Editing it for Season 2 **overwrites Season 1 permanently** — kill dates, Rotmire, final world/region/realm ranks.
@@ -48,6 +29,49 @@ The kill lock at `syncProgression.ts:66` does **not** protect against this. It s
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-05 — Local development database
+
+`docker-compose.yml`, `scripts/seed-local.mjs`, `.env.example`. Development no longer runs against production.
+
+`push: false` stopped `npm run dev` mutating production's *schema*, but the app still read and wrote production *data* — the local `.env` `DATABASE_URL` pointed at Neon. This closes that.
+
+**Decisions:**
+
+- **Persistent local Postgres, disposable on demand** — named volume, so data survives restarts; `npm run db:reset` wipes and rebuilds. A truly ephemeral per-session container was rejected: Payload needs an admin user and `Progression.tier` before the site is usable, and paying that cost every session makes pointing back at production the path of least resistance. Port **55432**, not 5432, so it cannot collide with another project's container.
+- **`.env.local` is what redirects development.** It takes precedence over `.env` for both Next.js and the Payload CLI, so nothing in `.env` had to change. `.env.example` is the committed template — it required an `!.env.example` exception, since `.env*` ignores everything.
+- **The seed script refuses any non-localhost host.** It creates an admin user with a known password, so it must never reach a deployed database. Verified by pointing it at the real production URL and watching it refuse by hostname.
+- **`@next/env` loaded explicitly in the seed script.** A plain `node` script gets no env-file loading, so `DATABASE_URL` was simply unset. It is CommonJS, so it needs a default import, and `payload.config.ts` must be imported *dynamically* after the env is loaded — a static import would hoist above it and read an empty `DATABASE_URL`.
+
+**Verified end-to-end:** `db:reset` from an empty volume → migrate → seed → `npm run dev` serving `/` and `/admin` at 200 with real seeded content. A database built purely from migrations matches production exactly (135 columns), which re-proves the baseline independently.
+
+**`--sync` reports `0 officers` on a fresh database, and that is correct.** `deriveOfficers` returns early when the current officer list is empty (`syncOfficers.ts:26`) — it *enriches* an operator-curated list, it does not create one. Likewise `0/9 bosses`: kill data is locked once set, and a new database has no kill history.
+
+**README rewritten.** It was still create-next-app boilerplate telling a new contributor to run `npm run dev` — which, before this, pointed them at production.
+
+---
+
+### 2026-08-05 — Migrations adopted
+
+ADR `0004`. Closes the "no migrations" issue that was open above. `push: false`, a committed baseline, and `payload migrate` in the build.
+
+**The recorded blocker was a misdiagnosis.** The ledger said the Payload CLI failed on "Node 24 + `tsx` ESM/CJS interop errors inside Payload's own `bin.js`" and that a Node 20/22 runtime was likely a prerequisite. The actual error was `Cannot find module src/collections/Users`: `payload.config.ts` used extensionless imports, which Next.js resolves because `tsconfig.json` sets `moduleResolution: "bundler"`, but the CLI does not because it runs outside the bundler. The Node version was never involved. Worth remembering as a pattern — three different invocations produced three different-looking stack traces, and the common line at the bottom of all of them was the real cause.
+
+**Decisions:**
+
+- **`push: false` on the Postgres adapter.** Auto-push only disengages when `NODE_ENV === 'production'`, and the local `.env` `DATABASE_URL` points at the production Neon database — so `npm run dev` had been mutating production's schema. That is why prod had every column except the newest one.
+- **`--use-swc` (`@swc-node/register`) plus `"type": "module"`.** The default `tsx` path fails under Node 24; `--disable-transpile` works for the config but chokes on the type-only imports `migrate:create` generates. swc runs generated migrations **unmodified** — verified by adding a throwaway field, generating, and running it untouched. Any approach needing a hand-edit after every generate would eventually be forgotten.
+- **Baseline recorded as already-applied, not executed.** Generated, applied to an empty Docker Postgres, then diffed against production: **135 columns, identical both directions**, including the hand-patched `last_sync_error`. That diff is the safety argument for the whole approach.
+- **The synthetic `dev` row must be deleted.** Auto-push leaves `{name: 'dev', batch: -1}` in `payload_migrations`. `payload migrate` reads it and *interactively prompts* ("data loss will occur") before running anything. No TTY in CI means the prompt takes its default — abort — and exits **0** having run nothing. A green build that silently skipped its migrations is exactly the failure being fixed.
+- **`.swcrc` was created during diagnosis and then deleted** once `"type": "module"` proved sufficient. It was tested as unnecessary rather than left in place.
+
+**`generate:types` works again** — the third thing listed as broken. Regenerating `payload-types.ts` (previously hand-edited) surfaced two real drifts it had masked: a stale `roster` global no longer in the config, and `officers.name` being the one field in its block missing the `!` assertion its neighbours all had, which was a genuine type error in `page.tsx`.
+
+**Baseline reconciled against production on 2026-08-05.** `scripts/adopt-migrations-baseline.mjs --commit` ran against Neon: the `dev` row was deleted and `20260804_235225_baseline` recorded at batch 1, in one transaction. Verified independently afterwards — **135 columns before and after, unchanged**, `guild_details` intact with `lastSyncError` still null, and a re-run reports "already recorded". `migrate:status` against production now lists the baseline as applied, so `payload migrate` runs unattended without the prompt-and-skip.
+
+The script is kept rather than deleted: it is the record of why production's migration history starts at a baseline it never executed.
+
+---
 
 ### 2026-08-04 — Sync hardening
 

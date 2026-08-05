@@ -2,12 +2,21 @@
   "name": "guild-website",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node node_modules/payload/bin.js migrate --use-swc && next build",
     "start": "next start",
-    "generate:importmap": "node --no-strip-types --import tsx/esm node_modules/payload/bin.js generate:importmap",
-    "generate:types": "node --no-strip-types --import tsx/esm node_modules/payload/bin.js generate:types",
+    "payload": "node node_modules/payload/bin.js",
+    "migrate": "node node_modules/payload/bin.js migrate --use-swc",
+    "migrate:create": "node node_modules/payload/bin.js migrate:create --use-swc",
+    "migrate:status": "node node_modules/payload/bin.js migrate:status --use-swc",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d --wait && npm run migrate && npm run seed",
+    "seed": "node --import @swc-node/register/esm-register scripts/seed-local.mjs",
+    "generate:importmap": "node node_modules/payload/bin.js generate:importmap --use-swc",
+    "generate:types": "node node_modules/payload/bin.js generate:types --use-swc",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -26,6 +35,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@swc-node/register": "^1.12.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
