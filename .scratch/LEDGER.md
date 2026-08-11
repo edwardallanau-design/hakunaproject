@@ -20,13 +20,17 @@ Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are 
 - **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct.
 - **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
 
-### Season 1's `startedAt` is still a placeholder
-
-Both the committed snapshot (`.scratch/season-rollover/season-1-snapshot.json`) and the migrated production row hold `2026-01-01` — nobody has confirmed the real date Season 1 began. It now drives the switcher's chronological ordering (ticket `07`), so it stops being cosmetic the moment a second Season exists. Needs an operator-supplied real date, then a data correction (script or admin edit) before `09` lands — the ordering has to be right the first time two Seasons coexist.
-
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-11 — Season 1's real start date: 2026-03-17
+
+Closes the `startedAt`-placeholder issue that was open above, clearing the data prerequisite for ticket `09` — switcher ordering is now correct before a second Season can exist. The operator confirmed Season 1 began **2026-03-17**; the `2026-01-01` placeholder was corrected everywhere it lived: the committed snapshot, `seed-local.mjs`, `snapshot-season-1.mjs` (constant renamed `SEASON_1_STARTED_AT` — it is no longer a placeholder, and a re-run can't resurrect one), and both database rows via `scripts/correct-season-1-started-at.mjs`.
+
+That script is a verify-first/`--commit` one-shot in the `adopt-migrations-baseline.mjs` mould, kept as the record of the correction. It writes only when the current value is exactly the known placeholder — already-corrected exits 0 as a no-op, any *other* value means someone set it deliberately and it refuses — so it is inert after first use. Rehearsed against the local Docker database first, then run against production: placeholder confirmed before, target re-verified after, on both.
+
+Test fixtures in `resolveRequestedSeason.test.ts` / `syncProgression.test.ts` still use `2026-01-01` as an arbitrary date — deliberate, they never referenced the placeholder.
 
 ### 2026-08-11 — Season rollover, tickets 01–08
 

@@ -66,15 +66,15 @@ const mythicPlusParticipants = details.members
   }))
 
 // No authoritative Season 1 start date is recorded anywhere upstream or in the
-// CMS — this is a placeholder the operator must confirm/correct in the
-// migration (ticket 03) before it drives switcher ordering.
-const PLACEHOLDER_STARTED_AT = '2026-01-01T00:00:00.000Z'
+// CMS. Shipped as a 2026-01-01 placeholder; the real date was operator-confirmed
+// on 2026-08-11 and corrected everywhere by scripts/correct-season-1-started-at.mjs.
+const SEASON_1_STARTED_AT = '2026-03-17T00:00:00.000Z'
 
 const snapshot = {
   name: progression.tier,
   urlSlug: 'season-1',
   themeSlug: 'void',
-  startedAt: PLACEHOLDER_STARTED_AT,
+  startedAt: SEASON_1_STARTED_AT,
   raidSlugs: ['tier-mn-1', 'sporefall'],
   rankSourceRaidSlug: 'tier-mn-1',
   mythicPlusSeasonSlug: 'season-mn-1',

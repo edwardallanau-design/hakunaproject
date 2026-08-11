@@ -111,7 +111,7 @@ if (!currentSeasonId) {
         name: 'Midnight Season 1',
         urlSlug: 'season-1',
         themeSlug: 'void',
-        startedAt: new Date('2026-01-01').toISOString(),
+        startedAt: new Date('2026-03-17').toISOString(),
         raidSlugs: [{ slug: 'tier-mn-1' }, { slug: 'sporefall' }],
         rankSourceRaidSlug: 'tier-mn-1',
         mythicPlusSeasonSlug: 'season-mn-1',
