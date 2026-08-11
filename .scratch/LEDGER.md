@@ -12,32 +12,41 @@ This file is committed. Keep it accurate; it is the only durable record — `doc
 
 Known issues, not yet actioned. Oldest first.
 
-### ⚠️ Season 1 data is destroyed by the Season 2 rollover
+### Season 2 rollover: creating the row and re-enabling the Sync
 
-There is one `progression` global: one `bosses` array, one `rankings` group, one `tier`. The site renders that single record. Editing it for Season 2 **overwrites Season 1 permanently** — kill dates, Rotmire, final world/region/realm ranks.
+Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are gated on the outside world, not on more engineering:
 
-The kill lock at `syncProgression.ts:66` does **not** protect against this. It stops a *sync* from un-killing a boss; it does nothing to stop the row being *replaced* by hand.
+- **`09` — create the Season 2 row.** Blocked until Season 2's raid opens (~2026-08-17) so its boss list, contributing Raid slugs, and real Rank Source slug (`tier-mn-2` is a guess) can be typed in from a live response — the API omits un-pulled and even some killed encounters, so nothing upstream can be trusted to generate this automatically.
+- **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct.
+- **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
 
-**Specced (2026-08-10):** `.scratch/season-rollover/spec.md`, tickets `01`–`11`. ADRs `0005`, `0006`; ADR `0003` amended. Tickets `01` (freeze the Sync) and `02` (snapshot Season 1) carry the deadline; everything after them is unhurried.
-
-**Decided (2026-08-04):** Seasons become a collection — one row per Season, ~~`isCurrent` flag~~, `theme` field for per-Season styling. Same shape every Season; only data and styling differ. Sync writes to the current row. Scoped as **separate work**, not part of the sync fixes.
-
-**Revised (2026-08-10):** `isCurrent` per row was rejected during grilling — a boolean can represent two currents or zero, and preventing that needs a hook a migration or seed script can bypass. A `currentSeason` **pointer** on `guild-settings` makes exactly-one true by construction. Also decided: a Season carries its own upstream identity (ADR `0006`), Seasons capture **every** M+ Participant rather than the displayed top ten, and the archive is viewed via a switcher that re-themes the site rather than a separate screen.
-
-**~~Deliberately not snapshotting now.~~ Plan is to re-fetch Season 1 from Raider.IO and snapshot near season end, when the data is final.**
-
-**Corrected 2026-08-10 — re-fetch does not work, and this plan was unsafe.** Raider.IO stores M+ scores per *Character*, not per Guild; any guild-scoped historical query is recomputed from *present* membership. Verified live: `season-tww-3` returns 322 Characters, meaning "today's roster's tww-3 scores", not a stored leaderboard. A departed member silently vanishes from their own season's record, and a Guild rename — which already happened once — breaks the lookup entirely. Recorded as ADR `0005`. **The snapshot is the only faithful record that will ever exist.**
-
-**Two further corrections from checking the live API on 2026-08-10:**
-
-- **The `raidAttempt` telemetry risk does not apply.** The guild is **10/10 Mythic** (9 × `tier-mn-1` + Rotmire, finishing Midnight Falls 2026-07-17), so every Boss hits the kill lock at `syncProgression.ts:72` and is permanently protected. There are no un-killed bosses holding best-pull data.
-- **The real exposure is the M+ leaderboard, and it degrades rather than resets.** `syncProgression.ts:132` replaces the whole list the moment *one* member posts a Season 2 score — ten rows become one. Worse, it is not reliably caught by the ADR 0003 tripwire: that throw needs `tier-mn-1` to *vanish* from `raidRankings`. If Raider.IO keeps it and merely adds `tier-mn-2`, no throw fires and the sync proceeds normally.
-
-**The obligation this creates:** the snapshot must be taken **before the first write made during Season 2** — and the first writer is the hourly cron at `:17`, not a human. Season 2 begins 2026-08-12; raid and M+ open ~2026-08-17.
+**Operator actions still outstanding, not code:** `SYNC_DISABLED` needs to actually be set in the production environment (the route-side gate is built and tested, but nobody has flipped the real env var yet) — this must happen **before** the commits below are deployed, or the first sync after deploy re-derives `mythicPlusParticipants` from the live roster and silently loses anyone who has left the guild since the 2026-08-10/08-11 snapshot. Season 1's real `startedAt` date is also still a placeholder (`2026-01-01`) in both the committed snapshot and the migrated row — nobody has confirmed the actual date, and it now drives the switcher's chronological ordering.
 
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-11 — Season rollover, tickets 01–08
+
+`.scratch/season-rollover/spec.md`. ADRs `0005`, `0006`; ADR `0003` amended. Seasons become rows: a `Seasons` collection, one row per Season, named current by a `currentSeason` pointer on `guild-settings`. Season 1 migrated in from a snapshot of the live `progression` global and `guild-details`' stored roster payload — 10/10 Mythic, 595 M+ Participants, matching the values captured live on 2026-08-10 exactly (world 1375 / region 450 / realm 6, last kill Midnight Falls 2026-07-17, Rotmire 2026-06-17).
+
+**Stopgap shipped first, separately reviewable:** the hourly cron trigger is gone from the Sync workflow (`workflow_dispatch` stays, as a deliberate manual escape hatch), and the Sync route now refuses to run when `SYNC_DISABLED` is set, reporting a `stage: "disabled"` failure through the existing contract rather than silently no-op'ing.
+
+**The home page and Sync now read/write the Seasons collection, not the `progression` global** — which is left completely intact and unread, so the cutover stays reversible. `deriveProgression` kept its exact existing shape, `(fetched data, current Season state) → new state`; a Season's upstream identity (contributing Raid slugs, Rank Source, M+ season slug) arrives through the existing current-state parameter rather than a new one, per ADR `0006`. The loud-failure guarantees carry over unchanged: an empty `currentSeason` pointer throws, the Rank Source being absent from a non-empty rankings response throws naming the slug, an empty rankings response still preserves existing ranks.
+
+**Every M+ Participant with a score is now captured**, not just the displayed top ten (~575 previously discarded at Derivation time) — the point of the whole feature per ADR `0005`. Costs no extra upstream request, since it's derived from the same roster fetch the top ten already comes from.
+
+**A visitor can switch to an archived Season** via a query parameter (`resolveRequestedSeason`, a new pure seam: `(all Seasons, current Season id, requested slug) → Season`), which re-themes the whole page via a CSS class per `themeSlug` and shows a visible archived notice. An unrecognised slug falls back to the current Season. About, officers and recruitment stay current regardless of which Season is selected. Season 1's theme (`void`) is the site's existing dark palette, unchanged; the light palette stays season-neutral and the toggle keeps working — verified with real screenshots in both modes.
+
+**Three bugs found and fixed during `/code-review` before this landed, all caught by parallel Standards/Spec sub-agent review, not by the original implementation:**
+
+- `mythicPlusParticipants` had no preserve-on-no-data fallback, unlike `rankings` and `mythicPlusRunners` — a guild-rename response (the exact case the preserve path exists for) would have silently wiped the current Season's whole stored roster to `[]`. Now preserves on empty, with a regression test.
+- The home page's "is this the current Season" check fell back to whichever Season the visitor had *requested* whenever the relationship came back unpopulated, mislabelling an archived Season as current in the switcher. Fixed to look the true current Season up by id against the full list.
+- A Season with bosses typed in but an empty `raidSlugs` list would silently freeze kills forever, since Season-scoping causes every raid in the response to be skipped with no signal — exactly the decay ADR `0001`/`0006` exist to prevent. Now a Derivation failure; the genuine empty-boss-**and**-empty-`raidSlugs` mid-rollover state is unaffected and does not throw.
+
+**Insurance taken before any production data was touched:** a `pg_dump` whole-database backup (Neon branching wasn't available from this session; the ticket's fallback path), copied to durable storage outside the repo.
+
+**Deliberately deferred, gated on the outside world:** tickets `09`–`11` — see Open, above.
 
 ### 2026-08-05 — Local development database
 
