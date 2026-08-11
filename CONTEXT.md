@@ -18,6 +18,12 @@ Exactly one Season is **current** — the one a Sync writes to. Every other Seas
 
 Every Season has the same *shape* — bosses, kills, rankings, M+ leaderboard. Seasons differ in their **data** and their **styling**, not in their structure. A Season's styling is part of its identity: viewing an archived Season shows the site as it looked that Season.
 
+## Theme
+
+A Season's named visual identity — palette, typography, and imagery — selected by a **theme slug**. Themes are a fixed vocabulary: each is built and reviewed as a whole, and a Season wears exactly one. Season 1's theme is **void**; Season 2's is **venom**.
+
+Distinct from **light/dark mode**, which is a visitor preference and season-neutral: a Theme defines a Season's dark look, and light mode looks the same whichever Season is viewed.
+
 ## Snapshot
 
 An archived Season's data, captured while it was still current. A Snapshot is the **only** faithful record of a Season, because the upstream API cannot reproduce one after the fact: it stores scores per Character and rebuilds any guild-scoped view from *present* membership. A member who leaves is silently absent from a later query, and a Guild rename breaks the lookup entirely.

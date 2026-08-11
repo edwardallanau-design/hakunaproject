@@ -6,7 +6,7 @@
 
 Season 2's Rank Source slug is a guess (`tier-mn-2`) until a real response confirms it. Raid and Mythic+ open around 2026-08-17.
 
-**Blocked by:** 06 — Capture every M+ Participant
+**Blocked by:** 06 — Capture every M+ Participant, .scratch/season-2-theming/issues/07 — Venom complete
 
 **Status:** ready-for-agent
 
@@ -17,3 +17,7 @@ Season 2's Rank Source slug is a guess (`tier-mn-2`) until a real response confi
 - [ ] A theme palette exists for Season 2
 - [ ] The `currentSeason` pointer is moved to Season 2 **after** the row is fully configured, so there is no window in which a half-built Season is current
 - [ ] Verified: Season 1 renders correctly via the switcher and is no longer the Sync target
+
+## Comments
+
+**2026-08-11** — Operator decision: Season 2 does not launch until its full theme is complete, so this ticket gains the cross-feature edge `.scratch/season-2-theming/issues/07`. The theming seam is also widening (fonts, backdrop, motifs, key art — ADR `0007`), and `themeSlug` becomes a dropdown, so "a theme palette exists" above is superseded by: **venom is selectable in the dropdown and complete per the gate ticket**. The risk was accepted eyes-open: if theming slips past raid opening (~2026-08-17), in-progress pull counts go unrecorded until it lands — and that situation triggers a fresh operator decision, not a silent wait (see the gate ticket).

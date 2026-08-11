@@ -16,9 +16,17 @@ Known issues, not yet actioned. Oldest first.
 
 Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are gated on the outside world, not on more engineering:
 
-- **`09` — create the Season 2 row.** Blocked until Season 2's raid opens (~2026-08-17) so its boss list, contributing Raid slugs, and real Rank Source slug (`tier-mn-2` is a guess) can be typed in from a live response — the API omits un-pulled and even some killed encounters, so nothing upstream can be trusted to generate this automatically.
+- **`09` — create the Season 2 row.** Blocked until Season 2's raid opens (~2026-08-17) so its boss list, contributing Raid slugs, and real Rank Source slug (`tier-mn-2` is a guess) can be typed in from a live response — the API omits un-pulled and even some killed encounters, so nothing upstream can be trusted to generate this automatically. **Additionally gated on the venom theme** (below) by operator decision.
 - **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct.
 - **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
+
+### Season 2 theming: the venom theme and the widened seam
+
+`.scratch/season-2-theming/spec.md`, tickets `01`–`07`. ADR `0007`. Grilled and specced 2026-08-11; nothing implemented yet.
+
+The theming seam widens from 13 colour tokens to a full theme package — font tokens (all three roles), optional backdrop, motifs, and key art, all committed slug-keyed and picked per Season from a `themeSlug` **dropdown** (free text → select, one enum migration covering `void` and `venom`). Season 1 stays pixel-for-pixel frozen — that's the seam refactor's verification gate. Light mode stays season-neutral. Assets are code-drawn SVG/CSS pixel art so the deadline stays in our control.
+
+**Sequencing, by operator decision made eyes-open:** the **full venom theme gates rollover ticket `09`** (gate ticket: `07`). This costs nothing if the theme lands before the raid opens (~2026-08-17), since `09` can't run earlier anyway — but **if `07` is not cleared by then, that is a fresh operator decision** (launch palette-only vs. hold `09` while in-progress pull counts go unrecorded), not a silent wait. A session hitting that date with the theme incomplete must put the choice back to the operator.
 
 ## Shipped
 
