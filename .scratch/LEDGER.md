@@ -18,13 +18,22 @@ There is one `progression` global: one `bosses` array, one `rankings` group, one
 
 The kill lock at `syncProgression.ts:66` does **not** protect against this. It stops a *sync* from un-killing a boss; it does nothing to stop the row being *replaced* by hand.
 
-**Decided (2026-08-04):** Seasons become a collection — one row per Season, `isCurrent` flag, `theme` field for per-Season styling. Same shape every Season; only data and styling differ. Sync writes to the current row. Scoped as **separate work**, not part of the sync fixes.
+**Specced (2026-08-10):** `.scratch/season-rollover/spec.md`, tickets `01`–`11`. ADRs `0005`, `0006`; ADR `0003` amended. Tickets `01` (freeze the Sync) and `02` (snapshot Season 1) carry the deadline; everything after them is unhurried.
 
-**Deliberately not snapshotting now.** Plan is to re-fetch Season 1 from Raider.IO and snapshot near season end, when the data is final.
+**Decided (2026-08-04):** Seasons become a collection — one row per Season, ~~`isCurrent` flag~~, `theme` field for per-Season styling. Same shape every Season; only data and styling differ. Sync writes to the current row. Scoped as **separate work**, not part of the sync fixes.
 
-**The obligation this creates:** the snapshot must be taken **before the first edit made for Season 2**, not before Season 2 launches. The destructive act is the edit, not the patch.
+**Revised (2026-08-10):** `isCurrent` per row was rejected during grilling — a boolean can represent two currents or zero, and preventing that needs a hook a migration or seed script can bypass. A `currentSeason` **pointer** on `guild-settings` makes exactly-one true by construction. Also decided: a Season carries its own upstream identity (ADR `0006`), Seasons capture **every** M+ Participant rather than the displayed top ten, and the archive is viewed via a switcher that re-themes the site rather than a separate screen.
 
-**Residual risk accepted:** a re-fetch recovers kills and rankings, but `raidAttempt` telemetry — pull counts and best-pull % on bosses left un-killed — may not be retained upstream once the tier is no longer current. If Season 1 ends with a boss at 0.4%, that number may exist only in this database.
+**~~Deliberately not snapshotting now.~~ Plan is to re-fetch Season 1 from Raider.IO and snapshot near season end, when the data is final.**
+
+**Corrected 2026-08-10 — re-fetch does not work, and this plan was unsafe.** Raider.IO stores M+ scores per *Character*, not per Guild; any guild-scoped historical query is recomputed from *present* membership. Verified live: `season-tww-3` returns 322 Characters, meaning "today's roster's tww-3 scores", not a stored leaderboard. A departed member silently vanishes from their own season's record, and a Guild rename — which already happened once — breaks the lookup entirely. Recorded as ADR `0005`. **The snapshot is the only faithful record that will ever exist.**
+
+**Two further corrections from checking the live API on 2026-08-10:**
+
+- **The `raidAttempt` telemetry risk does not apply.** The guild is **10/10 Mythic** (9 × `tier-mn-1` + Rotmire, finishing Midnight Falls 2026-07-17), so every Boss hits the kill lock at `syncProgression.ts:72` and is permanently protected. There are no un-killed bosses holding best-pull data.
+- **The real exposure is the M+ leaderboard, and it degrades rather than resets.** `syncProgression.ts:132` replaces the whole list the moment *one* member posts a Season 2 score — ten rows become one. Worse, it is not reliably caught by the ADR 0003 tripwire: that throw needs `tier-mn-1` to *vanish* from `raidRankings`. If Raider.IO keeps it and merely adds `tier-mn-2`, no throw fires and the sync proceeds normally.
+
+**The obligation this creates:** the snapshot must be taken **before the first write made during Season 2** — and the first writer is the hourly cron at `:17`, not a human. Season 2 begins 2026-08-12; raid and M+ open ~2026-08-17.
 
 ## Shipped
 

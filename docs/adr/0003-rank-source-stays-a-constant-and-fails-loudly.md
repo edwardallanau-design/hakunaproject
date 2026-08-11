@@ -4,7 +4,9 @@ Date: 2026-08-04
 
 ## Status
 
-Accepted
+Accepted — amended by ADR 0006.
+
+The Rank Source is no longer a constant: once Seasons became rows, a single constant could not describe an archived and a current Season at the same time. ADR 0006 moves the slug onto the Season row, taking the option this ADR pre-authorised below ("acceptable only *in addition to* failing loudly"). **The fail-loudly decision, and the empty-`raidRankings` distinction, are unchanged and remain in force.**
 
 ## Context
 

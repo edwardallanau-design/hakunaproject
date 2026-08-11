@@ -14,9 +14,19 @@ A single raid instance, identified by a **raid slug** (e.g. `tier-mn-1`, `sporef
 
 The current content period. The **boss list** shown on the site spans a whole Season, so it can draw bosses from more than one Raid. Midnight Season 1 = 9 bosses from `tier-mn-1` plus Rotmire from `sporefall`.
 
-Exactly one Season is **current** — the one the front page shows and the one a Sync writes to. Past Seasons are **archived**: their data is final and no longer synced, but remains viewable on its own screen.
+Exactly one Season is **current** — the one a Sync writes to. Every other Season is **archived**: its data is a Snapshot, final and never re-synced. Archived Seasons remain viewable on the site.
 
-Every Season has the same *shape* — bosses, kills, rankings, M+ leaderboard. Seasons differ in their **data** and their **styling**, not in their structure.
+Every Season has the same *shape* — bosses, kills, rankings, M+ leaderboard. Seasons differ in their **data** and their **styling**, not in their structure. A Season's styling is part of its identity: viewing an archived Season shows the site as it looked that Season.
+
+## Snapshot
+
+An archived Season's data, captured while it was still current. A Snapshot is the **only** faithful record of a Season, because the upstream API cannot reproduce one after the fact: it stores scores per Character and rebuilds any guild-scoped view from *present* membership. A member who leaves is silently absent from a later query, and a Guild rename breaks the lookup entirely.
+
+Consequently a Season's data is never re-fetched once archived — see `docs/adr/0005`.
+
+## M+ Participant
+
+Any Character with a Mythic+ score in a Season. Distinct from the **M+ Leaderboard**, which is the top ten shown on the site. Every Participant is recorded in the Season's Snapshot; only the Leaderboard is displayed.
 
 ## Boss
 
