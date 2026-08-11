@@ -20,7 +20,9 @@ Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are 
 - **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct.
 - **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
 
-**Operator actions still outstanding, not code:** `SYNC_DISABLED` needs to actually be set in the production environment (the route-side gate is built and tested, but nobody has flipped the real env var yet) — this must happen **before** the commits below are deployed, or the first sync after deploy re-derives `mythicPlusParticipants` from the live roster and silently loses anyone who has left the guild since the 2026-08-10/08-11 snapshot. Season 1's real `startedAt` date is also still a placeholder (`2026-01-01`) in both the committed snapshot and the migrated row — nobody has confirmed the actual date, and it now drives the switcher's chronological ordering.
+### Season 1's `startedAt` is still a placeholder
+
+Both the committed snapshot (`.scratch/season-rollover/season-1-snapshot.json`) and the migrated production row hold `2026-01-01` — nobody has confirmed the real date Season 1 began. It now drives the switcher's chronological ordering (ticket `07`), so it stops being cosmetic the moment a second Season exists. Needs an operator-supplied real date, then a data correction (script or admin edit) before `09` lands — the ordering has to be right the first time two Seasons coexist.
 
 ## Shipped
 
