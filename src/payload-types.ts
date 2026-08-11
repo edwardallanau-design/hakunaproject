@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    seasons: Season;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +79,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    seasons: SeasonsSelect<false> | SeasonsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -175,6 +177,115 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seasons".
+ */
+export interface Season {
+  id: number;
+  /**
+   * Display label, e.g. "Midnight Season 1".
+   */
+  name: string;
+  /**
+   * Identifies this Season in the site switcher URL. Not a Raid slug or the M+ season slug.
+   */
+  urlSlug: string;
+  /**
+   * Selects this Season's colour palette class.
+   */
+  themeSlug: string;
+  /**
+   * Orders the switcher. Not the same as row order.
+   */
+  startedAt: string;
+  /**
+   * Raider.IO Raid slugs that contribute kills to this Season, e.g. "tier-mn-1", "sporefall".
+   */
+  raidSlugs?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The Raid slug (from raidSlugs) whose world/region/realm ranks are shown. Per ADR 0006 — absence from a non-empty rankings response fails the Sync loudly rather than silently.
+   */
+  rankSourceRaidSlug: string;
+  /**
+   * Raider.IO M+ season slug this Season's scores came from, e.g. "season-mn-1". Provenance only — never used to pin the live fetch, per ADR 0005.
+   */
+  mythicPlusSeasonSlug: string;
+  difficulty?: ('Normal' | 'Heroic' | 'Mythic') | null;
+  /**
+   * e.g. "6/9 H" — auto-filled by Raider.IO sync
+   */
+  summary?: string | null;
+  /**
+   * Raider.IO profile URL
+   */
+  profileUrl?: string | null;
+  /**
+   * Last time data was synced from Raider.IO
+   */
+  lastSyncedAt?: string | null;
+  kills?: number | null;
+  totalBosses?: number | null;
+  rankings?: {
+    /**
+     * Auto-filled by sync — level 90 characters with an IO score or raid kill
+     */
+    members?: number | null;
+    world?: number | null;
+    region?: number | null;
+    realm?: number | null;
+  };
+  bosses?:
+    | {
+        name: string;
+        killed?: boolean | null;
+        /**
+         * Date the boss was first killed on mythic
+         */
+        firstDefeated?: string | null;
+        /**
+         * Total pulls — auto-set at time of kill and frozen, or live pull count while in progress
+         */
+        pulls?: number | null;
+        /**
+         * Best pull % (in-progress bosses only — auto-updated by sync until killed)
+         */
+        bestPull?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Top 10 M+ runners shown on the site — auto-filled by Raider.IO sync or add manually
+   */
+  mythicPlusRunners?:
+    | {
+        name: string;
+        class: string;
+        spec: string;
+        score: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Every Character with an M+ score this Season, not just the displayed top 10. Archival — roughly 585+ rows, so this is JSON rather than an array to keep the admin edit screen usable. Correcting it requires a script.
+   */
+  mythicPlusParticipants?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -204,6 +315,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'seasons';
+        value: number | Season;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -289,6 +404,60 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seasons_select".
+ */
+export interface SeasonsSelect<T extends boolean = true> {
+  name?: T;
+  urlSlug?: T;
+  themeSlug?: T;
+  startedAt?: T;
+  raidSlugs?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  rankSourceRaidSlug?: T;
+  mythicPlusSeasonSlug?: T;
+  difficulty?: T;
+  summary?: T;
+  profileUrl?: T;
+  lastSyncedAt?: T;
+  kills?: T;
+  totalBosses?: T;
+  rankings?:
+    | T
+    | {
+        members?: T;
+        world?: T;
+        region?: T;
+        realm?: T;
+      };
+  bosses?:
+    | T
+    | {
+        name?: T;
+        killed?: T;
+        firstDefeated?: T;
+        pulls?: T;
+        bestPull?: T;
+        id?: T;
+      };
+  mythicPlusRunners?:
+    | T
+    | {
+        name?: T;
+        class?: T;
+        spec?: T;
+        score?: T;
+        id?: T;
+      };
+  mythicPlusParticipants?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -346,6 +515,10 @@ export interface GuildSetting {
   server?: string | null;
   region?: string | null;
   faction?: string | null;
+  /**
+   * The Season the Sync writes to and the home page renders by default. Exactly one Season is current — this pointer, not a per-row flag, is what makes that true by construction.
+   */
+  currentSeason?: (number | null) | Season;
   /**
    * Guild description shown on the About section. Supports bold, italic, lists, links.
    */
@@ -574,6 +747,7 @@ export interface GuildSettingsSelect<T extends boolean = true> {
   server?: T;
   region?: T;
   faction?: T;
+  currentSeason?: T;
   description?: T;
   footerLinks?:
     | T

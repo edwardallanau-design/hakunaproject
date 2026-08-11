@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { deriveProgression, PRIMARY_RAID_SLUG } from "@/lib/syncProgression";
+import { deriveProgression } from "@/lib/syncProgression";
 import type { GuildDetailsData } from "@/lib/raiderio";
+
+// Season 1's real slugs, used as the fixture's Rank Source and Raids. Seasons
+// now carry their own upstream identity (ADR 0006) rather than a code
+// constant, so these are just fixture data, not shared with production code.
+const PRIMARY_RAID_SLUG = "tier-mn-1";
 
 function makeDetails(overrides: Partial<GuildDetailsData> = {}): GuildDetailsData {
   return {
@@ -92,7 +97,22 @@ const emptyProgression = {
   totalBosses: 0,
   rankings: null as { world: number; region: number; realm: number; members: number } | null,
   mythicPlusRunners: [] as { name: string; class: string; spec: string; score: number }[],
+  mythicPlusParticipants: [] as { name: string; class: string; spec: string; score: number }[],
+  raidSlugs: [PRIMARY_RAID_SLUG, "sporefall"],
+  rankSourceRaidSlug: PRIMARY_RAID_SLUG,
 };
+
+function member(
+  name: string,
+  overrides: Partial<{ class: string; spec: string; score: number }> = {},
+) {
+  const { class: klass = "Warrior", spec = "Fury", score = 0 } = overrides;
+  return {
+    character: { name, class: { name: klass }, spec: { name: spec } },
+    keystoneScores: { allScore: score },
+    raidProgress: { progress: { normal: 0, heroic: 0, mythic: 0 } },
+  } as unknown as GuildDetailsData["members"][number];
+}
 
 describe("deriveProgression — Rotmire regression", () => {
   it("resolves a kill in the SECOND raid of the response, not just the first", () => {
@@ -121,7 +141,7 @@ describe("deriveProgression — Rotmire regression", () => {
 });
 
 describe("deriveProgression — kill aggregation", () => {
-  it("aggregates kills across every raid in the response", () => {
+  it("aggregates kills across every raid the Season claims", () => {
     const details = makeDetails();
     const current = {
       ...emptyProgression,
@@ -132,6 +152,23 @@ describe("deriveProgression — kill aggregation", () => {
 
     expect(result.kills).toBe(2); // Imperator Averzian + Rotmire
     expect(result.totalBosses).toBe(3);
+  });
+
+  it("does not credit a kill from a raid outside the Season's own raidSlugs", () => {
+    const details = makeDetails();
+    const current = {
+      ...emptyProgression,
+      // This Season only claims the primary raid — sporefall (and Rotmire's kill
+      // in it) belongs to a different Season and must not contaminate this one.
+      raidSlugs: [PRIMARY_RAID_SLUG],
+      bosses: [boss("Imperator Averzian"), boss("Rotmire")],
+    };
+
+    const result = deriveProgression(details, current);
+
+    expect(result.kills).toBe(1); // Imperator Averzian only
+    const rotmire = result.bosses.find((b) => b.name === "Rotmire");
+    expect(rotmire?.killed).toBe(false);
   });
 });
 
@@ -208,7 +245,7 @@ describe("deriveProgression — pulls / bestPull rules", () => {
 });
 
 describe("deriveProgression — rankings", () => {
-  it("picks the pinned raid's mythic ranks and attaches active member count", () => {
+  it("picks the Season's Rank Source raid's mythic ranks and attaches active member count", () => {
     const details = makeDetails();
     const current = { ...emptyProgression, bosses: [] };
 
@@ -217,7 +254,7 @@ describe("deriveProgression — rankings", () => {
     expect(result.rankings).toEqual({ world: 1375, region: 450, realm: 6, members: 0 });
   });
 
-  it("throws when raidRankings is non-empty but lacks the pinned raid, naming the slugs", () => {
+  it("throws when raidRankings is non-empty but lacks the Season's Rank Source raid, naming the slugs", () => {
     const details = makeDetails({
       raidRankings: [
         { raid: "tier-mn-2", ranks: { mythic: { world: 1, region: 1, realm: 1 } } },
@@ -244,5 +281,85 @@ describe("deriveProgression — rankings", () => {
     // members is always recomputed from this response's active-member count, never
     // preserved — it isn't a "rank" that goes stale, it's a live count of details.members.
     expect(result.rankings).toEqual({ world: 100, region: 50, realm: 5, members: 0 });
+  });
+
+  it("reads a different Season's Rank Source without a code change", () => {
+    const details = makeDetails({
+      raidRankings: [{ raid: "tier-mn-2", ranks: { mythic: { world: 5, region: 2, realm: 1 } } }],
+    });
+    const current = { ...emptyProgression, bosses: [], rankSourceRaidSlug: "tier-mn-2" };
+
+    const result = deriveProgression(details, current);
+
+    expect(result.rankings).toEqual({ world: 5, region: 2, realm: 1, members: 0 });
+  });
+});
+
+describe("deriveProgression — empty boss list", () => {
+  it("still derives rankings and M+ data when the Season has no bosses yet", () => {
+    const details = makeDetails({ members: [member("Heyems", { score: 4000 })] });
+    const current = { ...emptyProgression, bosses: [] };
+
+    const result = deriveProgression(details, current);
+
+    expect(result.bosses).toEqual([]);
+    expect(result.kills).toBe(0);
+    expect(result.rankings).toEqual({ world: 1375, region: 450, realm: 6, members: 1 });
+    expect(result.mythicPlusParticipants).toHaveLength(1);
+  });
+
+  it("does not throw when both bosses and raidSlugs are empty — the normal mid-rollover state", () => {
+    const details = makeDetails({ members: [member("Heyems", { score: 4000 })] });
+    const current = { ...emptyProgression, bosses: [], raidSlugs: [] };
+
+    expect(() => deriveProgression(details, current)).not.toThrow();
+  });
+});
+
+describe("deriveProgression — raidSlugs configuration failure", () => {
+  it("throws when the Season has bosses but no raidSlugs, since no kill could ever resolve", () => {
+    const details = makeDetails();
+    const current = { ...emptyProgression, raidSlugs: [], bosses: [boss("Imperator Averzian")] };
+
+    expect(() => deriveProgression(details, current)).toThrowError(/no raidSlugs/);
+  });
+});
+
+describe("deriveProgression — M+ Participants", () => {
+  it("captures every Character with a score, while the Leaderboard stays capped at ten", () => {
+    const scoredMembers = Array.from({ length: 12 }, (_, i) => member(`Runner${i}`, { score: 100 - i }));
+    const details = makeDetails({ members: scoredMembers });
+    const current = { ...emptyProgression, bosses: [] };
+
+    const result = deriveProgression(details, current);
+
+    expect(result.mythicPlusParticipants).toHaveLength(12);
+    expect(result.mythicPlusRunners).toHaveLength(10);
+    expect(result.mythicPlusParticipants[0].name).toBe("Runner0");
+    expect(result.mythicPlusParticipants[11].name).toBe("Runner11");
+  });
+
+  it("excludes a member with no score", () => {
+    const details = makeDetails({
+      members: [member("Scored", { score: 100 }), member("Unscored", { score: 0 })],
+    });
+    const current = { ...emptyProgression, bosses: [] };
+
+    const result = deriveProgression(details, current);
+
+    expect(result.mythicPlusParticipants).toHaveLength(1);
+    expect(result.mythicPlusParticipants[0].name).toBe("Scored");
+  });
+
+  it("preserves the existing Participants when the response has no scored members (e.g. after a guild rename)", () => {
+    const details = makeDetails({ members: [] });
+    const existing = [{ name: "OldParticipant", class: "Mage", spec: "Frost", score: 3000 }];
+    const current = { ...emptyProgression, bosses: [], mythicPlusParticipants: existing };
+
+    const result = deriveProgression(details, current);
+
+    // A Sync must never be what destroys the roster history ADR 0005 protects —
+    // no data this run is the guild-rename case, not evidence everyone left.
+    expect(result.mythicPlusParticipants).toEqual(existing);
   });
 });

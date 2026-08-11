@@ -32,7 +32,53 @@
   --vt-2xl: clamp(48px, 3.8vw,  78px);
 }
 
+/* ── Per-Season dark themes ──
+   Selected by the Season's `themeSlug` via a class on the page's root wrapper,
+   set server-side from the Season being viewed. Each defines the same 13
+   tokens as :root. `.theme-void` matches Season 1's palette — the same values
+   as :root, kept explicit so :root can stay a true fallback rather than
+   silently doubling as "Season 1's theme". */
+.theme-void {
+  --bg: #030710;
+  --surface: #080d1e;
+  --surface2: #0d1428;
+  --accent: #7c3aed;
+  --accent2: #22d3ee;
+  --glow: #a855f7;
+  --text: #e2d9f3;
+  --muted: #8b7aa8;
+  --border: rgba(124,58,237,0.5);
+  --border-dim: rgba(124,58,237,0.25);
+  --card-bg: rgba(8,13,30,0.85);
+  --corner: #22d3ee;
+  --shadow-accent: #2d1b69;
+}
+
 .light {
+  --bg: #faf8f2;
+  --surface: #fffef9;
+  --surface2: #fef9ec;
+  --accent: #f59e0b;
+  --accent2: #d97706;
+  --glow: #fbbf24;
+  --text: #1e1b0f;
+  --muted: #78716c;
+  --border: rgba(245,158,11,0.5);
+  --border-dim: rgba(245,158,11,0.25);
+  --card-bg: rgba(255,254,249,0.88);
+  --corner: #f59e0b;
+  --shadow-accent: #92400e;
+}
+
+/* The light/dark toggle sets `.light` on <html>, an ancestor of the Season
+   theme wrapper (`.theme-*`, e.g. `.theme-void`) below it in the tree. CSS
+   custom properties declared directly on a descendant element always beat an
+   inherited value from an ancestor, regardless of source order — so without
+   this rule, a Season's dark palette would win over `.light` even when the
+   visitor has chosen light mode. `[class*="theme-"]` matches any current or
+   future Season theme class so this stays correct without an edit per Season;
+   the light palette itself stays season-neutral, unchanged from `.light` above. */
+.light [class*="theme-"] {
   --bg: #faf8f2;
   --surface: #fffef9;
   --surface2: #fef9ec;

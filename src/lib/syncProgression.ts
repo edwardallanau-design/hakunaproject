@@ -1,13 +1,5 @@
 import type { GuildDetailsData, RosterMember, MythicPlusRunner } from "@/lib/raiderio";
 
-// Guild rankings are reported per-raid and can't be merged, so one raid has to be
-// the source for the world/region/realm numbers shown in the StatsBar. Kills are
-// aggregated across every raid, but the rank comes from the main tier only —
-// a one-boss side raid (e.g. sporefall) has its own rank that isn't guild-wide.
-// Update this each season. If the slug is absent from the API response, rankings
-// are left at their last known values rather than silently switching raids.
-export const PRIMARY_RAID_SLUG = "tier-mn-1";
-
 type Boss = {
   name: string;
   killed: boolean;
@@ -18,12 +10,25 @@ type Boss = {
 
 type Rankings = { world: number; region: number; realm: number; members: number };
 
+export type MythicPlusParticipant = {
+  name: string;
+  class: string;
+  spec: string;
+  score: number;
+};
+
 export type ProgressionState = {
   bosses: Boss[];
   kills: number;
   totalBosses: number;
   rankings: Rankings | null;
   mythicPlusRunners: MythicPlusRunner[];
+  mythicPlusParticipants: MythicPlusParticipant[];
+  // A Season's own upstream identity, per ADR 0006. Not a code constant, because
+  // an archived Season and the current Season must be able to name different
+  // values at the same time.
+  raidSlugs: string[];
+  rankSourceRaidSlug: string;
 };
 
 export type DerivedProgression = {
@@ -32,24 +37,41 @@ export type DerivedProgression = {
   bosses: Boss[];
   rankings: Rankings;
   mythicPlusRunners: MythicPlusRunner[];
+  mythicPlusParticipants: MythicPlusParticipant[];
 };
 
 export function deriveProgression(details: GuildDetailsData, current: ProgressionState): DerivedProgression {
   // ── Bosses ─────────────────────────────────────────────────────────────────
   const existingBosses = current.bosses ?? [];
+  const seasonRaidSlugs = new Set(current.raidSlugs ?? []);
+
+  // A Season with bosses typed in but no Raids claimed can never resolve a
+  // single kill — every raidProgress entry gets skipped by the scoping below,
+  // silently freezing bosses/kills forever with no signal. That is the exact
+  // silent-decay shape ADR 0001/0006 exist to prevent, so it fails loudly
+  // instead. An empty boss list with empty raidSlugs is NOT this case — it is
+  // the normal mid-rollover state ticket 05 protects, so it must not throw.
+  if (existingBosses.length > 0 && seasonRaidSlugs.size === 0) {
+    throw new Error(
+      "Season has bosses but no raidSlugs — kills can never be resolved. Set the Season's contributing Raid slugs.",
+    );
+  }
 
   let bosses = existingBosses;
   let kills = current.kills ?? 0;
   let totalBosses = current.totalBosses ?? existingBosses.length;
 
   if (existingBosses.length > 0 && details.raidProgress?.length) {
-    // The boss list in the CMS spans every raid in the current season, so kill and
-    // pull data is collected across all raids the API returns — not just the first.
+    // Kill and pull data is collected only across the Season's own Raids
+    // (current.raidSlugs), not every Raid the API returns — an encounter from a
+    // Raid outside this Season must not enter this Season's boss list.
     const mythicDefeated = new Map<string, string>();
     const mythicPullData = new Map<string, { pullCount: number; bestPercent: number }>();
     const nameToSlug = new Map<string, string>();
 
     for (const raidProgress of details.raidProgress) {
+      if (!seasonRaidSlugs.has(raidProgress.raid)) continue;
+
       const raidAttempt = details.raidAttempt?.find((a) => a.raid === raidProgress.raid);
 
       for (const encounter of raidProgress.encountersDefeated["mythic"] ?? []) {
@@ -90,19 +112,22 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
   }
 
   // ── Rankings (Mythic) ──────────────────────────────────────────────────────
-  // Absence of the pinned raid is a Derivation failure, NOT the same as no data at
-  // all — an empty raidRankings is the guild-rename case and still preserves below.
-  if (details.raidRankings.length > 0 && !details.raidRankings.some((r) => r.raid === PRIMARY_RAID_SLUG)) {
+  // Absence of the Season's Rank Source raid is a Derivation failure, NOT the
+  // same as no data at all — an empty raidRankings is the guild-rename case and
+  // still preserves below. Per ADR 0006 the slug is read from the Season row
+  // rather than a code constant, but the throw itself is unchanged.
+  const rankSourceRaidSlug = current.rankSourceRaidSlug;
+  if (details.raidRankings.length > 0 && !details.raidRankings.some((r) => r.raid === rankSourceRaidSlug)) {
     const available = details.raidRankings.map((r) => r.raid).join(", ");
-    throw new Error(`Rank source raid "${PRIMARY_RAID_SLUG}" not found in response. Available: ${available}`);
+    throw new Error(`Rank source raid "${rankSourceRaidSlug}" not found in response. Available: ${available}`);
   }
 
-  const raidRanking = details.raidRankings?.find((r) => r.raid === PRIMARY_RAID_SLUG);
+  const raidRanking = details.raidRankings?.find((r) => r.raid === rankSourceRaidSlug);
   const mythicRanks = raidRanking?.ranks["mythic"] ?? null;
 
   const existingRankings = current.rankings;
 
-  // ── M+ Runners ─────────────────────────────────────────────────────────────
+  // ── M+ Runners & Participants ─────────────────────────────────────────────
   const members: RosterMember[] = details.members ?? [];
   const activeCount = members.filter(
     (m) =>
@@ -111,16 +136,16 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
       m.raidProgress?.progress?.heroic > 0 ||
       m.raidProgress?.progress?.mythic > 0,
   ).length;
-  const freshRunners: MythicPlusRunner[] = members
+  const scoredMembers = members
     .filter((m) => m.keystoneScores?.allScore > 0)
     .sort((a, b) => b.keystoneScores.allScore - a.keystoneScores.allScore)
-    .slice(0, 10)
     .map((m) => ({
       name: m.character.name,
       class: m.character.class.name,
       spec: m.character.spec.name,
       score: m.keystoneScores.allScore,
     }));
+  const freshRunners: MythicPlusRunner[] = scoredMembers.slice(0, 10);
 
   // Preserve existing rankings/runners if the new profile has no data yet (e.g. after a guild rename)
   const rankings = mythicRanks
@@ -131,5 +156,14 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
 
   const mythicPlusRunners = freshRunners.length > 0 ? freshRunners : current.mythicPlusRunners ?? [];
 
-  return { kills, totalBosses, bosses, rankings, mythicPlusRunners };
+  // Every Character with a score, not just the displayed top ten — this is what
+  // an archived Season's Snapshot preserves. Costs no extra upstream request:
+  // it is derived from the same roster fetch the top ten comes from. Preserved
+  // on the same no-data condition as mythicPlusRunners (e.g. a guild rename)
+  // rather than wiped — a Sync must never be the thing that destroys the
+  // roster history ADR 0005 exists to protect.
+  const mythicPlusParticipants: MythicPlusParticipant[] =
+    scoredMembers.length > 0 ? scoredMembers : current.mythicPlusParticipants ?? [];
+
+  return { kills, totalBosses, bosses, rankings, mythicPlusRunners, mythicPlusParticipants };
 }

@@ -1,0 +1,3750 @@
+{
+  "name": "Midnight Season 1",
+  "urlSlug": "season-1",
+  "themeSlug": "void",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "raidSlugs": [
+    "tier-mn-1",
+    "sporefall"
+  ],
+  "rankSourceRaidSlug": "tier-mn-1",
+  "mythicPlusSeasonSlug": "season-mn-1",
+  "difficulty": "Mythic",
+  "summary": "",
+  "profileUrl": "https://raider.io/guilds/us/barthilas/Potato%20Corner",
+  "lastSyncedAt": "2026-08-11T02:25:04.931Z",
+  "kills": 10,
+  "totalBosses": 10,
+  "rankings": {
+    "members": 595,
+    "world": 1375,
+    "region": 450,
+    "realm": 6
+  },
+  "bosses": [
+    {
+      "id": "69d47ae26948e70004f3e090",
+      "name": "Imperator Averzian",
+      "killed": true,
+      "firstDefeated": "2026-03-30T14:01:58.000Z",
+      "pulls": 8,
+      "bestPull": null
+    },
+    {
+      "id": "69d47ae26948e70004f3e091",
+      "name": "Vorasius",
+      "killed": true,
+      "firstDefeated": "2026-04-02T13:24:04.000Z",
+      "pulls": 19,
+      "bestPull": null
+    },
+    {
+      "id": "69d47ae26948e70004f3e096",
+      "name": "Chimaerus the Undreamt God",
+      "killed": true,
+      "firstDefeated": "2026-04-06T12:37:00.000Z",
+      "pulls": 28,
+      "bestPull": null
+    },
+    {
+      "id": "69dd106fbfcc1c00048f5807",
+      "name": "Fallen-King Salhadaar",
+      "killed": true,
+      "firstDefeated": "2026-04-13T12:12:20.000Z",
+      "pulls": 41,
+      "bestPull": null
+    },
+    {
+      "id": "69e64ace3c30980004aae0d0",
+      "name": "Vaelgor & Ezzorak",
+      "killed": true,
+      "firstDefeated": "2026-04-20T14:07:48.000Z",
+      "pulls": 63,
+      "bestPull": null
+    },
+    {
+      "id": "69f388488a1b07000477b3be",
+      "name": "Lightblinded Vanguard",
+      "killed": true,
+      "firstDefeated": "2026-04-30T12:59:30.000Z",
+      "pulls": 65,
+      "bestPull": null
+    },
+    {
+      "id": "6a0dfebf5c9c210004a0db2a",
+      "name": "Crown of the Cosmos",
+      "killed": true,
+      "firstDefeated": "2026-05-20T14:26:26.000Z",
+      "pulls": 126,
+      "bestPull": null
+    },
+    {
+      "id": "6a2719c2d006d60004723cc5",
+      "name": "Belo'ren, Child of Al'ar",
+      "killed": true,
+      "firstDefeated": "2026-06-08T13:22:58.000Z",
+      "pulls": 243,
+      "bestPull": null
+    },
+    {
+      "id": "6a71809b8cf46e0004d5f880",
+      "name": "Rotmire",
+      "killed": true,
+      "firstDefeated": "2026-06-17T12:24:30.000Z",
+      "pulls": 14,
+      "bestPull": null
+    },
+    {
+      "id": "6a5a6506f835470004a25833",
+      "name": "Midnight Falls",
+      "killed": true,
+      "firstDefeated": "2026-07-17T14:25:43.000Z",
+      "pulls": 608,
+      "bestPull": null
+    }
+  ],
+  "mythicPlusRunners": [
+    {
+      "id": "6a7a88057f12590004676e96",
+      "name": "Heyems",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 4234
+    },
+    {
+      "id": "6a7a88057f12590004676e97",
+      "name": "Freakyski",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 4210.5
+    },
+    {
+      "id": "6a7a88057f12590004676e98",
+      "name": "Exyie",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 4208.9
+    },
+    {
+      "id": "6a7a88057f12590004676e99",
+      "name": "Zoya",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 4200.8
+    },
+    {
+      "id": "6a7a88057f12590004676e9a",
+      "name": "Kuyakulaters",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 4200.8
+    },
+    {
+      "id": "6a7a88057f12590004676e9b",
+      "name": "Papablèss",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 4158.9
+    },
+    {
+      "id": "6a7a88057f12590004676e9c",
+      "name": "Chestaur",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 4141.1
+    },
+    {
+      "id": "6a7a88057f12590004676e9d",
+      "name": "Dellîe",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 4134.1
+    },
+    {
+      "id": "6a7a88057f12590004676e9e",
+      "name": "Brunogarzz",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 4077.8
+    },
+    {
+      "id": "6a7a88057f12590004676e9f",
+      "name": "Jobshameme",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3994.3
+    }
+  ],
+  "mythicPlusParticipants": [
+    {
+      "name": "Heyems",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 4234
+    },
+    {
+      "name": "Freakyski",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 4210.5
+    },
+    {
+      "name": "Exyie",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 4208.9
+    },
+    {
+      "name": "Zoya",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 4200.8
+    },
+    {
+      "name": "Kuyakulaters",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 4200.8
+    },
+    {
+      "name": "Papablèss",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 4158.9
+    },
+    {
+      "name": "Chestaur",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 4141.1
+    },
+    {
+      "name": "Dellîe",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 4134.1
+    },
+    {
+      "name": "Brunogarzz",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 4077.8
+    },
+    {
+      "name": "Jobshameme",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3994.3
+    },
+    {
+      "name": "Graoul",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3993.7
+    },
+    {
+      "name": "Dawnxo",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3983.4
+    },
+    {
+      "name": "Deathsama",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3978.9
+    },
+    {
+      "name": "Honkers",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3973.8
+    },
+    {
+      "name": "Bromio",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3964.2
+    },
+    {
+      "name": "Seandokz",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3957.3
+    },
+    {
+      "name": "Kaeion",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3956.1
+    },
+    {
+      "name": "Aravoka",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 3949
+    },
+    {
+      "name": "Stupedlock",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3940.9
+    },
+    {
+      "name": "Sovereignski",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3900.7
+    },
+    {
+      "name": "Aelystotem",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3899.5
+    },
+    {
+      "name": "Katamaran",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3897.5
+    },
+    {
+      "name": "Vxyie",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3887.1
+    },
+    {
+      "name": "Bearbecue",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3880.2
+    },
+    {
+      "name": "Dawnm",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3876.1
+    },
+    {
+      "name": "Skylerfinns",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3874.7
+    },
+    {
+      "name": "Piaosi",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3863.1
+    },
+    {
+      "name": "Carrieanne",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3862.3
+    },
+    {
+      "name": "Achok",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3857.7
+    },
+    {
+      "name": "Heralol",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3844.1
+    },
+    {
+      "name": "Redwithwings",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3793.2
+    },
+    {
+      "name": "Atay",
+      "class": "Warlock",
+      "spec": "Destruction",
+      "score": 3777.6
+    },
+    {
+      "name": "Caspark",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 3763
+    },
+    {
+      "name": "Taoke",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3762.8
+    },
+    {
+      "name": "Chaengrang",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3748.7
+    },
+    {
+      "name": "Tabachngchng",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3735.7
+    },
+    {
+      "name": "Bankài",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3735.5
+    },
+    {
+      "name": "Pylow",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 3731.1
+    },
+    {
+      "name": "Pulù",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3728.2
+    },
+    {
+      "name": "Jobeezym",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3727.9
+    },
+    {
+      "name": "Ârc",
+      "class": "Mage",
+      "spec": "Arcane",
+      "score": 3715.9
+    },
+    {
+      "name": "Ðuterte",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 3713.1
+    },
+    {
+      "name": "Dawnxp",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3709.2
+    },
+    {
+      "name": "Ogdwight",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3700.8
+    },
+    {
+      "name": "Najkie",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3700.5
+    },
+    {
+      "name": "Tanknamoo",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3699.8
+    },
+    {
+      "name": "Milkchocolat",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3694.2
+    },
+    {
+      "name": "Buchi",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3676.1
+    },
+    {
+      "name": "Aelystiã",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3672.4
+    },
+    {
+      "name": "Nobarå",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 3668.5
+    },
+    {
+      "name": "Romulus",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3667.6
+    },
+    {
+      "name": "Skylerfinn",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 3666
+    },
+    {
+      "name": "Yaabsh",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3661.2
+    },
+    {
+      "name": "Flashbangg",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3657.2
+    },
+    {
+      "name": "Brewsleed",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3656.6
+    },
+    {
+      "name": "Skybreaker",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3655.4
+    },
+    {
+      "name": "Wrenne",
+      "class": "Warlock",
+      "spec": "Affliction",
+      "score": 3651.4
+    },
+    {
+      "name": "Imbaboy",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 3640.3
+    },
+    {
+      "name": "Salerovia",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 3637.6
+    },
+    {
+      "name": "Xifeng",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 3630.9
+    },
+    {
+      "name": "Isuldir",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3630.5
+    },
+    {
+      "name": "Needbuffs",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 3630
+    },
+    {
+      "name": "Akali",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 3626.7
+    },
+    {
+      "name": "Michellebb",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3625.8
+    },
+    {
+      "name": "Philom",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3621.9
+    },
+    {
+      "name": "Kwalyk",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3604.5
+    },
+    {
+      "name": "Aiou",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3601.4
+    },
+    {
+      "name": "Thanawrath",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3599.1
+    },
+    {
+      "name": "Peppero",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3590.2
+    },
+    {
+      "name": "Bushet",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3586.3
+    },
+    {
+      "name": "Assej",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3582.4
+    },
+    {
+      "name": "Smapoo",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3581.4
+    },
+    {
+      "name": "Azkaellon",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3571.8
+    },
+    {
+      "name": "Highwaist",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3565.4
+    },
+    {
+      "name": "Chongkie",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3559.9
+    },
+    {
+      "name": "Equick",
+      "class": "Hunter",
+      "spec": "Marksmanship",
+      "score": 3557.4
+    },
+    {
+      "name": "Xnegreau",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3556.2
+    },
+    {
+      "name": "Voidsama",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3553.5
+    },
+    {
+      "name": "Dhuntis",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3553.3
+    },
+    {
+      "name": "Noveske",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3552.8
+    },
+    {
+      "name": "Dhonis",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3552.1
+    },
+    {
+      "name": "Mulbèrry",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 3548
+    },
+    {
+      "name": "Quéénmegz",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 3541.1
+    },
+    {
+      "name": "Patrickdorgu",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3535.6
+    },
+    {
+      "name": "Toncruz",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3524.4
+    },
+    {
+      "name": "Jobeezyr",
+      "class": "Rogue",
+      "spec": "Outlaw",
+      "score": 3523
+    },
+    {
+      "name": "Maitake",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3514
+    },
+    {
+      "name": "Jovit",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3509.3
+    },
+    {
+      "name": "Crítix",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3506.3
+    },
+    {
+      "name": "Squeerel",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3505.4
+    },
+    {
+      "name": "Salbahe",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3505.3
+    },
+    {
+      "name": "Vrapeshna",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3504.4
+    },
+    {
+      "name": "Vellondd",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3498.8
+    },
+    {
+      "name": "Herage",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3498.7
+    },
+    {
+      "name": "Rrz",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 3497.2
+    },
+    {
+      "name": "Alphabogg",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3485.6
+    },
+    {
+      "name": "Aahmirkhan",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3477.2
+    },
+    {
+      "name": "Bisig",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3476.1
+    },
+    {
+      "name": "Carnivoro",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3474.5
+    },
+    {
+      "name": "Carthage",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3472.6
+    },
+    {
+      "name": "Redhasmagic",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3471.9
+    },
+    {
+      "name": "Realvoker",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3468.8
+    },
+    {
+      "name": "Kayarun",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3468.3
+    },
+    {
+      "name": "Somethhingg",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 3466.3
+    },
+    {
+      "name": "Dohc",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3462.1
+    },
+    {
+      "name": "Gummyworms",
+      "class": "Warlock",
+      "spec": "Affliction",
+      "score": 3462.1
+    },
+    {
+      "name": "Spankmedadii",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3456.5
+    },
+    {
+      "name": "Gahii",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 3455.8
+    },
+    {
+      "name": "Crumpyy",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3454.9
+    },
+    {
+      "name": "Reilon",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3450.8
+    },
+    {
+      "name": "Hellkaii",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 3449.5
+    },
+    {
+      "name": "Chirashidön-304066836",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3441.8
+    },
+    {
+      "name": "Edgechrono",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3440.8
+    },
+    {
+      "name": "Voodeux",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3438.4
+    },
+    {
+      "name": "Werklock",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3437.6
+    },
+    {
+      "name": "Thiççbuns",
+      "class": "Mage",
+      "spec": "Arcane",
+      "score": 3436.4
+    },
+    {
+      "name": "Kulating",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3434.5
+    },
+    {
+      "name": "Säplord",
+      "class": "Rogue",
+      "spec": "Outlaw",
+      "score": 3432.4
+    },
+    {
+      "name": "Wrelik",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3429.7
+    },
+    {
+      "name": "Sugoitotem",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3428.1
+    },
+    {
+      "name": "Kookuang",
+      "class": "Priest",
+      "spec": "Holy",
+      "score": 3427.4
+    },
+    {
+      "name": "Kitsuneshimo",
+      "class": "Mage",
+      "spec": "Arcane",
+      "score": 3427.3
+    },
+    {
+      "name": "Blairethia",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3426.4
+    },
+    {
+      "name": "Adukä",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 3425.1
+    },
+    {
+      "name": "Dhaeth",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 3420.2
+    },
+    {
+      "name": "Illideins",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3419.1
+    },
+    {
+      "name": "Adewea",
+      "class": "Evoker",
+      "spec": "Preservation",
+      "score": 3418.3
+    },
+    {
+      "name": "Mickyla",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 3416.5
+    },
+    {
+      "name": "Vincentium",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3411.5
+    },
+    {
+      "name": "Iceross",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3408.8
+    },
+    {
+      "name": "Arzanem",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3408.8
+    },
+    {
+      "name": "Zaemaria",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 3407.7
+    },
+    {
+      "name": "Krastorblood",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3407.7
+    },
+    {
+      "name": "Mykshammy",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3407.7
+    },
+    {
+      "name": "Nishol",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3407.7
+    },
+    {
+      "name": "Kaarnei",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3407.6
+    },
+    {
+      "name": "Winrina",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3407.5
+    },
+    {
+      "name": "Angelinajoli",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3406.3
+    },
+    {
+      "name": "Jinzoue",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3404.9
+    },
+    {
+      "name": "Jyem",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3404.1
+    },
+    {
+      "name": "Skwyr",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3400.8
+    },
+    {
+      "name": "Dellie",
+      "class": "Rogue",
+      "spec": "Outlaw",
+      "score": 3399.7
+    },
+    {
+      "name": "Augiediaz",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3392.1
+    },
+    {
+      "name": "Superdönut",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3388.5
+    },
+    {
+      "name": "Kaòri",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3387.8
+    },
+    {
+      "name": "Manypacquiao",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3376.4
+    },
+    {
+      "name": "Sukamahbigdi",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 3376.3
+    },
+    {
+      "name": "Synfort",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3370
+    },
+    {
+      "name": "Eyzechi",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3367
+    },
+    {
+      "name": "Lightlodi",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3365.8
+    },
+    {
+      "name": "Pàldino",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 3360.3
+    },
+    {
+      "name": "Grayparser",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3353
+    },
+    {
+      "name": "Brakendrey",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 3348.6
+    },
+    {
+      "name": "Tamzon",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3344.9
+    },
+    {
+      "name": "Lilshy",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3343.2
+    },
+    {
+      "name": "Tobï",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3341.4
+    },
+    {
+      "name": "Soleryn",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3341.4
+    },
+    {
+      "name": "Meijin",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 3340.5
+    },
+    {
+      "name": "Krzyastrii",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3338.2
+    },
+    {
+      "name": "Forkcel",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 3336.4
+    },
+    {
+      "name": "Aeinelia",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3332.2
+    },
+    {
+      "name": "Pikoy",
+      "class": "Hunter",
+      "spec": "Marksmanship",
+      "score": 3331.9
+    },
+    {
+      "name": "Libat",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3328.8
+    },
+    {
+      "name": "Aerzenn",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3328.8
+    },
+    {
+      "name": "Erën",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3327
+    },
+    {
+      "name": "Dimunyu",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3326.3
+    },
+    {
+      "name": "Maraxus",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 3321.3
+    },
+    {
+      "name": "Chidôri",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3318.3
+    },
+    {
+      "name": "Sunkyu",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3314.4
+    },
+    {
+      "name": "Korvasin",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 3310.3
+    },
+    {
+      "name": "Lagcheck",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3308.4
+    },
+    {
+      "name": "Foxtrot",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3302.4
+    },
+    {
+      "name": "Suporta",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 3301.9
+    },
+    {
+      "name": "Sanakee",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3298.3
+    },
+    {
+      "name": "Exorcimus",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 3297.3
+    },
+    {
+      "name": "Dumandan",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3296.1
+    },
+    {
+      "name": "Shamanur",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3295.7
+    },
+    {
+      "name": "Dkskwyr",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3292.6
+    },
+    {
+      "name": "Huvak",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3291.4
+    },
+    {
+      "name": "Cybrok",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3286.7
+    },
+    {
+      "name": "Amandagarcia",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3284.5
+    },
+    {
+      "name": "Skwire",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3283.6
+    },
+    {
+      "name": "Swarlosdh",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3282.6
+    },
+    {
+      "name": "Nirilock",
+      "class": "Warlock",
+      "spec": "Affliction",
+      "score": 3281.1
+    },
+    {
+      "name": "Yunani",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3281.1
+    },
+    {
+      "name": "Meekay",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3276.8
+    },
+    {
+      "name": "Defwar",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 3275.2
+    },
+    {
+      "name": "Grommaul",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3274.1
+    },
+    {
+      "name": "Redmasahista",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3271.8
+    },
+    {
+      "name": "Chihanna",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3261.5
+    },
+    {
+      "name": "Synfor",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 3259.6
+    },
+    {
+      "name": "Poteid",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3259.2
+    },
+    {
+      "name": "Mirant",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3258.7
+    },
+    {
+      "name": "Talanjohnny",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3257.4
+    },
+    {
+      "name": "Darna",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3255.2
+    },
+    {
+      "name": "Kracht",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3255.2
+    },
+    {
+      "name": "Arthusz",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3246.8
+    },
+    {
+      "name": "Haedh",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3233.3
+    },
+    {
+      "name": "Seksadik",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3231.9
+    },
+    {
+      "name": "Fleebug",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 3230.2
+    },
+    {
+      "name": "Tylenstaul",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3228.4
+    },
+    {
+      "name": "Setna",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3226.5
+    },
+    {
+      "name": "Donzsham",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3225.4
+    },
+    {
+      "name": "Atorvas",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3224.5
+    },
+    {
+      "name": "Theeos",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 3223.8
+    },
+    {
+      "name": "Bwonsomji",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3223.8
+    },
+    {
+      "name": "Ozzyawa",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3219.9
+    },
+    {
+      "name": "Chibiheal",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3214.9
+    },
+    {
+      "name": "Catchupoy",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3212.6
+    },
+    {
+      "name": "Kaori",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3199.7
+    },
+    {
+      "name": "Clemonte",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 3196.6
+    },
+    {
+      "name": "Topdog",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3195.7
+    },
+    {
+      "name": "Proteinbra",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3194.3
+    },
+    {
+      "name": "Syncrow",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3194.1
+    },
+    {
+      "name": "Cowhileonard",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 3191.4
+    },
+    {
+      "name": "Shungks",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 3186.3
+    },
+    {
+      "name": "Lendelldoe",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 3185.4
+    },
+    {
+      "name": "Annkulotz",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3183.7
+    },
+    {
+      "name": "Alaskus",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 3181.7
+    },
+    {
+      "name": "Bilkian",
+      "class": "Evoker",
+      "spec": "Preservation",
+      "score": 3181.4
+    },
+    {
+      "name": "Thanapaladin",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 3176.4
+    },
+    {
+      "name": "Kuyakulata",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3172.9
+    },
+    {
+      "name": "Toyi",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 3166.7
+    },
+    {
+      "name": "Kokeyi",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3164.2
+    },
+    {
+      "name": "Blaireiana",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 3161.8
+    },
+    {
+      "name": "Domilthri",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3152.5
+    },
+    {
+      "name": "Chirash",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 3147.8
+    },
+    {
+      "name": "Navuyu",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3144.5
+    },
+    {
+      "name": "Praiselkhey",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3144
+    },
+    {
+      "name": "Krelian",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3139.8
+    },
+    {
+      "name": "Pogiboy",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3138.3
+    },
+    {
+      "name": "Ganyx",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3131.7
+    },
+    {
+      "name": "Pandakekong",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3125.5
+    },
+    {
+      "name": "Rjtot",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3124.2
+    },
+    {
+      "name": "Grogash",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3123.6
+    },
+    {
+      "name": "Lyannavoid",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3123.2
+    },
+    {
+      "name": "Niisol",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 3121.9
+    },
+    {
+      "name": "Ursà",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3121.2
+    },
+    {
+      "name": "Arthrum",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3119.5
+    },
+    {
+      "name": "Putridpapi",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3116.6
+    },
+    {
+      "name": "Zarianni",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 3116.5
+    },
+    {
+      "name": "Sildriel",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3116.4
+    },
+    {
+      "name": "Tonater",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3116.3
+    },
+    {
+      "name": "Tabledrop",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3115.4
+    },
+    {
+      "name": "Pulü",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3113.5
+    },
+    {
+      "name": "Saintbuwad",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 3112.6
+    },
+    {
+      "name": "Geissele",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3111.5
+    },
+    {
+      "name": "Sushihunter",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 3108.3
+    },
+    {
+      "name": "Enolikkin",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 3107.3
+    },
+    {
+      "name": "Aidhan",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3106.6
+    },
+    {
+      "name": "Arakova",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3105.4
+    },
+    {
+      "name": "Heojun",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3103.7
+    },
+    {
+      "name": "Navuyvuyu",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3101.7
+    },
+    {
+      "name": "Redshammy",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3099.6
+    },
+    {
+      "name": "Claüde",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3099.1
+    },
+    {
+      "name": "Bigblacktote",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3098.3
+    },
+    {
+      "name": "Haimpacquiao",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3097.4
+    },
+    {
+      "name": "Ezkiè",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 3097.1
+    },
+    {
+      "name": "Vincestroyer",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 3096.4
+    },
+    {
+      "name": "Praisel",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3096.2
+    },
+    {
+      "name": "Navuyu",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3096.1
+    },
+    {
+      "name": "Yaefa",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3095.7
+    },
+    {
+      "name": "Mumen",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3094.6
+    },
+    {
+      "name": "Wildboyz",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3088.1
+    },
+    {
+      "name": "Blingzy",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3087.6
+    },
+    {
+      "name": "Ådukå",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3086.7
+    },
+    {
+      "name": "Berdugø",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 3085.3
+    },
+    {
+      "name": "Monkclade",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3085
+    },
+    {
+      "name": "Ezarona",
+      "class": "Hunter",
+      "spec": "Marksmanship",
+      "score": 3081.9
+    },
+    {
+      "name": "Flashbaang",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3081.6
+    },
+    {
+      "name": "Zynith",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3079.2
+    },
+    {
+      "name": "Isami",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3077.5
+    },
+    {
+      "name": "Succububs",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 3077.5
+    },
+    {
+      "name": "ßelphegor",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3073.3
+    },
+    {
+      "name": "Amistilt",
+      "class": "Hunter",
+      "spec": "Marksmanship",
+      "score": 3073.3
+    },
+    {
+      "name": "Porklord",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3071
+    },
+    {
+      "name": "Karluchador",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3068.6
+    },
+    {
+      "name": "Forkcelboom",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3066.9
+    },
+    {
+      "name": "Macarizu",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3064.5
+    },
+    {
+      "name": "Íhavehothots",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3063.6
+    },
+    {
+      "name": "Ochix",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 3063.4
+    },
+    {
+      "name": "Ryderye",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 3060.4
+    },
+    {
+      "name": "Vhesta",
+      "class": "Warlock",
+      "spec": "Affliction",
+      "score": 3060.1
+    },
+    {
+      "name": "Annà",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 3060.1
+    },
+    {
+      "name": "Krazyastrii",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3058.3
+    },
+    {
+      "name": "Jhonnsnow",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3057.9
+    },
+    {
+      "name": "Arzaneb",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 3057.7
+    },
+    {
+      "name": "Dududududu",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3057.5
+    },
+    {
+      "name": "Bowlanm",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3050
+    },
+    {
+      "name": "Flawn",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3048.8
+    },
+    {
+      "name": "Trevari",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 3047.9
+    },
+    {
+      "name": "Eoq",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 3046.2
+    },
+    {
+      "name": "Animabba",
+      "class": "Warlock",
+      "spec": "Affliction",
+      "score": 3044.4
+    },
+    {
+      "name": "Realdruid",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 3042.2
+    },
+    {
+      "name": "Choghat",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 3039.6
+    },
+    {
+      "name": "Erk",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 3038.3
+    },
+    {
+      "name": "Lokasiib",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 3037.5
+    },
+    {
+      "name": "Skylerfin",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 3037.1
+    },
+    {
+      "name": "Fluffyson",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3036.8
+    },
+    {
+      "name": "Pinut",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3036
+    },
+    {
+      "name": "Fláshbang",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 3035.9
+    },
+    {
+      "name": "Meker",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3035.8
+    },
+    {
+      "name": "Haevyrion",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 3029.8
+    },
+    {
+      "name": "Arthrmorgan",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 3026.8
+    },
+    {
+      "name": "Reddedruid",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 3024
+    },
+    {
+      "name": "Darktitomonk",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3023.3
+    },
+    {
+      "name": "Depensa",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 3022
+    },
+    {
+      "name": "Andoks",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 3020
+    },
+    {
+      "name": "Salsagero",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3018.7
+    },
+    {
+      "name": "Shaoferk",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3014.8
+    },
+    {
+      "name": "Kymeila",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 3014.2
+    },
+    {
+      "name": "Aeshanll",
+      "class": "Hunter",
+      "spec": "Marksmanship",
+      "score": 3011.5
+    },
+    {
+      "name": "Titoboyy",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3010.2
+    },
+    {
+      "name": "Cshake",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3008.5
+    },
+    {
+      "name": "Yeek",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 3007.8
+    },
+    {
+      "name": "Mikaell",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 3007.1
+    },
+    {
+      "name": "Banayad",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 3007.1
+    },
+    {
+      "name": "Kelerad",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 3006.8
+    },
+    {
+      "name": "Boyekk",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 3006.1
+    },
+    {
+      "name": "Xephóra",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 3005.7
+    },
+    {
+      "name": "Cherubimon",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 3004.6
+    },
+    {
+      "name": "Dreadbriar",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 3003.2
+    },
+    {
+      "name": "Priestaquino",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 2998.9
+    },
+    {
+      "name": "Forxiga",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 2998.5
+    },
+    {
+      "name": "Rhaejuv",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2996.3
+    },
+    {
+      "name": "Mangtotomas",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 2993.6
+    },
+    {
+      "name": "Athzrael",
+      "class": "Rogue",
+      "spec": "Outlaw",
+      "score": 2985.3
+    },
+    {
+      "name": "Dorriann",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2983.6
+    },
+    {
+      "name": "Alpacahontas",
+      "class": "Priest",
+      "spec": "Holy",
+      "score": 2983.2
+    },
+    {
+      "name": "Mamoakay",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2976.3
+    },
+    {
+      "name": "Pikoy",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 2971
+    },
+    {
+      "name": "Póteido",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2971
+    },
+    {
+      "name": "Lju",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 2968.9
+    },
+    {
+      "name": "Kadou",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2966.8
+    },
+    {
+      "name": "Barynden",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2963.5
+    },
+    {
+      "name": "Rhyzack",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2961.1
+    },
+    {
+      "name": "Solánai",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2958.2
+    },
+    {
+      "name": "Dracinginini",
+      "class": "Evoker",
+      "spec": "Preservation",
+      "score": 2956.5
+    },
+    {
+      "name": "Sedrick",
+      "class": "Rogue",
+      "spec": "Outlaw",
+      "score": 2955.7
+    },
+    {
+      "name": "Hayockeo",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2952.4
+    },
+    {
+      "name": "Libagsur",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2950.2
+    },
+    {
+      "name": "Nakapaa",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2949.9
+    },
+    {
+      "name": "Adüka",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 2940.7
+    },
+    {
+      "name": "Anjero",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2938.1
+    },
+    {
+      "name": "Girlisog",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2936.9
+    },
+    {
+      "name": "Adukahahaha",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2936.5
+    },
+    {
+      "name": "Kefkha",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2936
+    },
+    {
+      "name": "Haimage",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2934.6
+    },
+    {
+      "name": "Heneral",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 2930
+    },
+    {
+      "name": "Solerynn",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2928.8
+    },
+    {
+      "name": "Edgistry",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2925.7
+    },
+    {
+      "name": "Antonov",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2920.8
+    },
+    {
+      "name": "Tongke",
+      "class": "Mage",
+      "spec": "Arcane",
+      "score": 2920.1
+    },
+    {
+      "name": "Draybear",
+      "class": "Mage",
+      "spec": "Arcane",
+      "score": 2911.8
+    },
+    {
+      "name": "Balawis",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 2906
+    },
+    {
+      "name": "Ayikarh",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 2902.9
+    },
+    {
+      "name": "Pypa",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2893
+    },
+    {
+      "name": "Natyshet",
+      "class": "Priest",
+      "spec": "Holy",
+      "score": 2892
+    },
+    {
+      "name": "Yann",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 2888.9
+    },
+    {
+      "name": "Bunaldowng",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 2887
+    },
+    {
+      "name": "Salarian",
+      "class": "Mage",
+      "spec": "Fire",
+      "score": 2872
+    },
+    {
+      "name": "Kerlewman",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2868.3
+    },
+    {
+      "name": "Fichris",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 2867.5
+    },
+    {
+      "name": "Wutdawg",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 2864.7
+    },
+    {
+      "name": "Soleuna",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 2864.6
+    },
+    {
+      "name": "Lags",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2860.2
+    },
+    {
+      "name": "Gargantuan",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2857
+    },
+    {
+      "name": "Snackalot",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 2851.1
+    },
+    {
+      "name": "Justberthngs",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2849.3
+    },
+    {
+      "name": "Barumbada",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2846.6
+    },
+    {
+      "name": "Fistermaxing",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 2839.7
+    },
+    {
+      "name": "Hiboo",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2834.9
+    },
+    {
+      "name": "Lavendêr",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2832.7
+    },
+    {
+      "name": "Enhui",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 2828.8
+    },
+    {
+      "name": "Cthulmoo",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2819.9
+    },
+    {
+      "name": "Profurex",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2819.3
+    },
+    {
+      "name": "Ammerick",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 2818.7
+    },
+    {
+      "name": "Lyannapal",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2813.4
+    },
+    {
+      "name": "Álec",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 2803.7
+    },
+    {
+      "name": "Delulusaurus",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 2794.7
+    },
+    {
+      "name": "Aku",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 2787.6
+    },
+    {
+      "name": "Paos",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2783.9
+    },
+    {
+      "name": "Kayatedo",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 2774.2
+    },
+    {
+      "name": "Khurzog",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2774.1
+    },
+    {
+      "name": "Àwhèé",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2774
+    },
+    {
+      "name": "Tortatime",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 2773.6
+    },
+    {
+      "name": "Luciefear",
+      "class": "Death Knight",
+      "spec": "Frost",
+      "score": 2767.5
+    },
+    {
+      "name": "Rizzjani",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 2764.9
+    },
+    {
+      "name": "Bootycalluwu",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2764.2
+    },
+    {
+      "name": "Stickyhotdog",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2762.3
+    },
+    {
+      "name": "Massao",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2762
+    },
+    {
+      "name": "Codexel",
+      "class": "Mage",
+      "spec": "Fire",
+      "score": 2756.6
+    },
+    {
+      "name": "Qweqweqwe",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2756.3
+    },
+    {
+      "name": "Clym",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 2747.5
+    },
+    {
+      "name": "Cairon",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2737.8
+    },
+    {
+      "name": "Geniusbread",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 2736.6
+    },
+    {
+      "name": "Krògg",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2732.8
+    },
+    {
+      "name": "Takipsilim",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 2728.8
+    },
+    {
+      "name": "Bongstum",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 2728.1
+    },
+    {
+      "name": "Hjenny",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2724.8
+    },
+    {
+      "name": "Garou",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 2723.7
+    },
+    {
+      "name": "Neenjar",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2717.2
+    },
+    {
+      "name": "Mirant",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 2717
+    },
+    {
+      "name": "Serefel",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 2710.2
+    },
+    {
+      "name": "Skullfk",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 2709.6
+    },
+    {
+      "name": "Dhraenyra",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2709.1
+    },
+    {
+      "name": "Xianzz",
+      "class": "Warlock",
+      "spec": "Destruction",
+      "score": 2698.9
+    },
+    {
+      "name": "Camou",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 2697.3
+    },
+    {
+      "name": "Icekei",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2694.3
+    },
+    {
+      "name": "Centralzee",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2690.5
+    },
+    {
+      "name": "Beefdonut",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 2681.9
+    },
+    {
+      "name": "Chocomann",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 2681.6
+    },
+    {
+      "name": "Noodlebender",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 2678.5
+    },
+    {
+      "name": "Kaliarin",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2677.8
+    },
+    {
+      "name": "Leesóng",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 2675.5
+    },
+    {
+      "name": "Charubi",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2675.4
+    },
+    {
+      "name": "Ariezee",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2674.3
+    },
+    {
+      "name": "Berysmol",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2672
+    },
+    {
+      "name": "Whatda",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2669.2
+    },
+    {
+      "name": "Yèshí",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2664.6
+    },
+    {
+      "name": "Fngrblastr",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 2663.4
+    },
+    {
+      "name": "Ogdwight",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 2661.5
+    },
+    {
+      "name": "Cbear",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2659.6
+    },
+    {
+      "name": "Delldoe",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 2657.2
+    },
+    {
+      "name": "Burberries",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 2656.7
+    },
+    {
+      "name": "Rafiel",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2653.2
+    },
+    {
+      "name": "Jjes",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2648.2
+    },
+    {
+      "name": "Wherestab",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 2646.1
+    },
+    {
+      "name": "Haiyop",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2644.1
+    },
+    {
+      "name": "Santigwar",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 2636.8
+    },
+    {
+      "name": "Jjaann",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 2634
+    },
+    {
+      "name": "Drednox",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 2630.6
+    },
+    {
+      "name": "Magnaogra",
+      "class": "Death Knight",
+      "spec": "Frost",
+      "score": 2628.2
+    },
+    {
+      "name": "Tuguegarao",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 2619.5
+    },
+    {
+      "name": "Targot",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 2619.2
+    },
+    {
+      "name": "Skylerphin",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 2611.4
+    },
+    {
+      "name": "Brodahnature",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 2611.3
+    },
+    {
+      "name": "Zherxes",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2608.6
+    },
+    {
+      "name": "Aöi",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2608.6
+    },
+    {
+      "name": "Aicx",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2603.3
+    },
+    {
+      "name": "Ashmic",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 2600.9
+    },
+    {
+      "name": "Reetalin",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2592.1
+    },
+    {
+      "name": "Nikoys",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 2584
+    },
+    {
+      "name": "Misseleana",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2580.3
+    },
+    {
+      "name": "Azkhalad",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 2577.2
+    },
+    {
+      "name": "Marvéll",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 2575.4
+    },
+    {
+      "name": "Karifunaert",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2569.4
+    },
+    {
+      "name": "Bangkai",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2562.6
+    },
+    {
+      "name": "Kagaw",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2551
+    },
+    {
+      "name": "Jizoo",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 2545.7
+    },
+    {
+      "name": "Parkercrane",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 2536.3
+    },
+    {
+      "name": "Darlinghelp",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 2530.9
+    },
+    {
+      "name": "Kapitantiago",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 2529.2
+    },
+    {
+      "name": "Blancs",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 2506.7
+    },
+    {
+      "name": "Skylerflint",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 2494.4
+    },
+    {
+      "name": "Sigmancer",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2493.6
+    },
+    {
+      "name": "Yakxi",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 2489.8
+    },
+    {
+      "name": "Moroe",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2478.9
+    },
+    {
+      "name": "Mootilate",
+      "class": "Rogue",
+      "spec": "Assassination",
+      "score": 2465.9
+    },
+    {
+      "name": "Chanterelle",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2458.8
+    },
+    {
+      "name": "Jmàn",
+      "class": "Warlock",
+      "spec": "Affliction",
+      "score": 2449.7
+    },
+    {
+      "name": "Kalyewest",
+      "class": "Priest",
+      "spec": "Holy",
+      "score": 2449.4
+    },
+    {
+      "name": "Akadus",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2381.2
+    },
+    {
+      "name": "Nêrö",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 2376.8
+    },
+    {
+      "name": "Dedgamelol",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2376.6
+    },
+    {
+      "name": "Durky",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 2371
+    },
+    {
+      "name": "Hoagies",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 2361.8
+    },
+    {
+      "name": "Jmân",
+      "class": "Mage",
+      "spec": "Arcane",
+      "score": 2360.7
+    },
+    {
+      "name": "Luxation",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2354.9
+    },
+    {
+      "name": "Aillidan",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 2347
+    },
+    {
+      "name": "Lokasib",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2342.7
+    },
+    {
+      "name": "Donmarino",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 2340.5
+    },
+    {
+      "name": "Xiaojilly",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 2329.2
+    },
+    {
+      "name": "Saeion",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 2327.9
+    },
+    {
+      "name": "Angbebenisen",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 2325.1
+    },
+    {
+      "name": "Zaxy",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 2316.1
+    },
+    {
+      "name": "Lmyhsx",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 2303.7
+    },
+    {
+      "name": "Maethorion",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2296.6
+    },
+    {
+      "name": "Lyannahunt",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2283.1
+    },
+    {
+      "name": "Grumpyandy",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 2269
+    },
+    {
+      "name": "Dizvick",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2268.2
+    },
+    {
+      "name": "Snïpér",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 2249.1
+    },
+    {
+      "name": "Senshine",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 2237
+    },
+    {
+      "name": "Critikarl",
+      "class": "Rogue",
+      "spec": "Subtlety",
+      "score": 2219.2
+    },
+    {
+      "name": "Cowbolt",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2179.8
+    },
+    {
+      "name": "Vincerock",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2151.2
+    },
+    {
+      "name": "Harimudon",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 2150
+    },
+    {
+      "name": "Xinyii",
+      "class": "Death Knight",
+      "spec": "Frost",
+      "score": 2135.3
+    },
+    {
+      "name": "Noahaurora",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 2135.1
+    },
+    {
+      "name": "Whitewhite",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 2128
+    },
+    {
+      "name": "Cleiah",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 2094.1
+    },
+    {
+      "name": "Timomothy",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 2087.8
+    },
+    {
+      "name": "Swordkiller",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 2069.3
+    },
+    {
+      "name": "Gomul",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 2003.3
+    },
+    {
+      "name": "Marryheal",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 1995.4
+    },
+    {
+      "name": "Âyaya",
+      "class": "Hunter",
+      "spec": "Survival",
+      "score": 1989.1
+    },
+    {
+      "name": "Chiihuahua",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 1963.2
+    },
+    {
+      "name": "Gharkul",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 1955.7
+    },
+    {
+      "name": "Mìlim",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 1952.4
+    },
+    {
+      "name": "Staku",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 1911.3
+    },
+    {
+      "name": "Eldressara",
+      "class": "Evoker",
+      "spec": "Preservation",
+      "score": 1910.4
+    },
+    {
+      "name": "Tenmonkk",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 1903.8
+    },
+    {
+      "name": "Ayuda",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 1885.5
+    },
+    {
+      "name": "Petaa",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 1881.6
+    },
+    {
+      "name": "Chinafirst",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 1876.8
+    },
+    {
+      "name": "Levana",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 1853
+    },
+    {
+      "name": "Duwuwid",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 1843.9
+    },
+    {
+      "name": "Bigblackfist",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 1835.7
+    },
+    {
+      "name": "Jaghas",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 1828.7
+    },
+    {
+      "name": "Slapsoil",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 1810.3
+    },
+    {
+      "name": "Thromgar",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 1761.9
+    },
+    {
+      "name": "Holypappi",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 1757.6
+    },
+    {
+      "name": "Kitsunehime",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 1741.3
+    },
+    {
+      "name": "Kookoorikapu",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 1739.2
+    },
+    {
+      "name": "Gianz",
+      "class": "Evoker",
+      "spec": "Augmentation",
+      "score": 1734.8
+    },
+    {
+      "name": "Cruztyest",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 1722.7
+    },
+    {
+      "name": "Talcrysh",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 1719.7
+    },
+    {
+      "name": "Losadaar",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 1714.7
+    },
+    {
+      "name": "Yasuo",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 1688.8
+    },
+    {
+      "name": "Sicapoo",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 1674.5
+    },
+    {
+      "name": "Marrywanna",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 1648.8
+    },
+    {
+      "name": "Williamwkl",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 1648.6
+    },
+    {
+      "name": "Zarlock",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 1639.5
+    },
+    {
+      "name": "Dedkarnei",
+      "class": "Death Knight",
+      "spec": "Blood",
+      "score": 1633
+    },
+    {
+      "name": "Daghamon",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 1626.7
+    },
+    {
+      "name": "Kaloy",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 1614.8
+    },
+    {
+      "name": "Augilangyan",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 1604.6
+    },
+    {
+      "name": "Franchette",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 1579.5
+    },
+    {
+      "name": "Droodlord",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 1555
+    },
+    {
+      "name": "Ezrraa",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 1512
+    },
+    {
+      "name": "Booyeek",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 1488
+    },
+    {
+      "name": "Katapangan",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 1487.8
+    },
+    {
+      "name": "Reddk",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 1486.3
+    },
+    {
+      "name": "Sugardahd",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 1476.9
+    },
+    {
+      "name": "Kabby",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 1389.8
+    },
+    {
+      "name": "Wokfu",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 1349.6
+    },
+    {
+      "name": "Pneumethra",
+      "class": "Evoker",
+      "spec": "Devastation",
+      "score": 1318.3
+    },
+    {
+      "name": "Vincenzi",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 1311.3
+    },
+    {
+      "name": "Hrakiya",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 1304.4
+    },
+    {
+      "name": "Tadtadgurl",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 1262.2
+    },
+    {
+      "name": "Eyedoll",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 1232.1
+    },
+    {
+      "name": "Keaa",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 1173.3
+    },
+    {
+      "name": "Mayweather",
+      "class": "Monk",
+      "spec": "Windwalker",
+      "score": 1171.5
+    },
+    {
+      "name": "Twitter",
+      "class": "Mage",
+      "spec": "Frost",
+      "score": 1158.9
+    },
+    {
+      "name": "Tensham",
+      "class": "Shaman",
+      "spec": "Enhancement",
+      "score": 1128.3
+    },
+    {
+      "name": "Theahoot",
+      "class": "Demon Hunter",
+      "spec": "Havoc",
+      "score": 1087.8
+    },
+    {
+      "name": "Arcnox",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 1086.7
+    },
+    {
+      "name": "Pistilence",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 1084.3
+    },
+    {
+      "name": "Maboo",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 1079.4
+    },
+    {
+      "name": "Kezhekoni",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 1055.3
+    },
+    {
+      "name": "Bahalina",
+      "class": "Rogue",
+      "spec": "Outlaw",
+      "score": 1054.2
+    },
+    {
+      "name": "Wduka",
+      "class": "Death Knight",
+      "spec": "Frost",
+      "score": 1044.8
+    },
+    {
+      "name": "Restodonut",
+      "class": "Shaman",
+      "spec": "Restoration",
+      "score": 1021.1
+    },
+    {
+      "name": "Kardos",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 993.5
+    },
+    {
+      "name": "Nweesol",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 988.7
+    },
+    {
+      "name": "Baicenat",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 897.8
+    },
+    {
+      "name": "Atrònarch",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 872.7
+    },
+    {
+      "name": "Beeftapa",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 870.6
+    },
+    {
+      "name": "Staku",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 817.9
+    },
+    {
+      "name": "Shabuknight",
+      "class": "Death Knight",
+      "spec": "Frost",
+      "score": 775.6
+    },
+    {
+      "name": "Mykwarr",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 763.9
+    },
+    {
+      "name": "Erzabelle",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 739.7
+    },
+    {
+      "name": "Zaetama",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 706.1
+    },
+    {
+      "name": "Rañola",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 702.4
+    },
+    {
+      "name": "Luminé",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 701.8
+    },
+    {
+      "name": "Boyyekk",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 687.3
+    },
+    {
+      "name": "Ciriliadk",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 668.3
+    },
+    {
+      "name": "Jushayoc",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 668.2
+    },
+    {
+      "name": "Kerlew",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 662.8
+    },
+    {
+      "name": "Forkcelxd",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 658.2
+    },
+    {
+      "name": "Clawdino",
+      "class": "Monk",
+      "spec": "Brewmaster",
+      "score": 656.7
+    },
+    {
+      "name": "Eldiabol",
+      "class": "Warrior",
+      "spec": "Fury",
+      "score": 637
+    },
+    {
+      "name": "Naisou",
+      "class": "Warrior",
+      "spec": "Arms",
+      "score": 626.2
+    },
+    {
+      "name": "Nightingale",
+      "class": "Druid",
+      "spec": "Balance",
+      "score": 567.9
+    },
+    {
+      "name": "Nardybarney",
+      "class": "Warrior",
+      "spec": "Protection",
+      "score": 534.2
+    },
+    {
+      "name": "Mildboyz",
+      "class": "Priest",
+      "spec": "Discipline",
+      "score": 521.9
+    },
+    {
+      "name": "Yesuschrst",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 495.4
+    },
+    {
+      "name": "Shüaige",
+      "class": "Paladin",
+      "spec": "Holy",
+      "score": 400
+    },
+    {
+      "name": "Magnussoulsv",
+      "class": "Druid",
+      "spec": "Restoration",
+      "score": 392.7
+    },
+    {
+      "name": "Zarvok",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 340
+    },
+    {
+      "name": "Leahcarr",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 332.4
+    },
+    {
+      "name": "Raphaboy",
+      "class": "Death Knight",
+      "spec": "Unholy",
+      "score": 330.5
+    },
+    {
+      "name": "Felthrower",
+      "class": "Warlock",
+      "spec": "Demonology",
+      "score": 327.6
+    },
+    {
+      "name": "Torol",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 321.6
+    },
+    {
+      "name": "Rigodon",
+      "class": "Druid",
+      "spec": "Guardian",
+      "score": 267.9
+    },
+    {
+      "name": "Banahaw",
+      "class": "Priest",
+      "spec": "Shadow",
+      "score": 200
+    },
+    {
+      "name": "Wals",
+      "class": "Demon Hunter",
+      "spec": "Devourer",
+      "score": 194.6
+    },
+    {
+      "name": "Lagoom",
+      "class": "Paladin",
+      "spec": "Protection",
+      "score": 194.1
+    },
+    {
+      "name": "Meekow",
+      "class": "Demon Hunter",
+      "spec": "Vengeance",
+      "score": 170
+    },
+    {
+      "name": "Itsumiroll",
+      "class": "Monk",
+      "spec": "Mistweaver",
+      "score": 170
+    },
+    {
+      "name": "Igi",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 170
+    },
+    {
+      "name": "Maraluu",
+      "class": "Hunter",
+      "spec": "Beast Mastery",
+      "score": 170
+    },
+    {
+      "name": "Kioshe",
+      "class": "Shaman",
+      "spec": "Elemental",
+      "score": 166.1
+    },
+    {
+      "name": "Greenrust",
+      "class": "Druid",
+      "spec": "Feral",
+      "score": 165.9
+    },
+    {
+      "name": "Tezzerad",
+      "class": "Paladin",
+      "spec": "Retribution",
+      "score": 165
+    }
+  ]
+}

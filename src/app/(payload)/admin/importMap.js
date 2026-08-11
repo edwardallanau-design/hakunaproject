@@ -1,3 +1,5 @@
+import { default as default_00765b09214755cfebc4bc7b9338ee1d } from '../../../components/admin/BossRowLabel'
+import { default as default_22494b6131442370509eea0f7ce28fc0 } from '../../../components/admin/MythicPlusRunnerRowLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -21,14 +23,14 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { default as default_00765b09214755cfebc4bc7b9338ee1d } from '../../../components/admin/BossRowLabel'
-import { default as default_22494b6131442370509eea0f7ce28fc0 } from '../../../components/admin/MythicPlusRunnerRowLabel'
 import { default as default_69ae5086db9342b129573dc8b5e22d32 } from '../../../components/admin/OfficerSyncButton'
 import { default as default_90ae37741d642c49a54ed2c8d811cea0 } from '../../../components/admin/OfficerRowLabel'
 import { default as default_1e19e96780d57bff0696432a7afa110e } from '../../../components/admin/SyncGuildDetailsButton'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
+  "/components/admin/BossRowLabel#default": default_00765b09214755cfebc4bc7b9338ee1d,
+  "/components/admin/MythicPlusRunnerRowLabel#default": default_22494b6131442370509eea0f7ce28fc0,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -52,8 +54,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "/components/admin/BossRowLabel#default": default_00765b09214755cfebc4bc7b9338ee1d,
-  "/components/admin/MythicPlusRunnerRowLabel#default": default_22494b6131442370509eea0f7ce28fc0,
   "/components/admin/OfficerSyncButton#default": default_69ae5086db9342b129573dc8b5e22d32,
   "/components/admin/OfficerRowLabel#default": default_90ae37741d642c49a54ed2c8d811cea0,
   "/components/admin/SyncGuildDetailsButton#default": default_1e19e96780d57bff0696432a7afa110e,

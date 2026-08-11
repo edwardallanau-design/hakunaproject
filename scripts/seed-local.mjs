@@ -3,9 +3,10 @@
  *
  * A freshly migrated database has the right schema and no data, which is not
  * enough to actually run the site: Payload has no admin user to log in with,
- * and `Progression.tier` is `required: true` but is never set by the Sync — it
- * is operator-set. A brand-new database therefore fails its first Sync at the
- * write stage, which is the fresh-database gotcha recorded in LEDGER.md.
+ * and there is no Season for guild-settings.currentSeason to point at — several
+ * Season fields are `required: true` but are operator-set, never written by the
+ * Sync. A brand-new database therefore fails its first Sync at the derivation
+ * stage, which is the fresh-database gotcha recorded in LEDGER.md.
  *
  * This script fixes both, then optionally pulls real data from Raider.IO so the
  * site renders something recognisable.
@@ -85,18 +86,47 @@ if (!settings?.name) {
   console.log(`  guild-settings: already set ("${settings.name}"), left alone`)
 }
 
-// --- Progression -------------------------------------------------------------
-// `tier` is required but operator-set, never written by the Sync. Without it the
-// first Sync fails at the write stage on an otherwise healthy database.
-const progression = await payload.findGlobal({ slug: 'progression' })
-if (!progression?.tier) {
-  await payload.updateGlobal({
-    slug: 'progression',
-    data: { tier: 'Midnight Season 1', difficulty: 'Mythic' },
-  })
-  console.log('  progression.tier: seeded (required, and not sync-derived)')
+// --- Season ------------------------------------------------------------------
+// The site renders from the current Season (via guild-settings.currentSeason),
+// not the retired `progression` global. A fresh database has neither, so the
+// first Sync would fail at the derivation stage with no Season to write to.
+//
+// The migration that adds the Seasons collection also inserts a Season 1 row
+// from the committed snapshot — but on a bare database it cannot also point
+// guild-settings at it, because that row does not exist until Payload writes
+// it for the first time (which this script does, just above). So: reuse an
+// existing Season if one is already there (from the migration) rather than
+// creating a second one, which would collide on the unique urlSlug.
+let currentSeasonId = settings?.currentSeason
+if (typeof currentSeasonId === 'object' && currentSeasonId !== null) {
+  currentSeasonId = currentSeasonId.id
+}
+if (!currentSeasonId) {
+  const { docs: existingSeasons } = await payload.find({ collection: 'seasons', limit: 1 })
+  const season =
+    existingSeasons[0] ??
+    (await payload.create({
+      collection: 'seasons',
+      data: {
+        name: 'Midnight Season 1',
+        urlSlug: 'season-1',
+        themeSlug: 'void',
+        startedAt: new Date('2026-01-01').toISOString(),
+        raidSlugs: [{ slug: 'tier-mn-1' }, { slug: 'sporefall' }],
+        rankSourceRaidSlug: 'tier-mn-1',
+        mythicPlusSeasonSlug: 'season-mn-1',
+        difficulty: 'Mythic',
+      },
+    }))
+  await payload.updateGlobal({ slug: 'guild-settings', data: { currentSeason: season.id } })
+  currentSeasonId = season.id
+  console.log(
+    existingSeasons[0]
+      ? `  seasons: pointed current Season at existing "${season.name}" (migration had already created it)`
+      : `  seasons: seeded "${season.name}" and set as current (required, and not sync-derived)`,
+  )
 } else {
-  console.log(`  progression.tier: already set ("${progression.tier}"), left alone`)
+  console.log(`  seasons: current Season already set (id ${currentSeasonId}), left alone`)
 }
 
 // --- Optional: real data from Raider.IO ---------------------------------------
@@ -108,13 +138,16 @@ if (WITH_SYNC) {
 
   const details = await fetchAndTransformGuildDetails()
 
-  const current = await payload.findGlobal({ slug: 'progression' })
+  const currentSeason = await payload.findByID({ collection: 'seasons', id: currentSeasonId })
   const derivedProgression = deriveProgression(details, {
-    bosses: current.bosses ?? [],
-    kills: current.kills ?? 0,
-    totalBosses: current.totalBosses ?? 0,
-    rankings: current.rankings,
-    mythicPlusRunners: current.mythicPlusRunners ?? [],
+    bosses: currentSeason.bosses ?? [],
+    kills: currentSeason.kills ?? 0,
+    totalBosses: currentSeason.totalBosses ?? 0,
+    rankings: currentSeason.rankings,
+    mythicPlusRunners: currentSeason.mythicPlusRunners ?? [],
+    mythicPlusParticipants: currentSeason.mythicPlusParticipants ?? [],
+    raidSlugs: (currentSeason.raidSlugs ?? []).map((r) => r.slug),
+    rankSourceRaidSlug: currentSeason.rankSourceRaidSlug,
   })
 
   const officersGlobal = await payload.findGlobal({ slug: 'officers-section' })
@@ -124,7 +157,7 @@ if (WITH_SYNC) {
     slug: 'guild-details',
     data: { details, lastSyncedAt: new Date().toISOString(), lastSyncError: null },
   })
-  await payload.updateGlobal({ slug: 'progression', data: derivedProgression })
+  await payload.update({ collection: 'seasons', id: currentSeasonId, data: derivedProgression })
   await payload.updateGlobal({
     slug: 'officers-section',
     data: { officers: derivedOfficers },
@@ -133,7 +166,8 @@ if (WITH_SYNC) {
   console.log(
     `  synced: ${derivedProgression.kills}/${derivedProgression.totalBosses} bosses, ` +
       `${derivedOfficers.length} officers, ` +
-      `${derivedProgression.mythicPlusRunners?.length ?? 0} M+ runners`,
+      `${derivedProgression.mythicPlusRunners?.length ?? 0} M+ runners, ` +
+      `${derivedProgression.mythicPlusParticipants?.length ?? 0} M+ participants`,
   )
 }
 

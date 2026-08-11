@@ -22,6 +22,14 @@ export const GuildSettings: GlobalConfig = {
     { name: 'region', type: 'text' },
     { name: 'faction', type: 'text' },
     {
+      name: 'currentSeason',
+      type: 'relationship',
+      relationTo: 'seasons',
+      admin: {
+        description: 'The Season the Sync writes to and the home page renders by default. Exactly one Season is current — this pointer, not a per-row flag, is what makes that true by construction.',
+      },
+    },
+    {
       name: 'description',
       type: 'richText',
       admin: { description: 'Guild description shown on the About section. Supports bold, italic, lists, links.' },
