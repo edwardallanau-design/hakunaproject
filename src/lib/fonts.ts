@@ -1,4 +1,4 @@
-import { VT323, Press_Start_2P } from "next/font/google";
+import { VT323, Press_Start_2P, Almendra_Display, Grenze, Cormorant_SC } from "next/font/google";
 
 // Every font any theme uses, self-hosted by next/font at build time. This
 // replaces the `@import url(fonts.googleapis.com/...)` that used to sit at the
@@ -39,6 +39,46 @@ export const pressStart2P = Press_Start_2P({
   display: "swap",
 });
 
+// ── venom (Season 2) ────────────────────────────────────────────────────────
+// All three carry `preload: false`, which is the rule stated above doing real
+// work for the first time: their @font-face rules ship on every page, but the
+// files only download when an element actually resolves to the family — i.e.
+// only under `.theme-venom`. A visitor reading Season 1 pays nothing for them.
+
+export const almendraDisplay = Almendra_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-almendra-display",
+  display: "swap",
+  preload: false,
+});
+
+export const grenze = Grenze({
+  subsets: ["latin"],
+  // The design uses 400 for body copy, 500 for boss and dungeon names, and 600
+  // where it wants weight without jumping to the display face.
+  weight: ["400", "500", "600"],
+  variable: "--font-grenze",
+  display: "swap",
+  preload: false,
+});
+
+export const cormorantSC = Cormorant_SC({
+  subsets: ["latin"],
+  // Labels and nav sit at 600; buttons, chips and section meta go to 700. 500
+  // is the lightest the design uses, on the hero tagline.
+  weight: ["500", "600", "700"],
+  variable: "--font-cormorant-sc",
+  display: "swap",
+  preload: false,
+});
+
 // Applied to <html> so every font variable is in scope for the whole document,
 // including the theme classes further down the tree.
-export const fontVariables = [vt323.variable, pressStart2P.variable].join(" ");
+export const fontVariables = [
+  vt323.variable,
+  pressStart2P.variable,
+  almendraDisplay.variable,
+  grenze.variable,
+  cormorantSC.variable,
+].join(" ");

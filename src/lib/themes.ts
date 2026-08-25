@@ -69,15 +69,19 @@ export const THEMES = [
     hasKeyArt: false,
   },
   {
-    // The theme exists as a selectable name before it exists as a look: there
-    // is no `.theme-venom` block yet, so a Season wearing venom renders the
-    // default look. That is the fallback contract working, not a bug — the
-    // palette and the rest arrive with tickets 03-06.
+    // Season 2. Palette and all three font roles are live; the page structure
+    // the design calls for (numbered sections, descent timeline, dungeon grid,
+    // champion spotlight) lands with the layout work.
+    //
+    // **venom is dark-only** — an operator decision from the Season 2 design
+    // that supersedes ADR 0007's "light stays season-neutral" for this theme.
+    // The light/dark toggle is hidden while venom shows. See the specificity
+    // note on `.theme-venom` in globals.css: the light override has to be
+    // beaten deliberately, it does not just lose.
     slug: "venom",
     label: "Venom — The Curse of Ula'tek",
-    // False until ticket 06 actually ships the art. The flag describes what a
-    // theme *has*, so claiming art that does not exist would make the slot
-    // reserve space for nothing the moment it starts reading this.
+    // The design bakes its serpent-eye crest into the hero rather than filling
+    // a generic slot, so there is no key art in the manifest sense.
     hasKeyArt: false,
   },
 ] as const satisfies readonly Theme[];

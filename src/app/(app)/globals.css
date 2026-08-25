@@ -123,6 +123,55 @@
   --shadow-accent: #92400e;
 }
 
+/* ── venom — Season 2, The Curse of Ula'tek ──
+   Poison greens and serpent teal. The full package: palette, all three font
+   roles, and (with the layout work) its own page structure.
+
+   **venom is dark-only, and that is a deliberate exception to the rule above.**
+   ADR 0007 said a theme defines its dark look and light stays season-neutral;
+   the Season 2 design supersedes that for this theme — there is no venom light
+   variant, and the light/dark toggle is hidden while venom is showing. So this
+   block must beat `.light [class*="theme-"]`, which matches `.theme-venom` too
+   and outweighs a bare `.theme-venom` (0-2-0 against 0-1-0). Hence
+   `.theme-venom, .light .theme-venom` — the second selector ties that
+   specificity and wins on source order, being declared later. Losing that
+   second selector would hand a visitor with a stored light preference the
+   cream palette underneath the venom layout, which is the one thing the design
+   rules out.
+
+   Season 1 is untouched by all of this: `.theme-void` declares no optional
+   element, so `void` still renders exactly as it always has, in both modes. */
+.theme-venom,
+.light .theme-venom {
+  --font-display: var(--font-almendra-display), serif;
+  --font-body: var(--font-grenze), serif;
+  --font-ui: var(--font-cormorant-sc), serif;
+
+  --bg: #050f08;
+  --surface: #081810;
+  --surface2: #0c2114;
+  --accent: #84cc16;
+  --accent2: #2dd4bf;
+  --glow: #a3e635;
+  --text: #e3f0da;
+  --muted: #7d9a80;
+  --border: rgba(132,204,22,0.45);
+  --border-dim: rgba(132,204,22,0.22);
+  --card-bg: rgba(8,24,16,0.85);
+  --corner: #2dd4bf;
+  --shadow-accent: #14320a;
+
+  /* The design's own type scale. Deliberately separate from the `--px-*` and
+     `--vt-*` scales above, which are Season 1's pixel-font sizes and stay
+     frozen — venom's faces are proportional serifs and need their own ramp. */
+  --ui-xs: clamp(11px, 0.7vw,  14px);
+  --ui-sm: clamp(12px, 0.78vw, 16px);
+  --ui-md: clamp(13px, 0.88vw, 18px);
+  --ui-lg: clamp(15px, 1vw,    20px);
+  --bd-sm: clamp(19px, 1.35vw, 28px);
+  --bd-md: clamp(23px, 1.65vw, 34px);
+}
+
 /* ── Base ── */
 *, *::before, *::after {
   box-sizing: border-box;
