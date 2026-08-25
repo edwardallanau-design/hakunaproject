@@ -8,6 +8,7 @@ import { resolveRequestedSeason } from "@/lib/resolveRequestedSeason";
 import { findTheme } from "@/lib/themes";
 import { VenomPage } from "@/components/venom/VenomPage";
 import { fetchDungeonRotation } from "@/lib/mythicPlusDungeons";
+import type { DungeonTile } from "@/lib/dungeonRotation";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { StatsBar } from "@/components/StatsBar";
@@ -104,25 +105,33 @@ export default async function Home({
   // must render that Season's own layout, which is how `void` stays frozen.
   const theme = findTheme(selectedSeason.themeSlug);
   if (theme?.layout === "editorial") {
-    // The dungeon grid is decoration over live data, not load-bearing content.
-    // An upstream outage should cost the section, never the page — DungeonGrid
-    // renders nothing for an empty list, the same way the M+ runners card does.
+    // The dungeon marquee is decoration over live data, not load-bearing
+    // content. An upstream outage should cost the section, never the page —
+    // DungeonMarquee renders nothing for an empty list, the same way the M+
+    // runners card does. Individual characters failing is handled a level down,
+    // inside the poll, so one bad profile costs one person's runs and not the
+    // strip.
     //
     // Never for an archived Season (ADR 0005). Raider.IO's M+ endpoints answer
     // only about the *current* season, so deriving an archive from them does
     // not show that season's rotation — it shows today's under a past season's
     // heading. An empty section is the honest answer until the rotation is
     // persisted at sync time; see the ledger's Open entry.
-    const dungeons = isArchived
-      ? []
+    // `activeCharacters: null` means "not measured" — an archived Season skips
+    // the poll entirely, and a failed poll has nothing to report. A genuinely
+    // quiet 48 hours is `0`, which is a real answer and must render as one.
+    // Collapsing the three into a falsy zero is what let a quiet weekend show
+    // the roster count under an activity label.
+    const rotation: { tiles: DungeonTile[]; activeCharacters: number | null } = isArchived
+      ? { tiles: [], activeCharacters: null }
       : await fetchDungeonRotation({
           region: process.env.GUILD_REGION ?? "us",
           realm: process.env.GUILD_REALM ?? "Barthilas",
           guild: process.env.GUILD_NAME ?? "Potato Corner",
           seasonSlug: selectedSeason.mythicPlusSeasonSlug,
         }).catch((err) => {
-          console.error("Dungeon rotation fetch failed; hiding the section.", err);
-          return [];
+          console.error("Recent keys fetch failed; hiding the section.", err);
+          return { tiles: [], activeCharacters: null };
         });
 
     return (
@@ -133,14 +142,16 @@ export default async function Home({
         currentUrlSlug={currentSeason.urlSlug}
         isArchived={isArchived}
         aboutHeading={guild.heading}
+        heroIntro={guildSettings.heroIntro ?? ""}
         descriptionHTML={descriptionHTML}
         officers={officersSectionData.officers.map((o) => ({
+          // `officersSectionData` keeps `ilvl` — the pixel layout below still
+          // renders it and is frozen. The venom card no longer takes it.
           id: o.id,
           name: o.name,
           class: o.class,
           spec: o.spec,
           rank: o.rank,
-          ilvl: o.ilvl,
         }))}
         recruitment={{
           heading: "The Vault Needs More Potatoes",
@@ -156,7 +167,8 @@ export default async function Home({
         }}
         footerLinks={footerLinks}
         runners={prog.mythicPlusRunners}
-        dungeons={dungeons}
+        dungeonTiles={rotation.tiles}
+        activeCharacters={rotation.activeCharacters}
       />
     );
   }

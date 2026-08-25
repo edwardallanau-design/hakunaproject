@@ -30,6 +30,16 @@ export const GuildSettings: GlobalConfig = {
       },
     },
     {
+      name: 'heroIntro',
+      type: 'textarea',
+      defaultValue:
+        "Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding.",
+      admin: {
+        description:
+          'The sentence under the guild name in the hero. Left blank, the layout falls back to its built-in copy rather than rendering an empty space.',
+      },
+    },
+    {
       name: 'description',
       type: 'richText',
       admin: { description: 'Guild description shown on the About section. Supports bold, italic, lists, links.' },

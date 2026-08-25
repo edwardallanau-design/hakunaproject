@@ -174,6 +174,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * ⚠ Written by the hourly Raider.IO Sync — not by hand. Almost every field here is auto-filled and read-only, and the values feed the live site directly. Archived Seasons are locked: only the Season that Guild Settings → Current Season points at can be edited at all. If something looks wrong, run the Sync from Guild Details rather than typing over it — a hand edit is overwritten within the hour, or worse, is not.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "seasons".
  */
@@ -600,6 +602,10 @@ export interface GuildSetting {
    */
   currentSeason?: (number | null) | Season;
   /**
+   * The sentence under the guild name in the hero. Left blank, the layout falls back to its built-in copy rather than rendering an empty space.
+   */
+  heroIntro?: string | null;
+  /**
    * Guild description shown on the About section. Supports bold, italic, lists, links.
    */
   description?: {
@@ -763,6 +769,7 @@ export interface GuildSettingsSelect<T extends boolean = true> {
   region?: T;
   faction?: T;
   currentSeason?: T;
+  heroIntro?: T;
   description?: T;
   footerLinks?:
     | T

@@ -138,7 +138,12 @@ export function VenomAbout({
 
 /* ── 05 · The Officers ───────────────────────────────────────────────────── */
 
-export type OfficerCard = { id: string; name: string; class: string; spec: string; rank: string; ilvl: number };
+/**
+ * No `ilvl`. The field is still on the Officers global and the Sync still
+ * writes it, because Season 1's frozen `Officers.tsx` renders it — dropping the
+ * column would edit a frozen layout. This card simply stops asking for it.
+ */
+export type OfficerCard = { id: string; name: string; class: string; spec: string; rank: string };
 
 export function VenomOfficers({ officers, numeral = "05" }: { officers: OfficerCard[]; numeral?: string }) {
   if (officers.length === 0) return null;
@@ -216,10 +221,14 @@ export function VenomOfficers({ officers, numeral = "05" }: { officers: OfficerC
                     </p>
                   </div>
                 </div>
+                {/* Rank only. Item level sat opposite it in teal display type
+                    and carried no meaning worth that much weight — it is a
+                    snapshot of gear that changes every raid night and says
+                    nothing about the person's role in the guild. `space-between`
+                    went with it: there is nothing left to space against. */}
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
                     borderTop: "1px solid var(--border-dim)",
                     paddingTop: "clamp(8px,0.7vw,12px)",
@@ -231,7 +240,6 @@ export function VenomOfficers({ officers, numeral = "05" }: { officers: OfficerC
                   }}
                 >
                   <span>{o.rank}</span>
-                  <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--bd-md)", color: "var(--accent2)" }}>{o.ilvl}</span>
                 </div>
               </motion.div>
             );

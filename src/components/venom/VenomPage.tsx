@@ -4,7 +4,8 @@ import { initialDifficulty, rankingsAt, raidGroups } from "@/lib/venomViewModel"
 import { VenomNavbar, type SwitcherSeason } from "./VenomNavbar";
 import { VenomHero } from "./VenomHero";
 import { RaidTimeline } from "./RaidTimeline";
-import { DungeonGrid, type DungeonRun } from "./DungeonGrid";
+import { DungeonMarquee } from "./DungeonMarquee";
+import type { DungeonTile } from "@/lib/dungeonRotation";
 import { Leaderboard, type Runner } from "./Leaderboard";
 import { VenomAbout, VenomOfficers, VenomRecruitment, VenomFooter, BackToTop, type OfficerCard, type RoleCard } from "./VenomSections";
 
@@ -16,10 +17,15 @@ import { VenomAbout, VenomOfficers, VenomRecruitment, VenomFooter, BackToTop, ty
  * rendering the same eight components it always has and Season 1 is frozen by
  * construction rather than by careful editing.
  *
- * Copy that the CMS owns (About, recruitment roles, footer links) is passed in.
- * Copy the design invented — the hero intro, the recruitment headline — is
- * hardcoded here: a theme is a reviewed, built whole (ADR 0007), and one-off
- * strings do not earn CMS fields.
+ * Copy that the CMS owns (About, recruitment roles, footer links, and now the
+ * hero intro) is passed in. What the design invented and the CMS does not own —
+ * the recruitment headline — stays hardcoded: a theme is a reviewed, built
+ * whole (ADR 0007), and one-off strings do not earn CMS fields.
+ *
+ * The hero intro moved across that line on 2026-08-26 by operator decision. It
+ * is the one sentence on the page that describes the guild rather than the
+ * design, so it belongs with the other guild copy — and unlike the recruitment
+ * headline it changes when the guild does, not when the theme does.
  */
 export function VenomPage({
   season,
@@ -28,12 +34,14 @@ export function VenomPage({
   currentUrlSlug,
   isArchived,
   aboutHeading,
+  heroIntro,
   descriptionHTML,
   officers,
   recruitment,
   footerLinks,
   runners,
-  dungeons,
+  dungeonTiles,
+  activeCharacters,
 }: {
   season: Season;
   seasons: SwitcherSeason[];
@@ -41,6 +49,8 @@ export function VenomPage({
   currentUrlSlug: string;
   isArchived: boolean;
   aboutHeading: string;
+  /** CMS-owned. Empty falls back to the layout's own copy. */
+  heroIntro: string;
   descriptionHTML: string;
   officers: OfficerCard[];
   recruitment: {
@@ -53,7 +63,13 @@ export function VenomPage({
   };
   footerLinks: { label: string; href: string }[];
   runners: Runner[];
-  dungeons: DungeonRun[];
+  dungeonTiles: DungeonTile[];
+  /**
+   * Distinct characters with a key inside the recency window, or `null` when
+   * that was never measured — an archived Season, or a failed poll. Zero is a
+   * measurement; null is the absence of one.
+   */
+  activeCharacters: number | null;
 }) {
   // Server-computed so the client toggle initialises without a hydration
   // mismatch.
@@ -79,9 +95,27 @@ export function VenomPage({
       <main>
         <VenomHero
           eyebrow={`Season 2 · ${season.name}`}
-          intro="Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding."
+          // Falls back rather than rendering an empty line: a blank field in the
+          // CMS should not leave a hole under the guild's name.
+          intro={
+            heroIntro.trim() ||
+            "Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding."
+          }
           stats={{
-            members: season.rankings?.members ?? 0,
+            // "Active Members" now means what it says: distinct characters who
+            // ran a key in the last 48 hours, derived from the Recent Keys
+            // data. It used to read `season.rankings.members` — the guild's
+            // roster size, which is a membership count and not an activity one.
+            //
+            // `null` means the poll never ran or failed — an archived Season
+            // (ADR 0005) or an upstream outage. Only then does this fall back to
+            // the roster count, which is exactly what the stat showed before, so
+            // the degraded path is the old behaviour rather than an invention.
+            //
+            // A measured `0` is a real answer and renders as one: a guild that
+            // ran nothing for 48 hours should say so, not quietly show its
+            // roster size under an activity label.
+            members: activeCharacters ?? season.rankings?.members ?? 0,
             world: ranks.world,
             region: ranks.region,
             realm: ranks.realm,
@@ -112,7 +146,7 @@ export function VenomPage({
             raid does not leave two sections both numbered 02. The raid groups
             take 01..n and everything after continues from there. */}
         <RaidTimeline season={season} groups={groups} />
-        <DungeonGrid dungeons={dungeons} numeral={numeralAfter(groups.length)} />
+        <DungeonMarquee tiles={dungeonTiles} numeral={numeralAfter(groups.length)} />
         <Leaderboard runners={runners} numeral={numeralAfter(groups.length + 1)} />
         <VenomAbout
           heading={aboutHeading}
