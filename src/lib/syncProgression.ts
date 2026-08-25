@@ -1,14 +1,60 @@
 import type { GuildDetailsData, RosterMember, MythicPlusRunner } from "@/lib/raiderio";
 
-type Boss = {
-  name: string;
+/**
+ * The three raid difficulties, easiest first. Order is load-bearing:
+ * `defaultDifficulty` walks it backwards to find the hardest one with a kill.
+ */
+export const DIFFICULTIES = ["normal", "heroic", "mythic"] as const;
+export type Difficulty = (typeof DIFFICULTIES)[number];
+
+/** Per-difficulty progress for one boss. */
+type BossProgress = {
   killed: boolean;
   firstDefeated?: string | null;
   pulls?: number | null;
   bestPull?: number | null;
 };
 
+/**
+ * A boss's stored shape is deliberately asymmetric: the flat fields are
+ * canonical **mythic**, and normal/heroic hang off their own groups.
+ *
+ * Symmetry would have been prettier — `{normal, heroic, mythic}` and nothing
+ * flat. It was rejected because restructuring means a backfill migration over
+ * Season 1's rows, and Season 1 is a frozen archive that must stay
+ * byte-identical (ADR 0005, reaffirmed by operator decision 2026-08-25). Adding
+ * two groups touches no existing column, so the archive is untouched by
+ * construction rather than by careful migration.
+ */
+type Boss = BossProgress & {
+  name: string;
+  normal?: BossProgress | null;
+  heroic?: BossProgress | null;
+};
+
 type Rankings = { world: number; region: number; realm: number; members: number };
+
+/** Kill counts keyed by difficulty. */
+export type KillsByDifficulty = Record<Difficulty, number>;
+
+/**
+ * Which difficulty the site should show by default: the hardest one the guild
+ * has **actually killed something on**.
+ *
+ * Attempts deliberately do not count. A single exploratory mythic pull would
+ * otherwise flip the page to "0/9 Mythic" and hide real heroic progress —
+ * precisely the under-reporting the difficulty toggle exists to fix.
+ *
+ * With nothing killed anywhere the answer is `normal`, which reads as "this
+ * Season has not started" rather than "we are 0/9 on Mythic".
+ */
+export function defaultDifficulty(kills: KillsByDifficulty): Difficulty {
+  for (let i = DIFFICULTIES.length - 1; i >= 0; i--) {
+    const d = DIFFICULTIES[i];
+    if ((kills[d] ?? 0) > 0) return d;
+  }
+  return "normal";
+}
 
 export type MythicPlusParticipant = {
   name: string;
@@ -22,6 +68,8 @@ export type ProgressionState = {
   kills: number;
   totalBosses: number;
   rankings: Rankings | null;
+  /** Ranks for the non-mythic difficulties. Mythic lives in `rankings`. */
+  rankingsByDifficulty?: Partial<Record<Difficulty, Rankings>> | null;
   mythicPlusRunners: MythicPlusRunner[];
   mythicPlusParticipants: MythicPlusParticipant[];
   // A Season's own upstream identity, per ADR 0006. Not a code constant, because
@@ -36,6 +84,8 @@ export type DerivedProgression = {
   totalBosses: number;
   bosses: Boss[];
   rankings: Rankings;
+  killsByDifficulty: KillsByDifficulty;
+  rankingsByDifficulty: Record<Difficulty, Rankings>;
   mythicPlusRunners: MythicPlusRunner[];
   mythicPlusParticipants: MythicPlusParticipant[];
 };
@@ -61,12 +111,26 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
   let kills = current.kills ?? 0;
   let totalBosses = current.totalBosses ?? existingBosses.length;
 
+  const killsByDifficulty: KillsByDifficulty = { normal: 0, heroic: 0, mythic: 0 };
+
   if (existingBosses.length > 0 && details.raidProgress?.length) {
     // Kill and pull data is collected only across the Season's own Raids
     // (current.raidSlugs), not every Raid the API returns — an encounter from a
     // Raid outside this Season must not enter this Season's boss list.
-    const mythicDefeated = new Map<string, string>();
-    const mythicPullData = new Map<string, { pullCount: number; bestPercent: number }>();
+    //
+    // Every difficulty is collected. The payload has always carried all three
+    // (the Zod boundary validates `encountersDefeated` and `encounters` as
+    // records), and derivation used to discard everything but mythic.
+    const defeated: Record<Difficulty, Map<string, string>> = {
+      normal: new Map(),
+      heroic: new Map(),
+      mythic: new Map(),
+    };
+    const pullData: Record<Difficulty, Map<string, { pullCount: number; bestPercent: number }>> = {
+      normal: new Map(),
+      heroic: new Map(),
+      mythic: new Map(),
+    };
     const nameToSlug = new Map<string, string>();
 
     for (const raidProgress of details.raidProgress) {
@@ -74,12 +138,16 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
 
       const raidAttempt = details.raidAttempt?.find((a) => a.raid === raidProgress.raid);
 
-      for (const encounter of raidProgress.encountersDefeated["mythic"] ?? []) {
-        mythicDefeated.set(encounter.slug, encounter.firstDefeated);
-      }
-
-      for (const enc of raidAttempt?.encounters["mythic"] ?? []) {
-        mythicPullData.set(enc.slug, { pullCount: enc.pullCount, bestPercent: enc.bestPercent });
+      for (const difficulty of DIFFICULTIES) {
+        for (const encounter of raidProgress.encountersDefeated[difficulty] ?? []) {
+          defeated[difficulty].set(encounter.slug, encounter.firstDefeated);
+        }
+        for (const enc of raidAttempt?.encounters[difficulty] ?? []) {
+          pullData[difficulty].set(enc.slug, {
+            pullCount: enc.pullCount,
+            bestPercent: enc.bestPercent,
+          });
+        }
       }
 
       for (const encounters of Object.values(raidAttempt?.encounters ?? {})) {
@@ -89,29 +157,61 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
       }
     }
 
-    bosses = existingBosses.map((boss) => {
-      // Kill data is final — once a boss is killed, its date and pull count are never overwritten
-      if (boss.killed) return boss;
-
-      const slug =
-        nameToSlug.get(boss.name.toLowerCase()) ??
-        boss.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const killed = mythicDefeated.has(slug);
-      const pull = mythicPullData.get(slug);
+    // The kill lock is per difficulty per boss: a heroic kill freezes heroic
+    // while mythic keeps progressing. Upstream rewrites its own history — four
+    // of Season 1's rows changed after the fact, one losing its pull count
+    // entirely — so a recorded kill is never re-derived.
+    const deriveOne = (
+      difficulty: Difficulty,
+      slug: string,
+      stored: BossProgress | null | undefined,
+    ): BossProgress => {
+      if (stored?.killed) return stored;
+      const killed = defeated[difficulty].has(slug);
+      const pull = pullData[difficulty].get(slug);
       return {
-        name: boss.name,
         killed,
-        firstDefeated: mythicDefeated.get(slug) ?? null,
+        firstDefeated: defeated[difficulty].get(slug) ?? null,
         pulls: pull && pull.pullCount > 0 ? pull.pullCount : null,
         bestPull: pull && pull.pullCount > 0 && !killed ? pull.bestPercent : null,
       };
+    };
+
+    bosses = existingBosses.map((boss) => {
+      const slug =
+        nameToSlug.get(boss.name.toLowerCase()) ??
+        boss.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+      // Flat fields are canonical mythic, so the existing lock applies to them.
+      const mythic = deriveOne("mythic", slug, boss);
+      const next: Boss = { name: boss.name, ...mythic };
+
+      // A difficulty group is only attached when there is something to say
+      // about it: data stored already, or data in this response. Season 1's
+      // rows are all mythic kills from before difficulties were tracked, and
+      // its raids report nothing new — so a Sync leaves them byte-identical
+      // rather than appending two empty groups to a frozen archive.
+      for (const difficulty of ["normal", "heroic"] as const) {
+        const stored = boss[difficulty];
+        const hasUpstream =
+          defeated[difficulty].has(slug) || pullData[difficulty].has(slug);
+        if (stored || hasUpstream) {
+          next[difficulty] = deriveOne(difficulty, slug, stored);
+        }
+      }
+
+      return next;
     });
 
-    kills = bosses.filter((b) => b.killed).length;
+    killsByDifficulty.mythic = bosses.filter((b) => b.killed).length;
+    killsByDifficulty.heroic = bosses.filter((b) => b.heroic?.killed).length;
+    killsByDifficulty.normal = bosses.filter((b) => b.normal?.killed).length;
+
+    kills = killsByDifficulty.mythic;
     totalBosses = bosses.length;
   }
 
-  // ── Rankings (Mythic) ──────────────────────────────────────────────────────
+  // ── Rankings ───────────────────────────────────────────────────────────────
   // Absence of the Season's Rank Source raid is a Derivation failure, NOT the
   // same as no data at all — an empty raidRankings is the guild-rename case and
   // still preserves below. Per ADR 0006 the slug is read from the Season row
@@ -154,6 +254,18 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
       ? { ...existingRankings, members: activeCount }
       : { world: 0, region: 0, realm: 0, members: activeCount };
 
+  // The same preserve-on-no-data rule, applied per difficulty. A rank source
+  // that reports nothing for a difficulty must never wipe what is stored for
+  // it — the guild-rename case, one level down.
+  const rankingsByDifficulty = Object.fromEntries(
+    DIFFICULTIES.map((difficulty) => {
+      const fresh = raidRanking?.ranks[difficulty] ?? null;
+      const stored = current.rankingsByDifficulty?.[difficulty] ?? null;
+      const chosen = fresh ?? stored ?? { world: 0, region: 0, realm: 0 };
+      return [difficulty, { ...chosen, members: activeCount }];
+    }),
+  ) as Record<Difficulty, Rankings>;
+
   const mythicPlusRunners = freshRunners.length > 0 ? freshRunners : current.mythicPlusRunners ?? [];
 
   // Every Character with a score, not just the displayed top ten — this is what
@@ -165,5 +277,14 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
   const mythicPlusParticipants: MythicPlusParticipant[] =
     scoredMembers.length > 0 ? scoredMembers : current.mythicPlusParticipants ?? [];
 
-  return { kills, totalBosses, bosses, rankings, mythicPlusRunners, mythicPlusParticipants };
+  return {
+    kills,
+    totalBosses,
+    bosses,
+    rankings,
+    killsByDifficulty,
+    rankingsByDifficulty,
+    mythicPlusRunners,
+    mythicPlusParticipants,
+  };
 }
