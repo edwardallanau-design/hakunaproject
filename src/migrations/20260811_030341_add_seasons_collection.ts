@@ -116,7 +116,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     data: {
       name: snapshot.name,
       urlSlug: snapshot.urlSlug,
-      themeSlug: snapshot.themeSlug,
+      // Asserted for the same reason as `difficulty` below: the snapshot is
+      // parsed JSON, so its fields are plain strings, while `themeSlug` is now
+      // a select narrowed to the theme manifest. This migration runs before the
+      // one that converts the column to a pg enum, so the value written here is
+      // still text at runtime — the assertion is a compile-time concern only,
+      // and the later conversion is what would reject an unknown slug.
+      themeSlug: snapshot.themeSlug as 'void' | 'venom',
       startedAt: snapshot.startedAt,
       raidSlugs: snapshot.raidSlugs.map((slug) => ({ slug })),
       rankSourceRaidSlug: snapshot.rankSourceRaidSlug,

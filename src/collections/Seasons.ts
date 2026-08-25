@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { THEME_OPTIONS } from '../lib/themes'
 
 export const Seasons: CollectionConfig = {
   slug: 'seasons',
@@ -16,7 +17,20 @@ export const Seasons: CollectionConfig = {
       unique: true,
       admin: { description: 'Identifies this Season in the site switcher URL. Not a Raid slug or the M+ season slug.' },
     },
-    { name: 'themeSlug', type: 'text', required: true, admin: { description: 'Selects this Season\'s colour palette class.' } },
+    {
+      name: 'themeSlug',
+      type: 'select',
+      required: true,
+      // Options come from the theme manifest rather than a second hand-typed
+      // list, so a theme cannot exist in the dropdown without existing in code.
+      // Note this is stored as a pg enum: adding a theme costs an enum-value
+      // migration (ADR 0007).
+      options: THEME_OPTIONS,
+      admin: {
+        description:
+          "Selects this Season's theme — the whole look, not just colours: palette, fonts, and any backdrop, motifs and key art the theme defines. Themes are built in code and added by a pull request; see src/lib/themes.ts.",
+      },
+    },
     {
       name: 'startedAt',
       type: 'date',

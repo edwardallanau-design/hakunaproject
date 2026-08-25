@@ -190,9 +190,9 @@ export interface Season {
    */
   urlSlug: string;
   /**
-   * Selects this Season's colour palette class.
+   * Selects this Season's theme — the whole look, not just colours: palette, fonts, and any backdrop, motifs and key art the theme defines. Themes are built in code and added by a pull request; see src/lib/themes.ts.
    */
-  themeSlug: string;
+  themeSlug: 'void' | 'venom';
   /**
    * Orders the switcher. Not the same as row order.
    */

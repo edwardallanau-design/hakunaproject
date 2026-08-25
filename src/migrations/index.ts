@@ -1,5 +1,6 @@
 import * as migration_20260804_235225_baseline from './20260804_235225_baseline';
 import * as migration_20260811_030341_add_seasons_collection from './20260811_030341_add_seasons_collection';
+import * as migration_20260825_023852_add_theme_slug_enum from './20260825_023852_add_theme_slug_enum';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20260811_030341_add_seasons_collection.up,
     down: migration_20260811_030341_add_seasons_collection.down,
-    name: '20260811_030341_add_seasons_collection'
+    name: '20260811_030341_add_seasons_collection',
+  },
+  {
+    up: migration_20260825_023852_add_theme_slug_enum.up,
+    down: migration_20260825_023852_add_theme_slug_enum.down,
+    name: '20260825_023852_add_theme_slug_enum'
   },
 ];
