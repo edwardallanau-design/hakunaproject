@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { SwitcherSeason } from "@/components/SeasonSwitcher";
 
@@ -58,6 +59,40 @@ export function PixelHeaderSwitcher({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // How far to sit from the right edge, measured from the controls Navbar
+  // actually rendered rather than guessed.
+  const [rightOffset, setRightOffset] = useState<number | null>(null);
+
+  useEffect(() => {
+    // A fixed `paddingRight` cannot track this: the navbar sizes its controls
+    // with clamp() and hides the hamburger above 640px, so the space they
+    // occupy is not a simple function of viewport width. Guessing produced a
+    // real overlap at 1440px — the select ran under the theme toggle.
+    const measure = () => {
+      const nav = document.querySelector("nav");
+      if (!nav) return;
+      const controls = [
+        nav.querySelector<HTMLElement>('button[aria-label="Toggle theme"]'),
+        nav.querySelector<HTMLElement>('button[aria-label="Menu"]'),
+      ].filter((el): el is HTMLElement => {
+        if (!el) return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && getComputedStyle(el).display !== "none";
+      });
+      if (controls.length === 0) return setRightOffset(null);
+      // Sit left of the leftmost control, with a gap matching the navbar's own.
+      const leftmost = Math.min(...controls.map((el) => el.getBoundingClientRect().left));
+      setRightOffset(Math.max(0, Math.round(window.innerWidth - leftmost + 12)));
+    };
+    measure();
+    window.addEventListener("resize", measure, { passive: true });
+    // The navbar mounts its controls after hydration, so measure once more.
+    const t = setTimeout(measure, 120);
+    return () => {
+      window.removeEventListener("resize", measure);
+      clearTimeout(t);
+    };
+  }, []);
 
   if (seasons.length <= 1) return null;
 
@@ -79,8 +114,10 @@ export function PixelHeaderSwitcher({
         position: "fixed",
         top: 0,
         right: 0,
-        // Clears the theme toggle and hamburger the navbar already renders.
-        paddingRight: "clamp(112px,10vw,190px)",
+        // Measured clearance for whatever controls the navbar is showing.
+        // Hidden until measured, so it never flashes in the wrong place.
+        paddingRight: rightOffset ?? 0,
+        visibility: rightOffset === null ? "hidden" : "visible",
         height: "clamp(52px,4.5vw,72px)",
         display: "flex",
         alignItems: "center",

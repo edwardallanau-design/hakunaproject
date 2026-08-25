@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const LINKS = [
   { id: "home", label: "Home" },
@@ -34,6 +34,7 @@ export function VenomNavbar({
   const searchParams = useSearchParams();
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("home");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -158,32 +159,117 @@ export function VenomNavbar({
           })}
         </div>
 
-        {seasons.length > 1 && (
-          <select
-            value={selectedUrlSlug}
-            onChange={(e) => handleChange(e.target.value)}
-            aria-label="Select Season"
+        {/* The switcher and the menu button share the right-hand side. They are
+            siblings in one flex row rather than positioned independently, so
+            they cannot overlap at any width — the mistake the pixel layout's
+            switcher made when it guessed a fixed offset instead. */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, minWidth: 0 }}>
+          {seasons.length > 1 && (
+            <select
+              value={selectedUrlSlug}
+              onChange={(e) => handleChange(e.target.value)}
+              aria-label="Select Season"
+              style={{
+                fontFamily: "var(--font-ui)",
+                fontWeight: 600,
+                fontSize: "var(--ui-xs)",
+                color: "var(--glow)",
+                background: "color-mix(in srgb,var(--accent) 10%,transparent)",
+                border: "1px solid var(--border)",
+                padding: "clamp(5px,0.5vw,9px) clamp(8px,0.8vw,13px)",
+                letterSpacing: "0.1em",
+                flexShrink: 1,
+                minWidth: 0,
+                maxWidth: "clamp(120px,32vw,260px)",
+              }}
+            >
+              {ordered.map((s) => (
+                <option key={s.urlSlug} value={s.urlSlug}>
+                  {s.name}
+                  {s.urlSlug === currentUrlSlug ? "" : " (archived)"}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Only below 640px, where the link row is hidden. Without it the
+              sections are unreachable on a phone except by scrolling. */}
+          <button
+            className="venom-show-640"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-expanded={menuOpen}
+            aria-label="Menu"
             style={{
               fontFamily: "var(--font-ui)",
-              fontWeight: 600,
-              fontSize: "var(--ui-xs)",
-              color: "var(--glow)",
-              background: "color-mix(in srgb,var(--accent) 10%,transparent)",
-              border: "1px solid var(--border)",
-              padding: "clamp(5px,0.5vw,9px) clamp(8px,0.8vw,13px)",
-              letterSpacing: "0.1em",
+              fontWeight: 700,
+              fontSize: "var(--ui-md)",
+              background: "transparent",
+              border: "1px solid var(--border-dim)",
+              color: "var(--muted)",
+              cursor: "pointer",
+              padding: "clamp(5px,0.45vw,8px) clamp(9px,0.9vw,13px)",
               flexShrink: 0,
+              lineHeight: 1,
             }}
           >
-            {ordered.map((s) => (
-              <option key={s.urlSlug} value={s.urlSlug}>
-                {s.name}
-                {s.urlSlug === currentUrlSlug ? "" : " (archived)"}
-              </option>
-            ))}
-          </select>
-        )}
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+            style={{
+              background: "rgba(5,15,8,0.97)",
+              backdropFilter: "blur(16px)",
+              borderBottom: "1px solid var(--border)",
+              padding: "8px clamp(16px,2.5vw,48px) 14px",
+            }}
+          >
+            {LINKS.map((l) => {
+              const isActive = active === l.id;
+              return (
+                <a
+                  key={l.id}
+                  href={`#${l.id}`}
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "11px 4px",
+                    fontFamily: "var(--font-ui)",
+                    fontWeight: 600,
+                    fontSize: "var(--ui-lg)",
+                    letterSpacing: "0.16em",
+                    color: isActive ? "var(--glow)" : "rgba(227,240,218,0.7)",
+                    textDecoration: "none",
+                  }}
+                >
+                  {isActive && (
+                    <span
+                      aria-hidden
+                      style={{
+                        width: 6,
+                        height: 6,
+                        background: "var(--glow)",
+                        transform: "rotate(45deg)",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  {l.label}
+                </a>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 }

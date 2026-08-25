@@ -7,13 +7,14 @@ import { SectionHeader } from "./SectionHeader";
 export type RunMember = { name: string; class: string; spec: string; role: string };
 
 /**
- * Two ways of showing who ran the key, for the operator to choose between.
+ * How the run's roster is shown on a card.
  *
- * - `row`    — one line under the key/time, tank → healer → dps, wrapping only
- *              if it must. Reads as a party.
- * - `stack`  — a column on the right of the key/time row, same baseline. Keeps
- *              the card compact when only one name is known, which is the
- *              common case.
+ * - `stack` — a column beside the key, growing upward from its baseline.
+ *   **The operator's choice**, and the default. Keeps the card compact when
+ *   only one name is known, which is the common case, and every card the same
+ *   height when a full party lands.
+ * - `row` — one line under the key/time. Kept because it reads better for a
+ *   full five and costs nothing to retain, but nothing selects it today.
  */
 export type RosterLayout = "row" | "stack";
 
@@ -57,7 +58,7 @@ function MemberName({ m, size }: { m: RunMember; size: string }) {
 
 export function DungeonGrid({
   dungeons,
-  rosterLayout = "row",
+  rosterLayout = "stack",
   numeral = "02",
 }: {
   dungeons: DungeonRun[];
@@ -326,5 +327,6 @@ export function DungeonGrid({
     </section>
   );
 }
+
 
 

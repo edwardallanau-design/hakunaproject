@@ -220,6 +220,9 @@
 /* Nav links and the class chip disappear at the design's breakpoints. */
 .venom-hide-640 { display: flex; }
 @media (max-width: 639px) { .venom-hide-640 { display: none !important; } }
+/* The mirror: the menu button exists only where the link row does not. */
+.venom-show-640 { display: none; }
+@media (max-width: 639px) { .venom-show-640 { display: block; } }
 .venom-hide-520 { display: inline-block; }
 @media (max-width: 519px) { .venom-hide-520 { display: none !important; } }
 

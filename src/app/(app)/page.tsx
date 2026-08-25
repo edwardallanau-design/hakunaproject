@@ -20,12 +20,10 @@ import { Footer } from "@/components/Footer";
 export default async function Home({
   searchParams,
 }: {
-  // `roster` is temporary, for choosing between the two dungeon-card roster
-  // treatments. It comes out once the operator picks one.
-  searchParams: Promise<{ season?: string; roster?: string }>;
+  searchParams: Promise<{ season?: string }>;
 }) {
   const payload = await getPayload({ config: await config });
-  const { season: requestedSlug, roster } = await searchParams;
+  const { season: requestedSlug } = await searchParams;
 
   const [guildSettings, officersSection, recruitmentSection, allSeasons] =
     await Promise.all([
@@ -151,7 +149,6 @@ export default async function Home({
         footerLinks={footerLinks}
         runners={prog.mythicPlusRunners}
         dungeons={dungeons}
-        rosterLayout={roster === "stack" ? "stack" : "row"}
       />
     );
   }
@@ -189,3 +186,4 @@ export default async function Home({
     </div>
   );
 }
+

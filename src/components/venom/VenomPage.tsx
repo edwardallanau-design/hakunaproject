@@ -34,7 +34,7 @@ export function VenomPage({
   footerLinks,
   runners,
   dungeons,
-  rosterLayout = "row",
+  rosterLayout = "stack",
 }: {
   season: Season;
   seasons: SwitcherSeason[];
@@ -55,7 +55,7 @@ export function VenomPage({
   footerLinks: { label: string; href: string }[];
   runners: Runner[];
   dungeons: DungeonRun[];
-  /** Temporary: lets the operator compare both roster treatments live. */
+  /** Defaults to the operator-chosen `stack`. */
   rosterLayout?: RosterLayout;
 }) {
   // Server-computed so the client toggle initialises without a hydration
@@ -136,3 +136,5 @@ export function VenomPage({
     </MotionConfig>
   );
 }
+
+
