@@ -41,7 +41,7 @@ function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }
       <span
         className="leading-none"
         style={{
-          fontFamily: "'VT323', monospace",
+          fontFamily: "var(--font-display)",
           fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)",
           color: "var(--text)",
           textShadow: isVoid ? "0 0 20px rgba(168,85,247,0.4)" : "0 0 16px rgba(245,158,11,0.3)",
@@ -51,7 +51,7 @@ function StatItem({ icon: Icon, value, label, prefix = "", suffix = "", isVoid }
       </span>
       <span
         style={{
-          fontFamily: "'Press Start 2P', monospace",
+          fontFamily: "var(--font-ui)",
           fontSize: "var(--px-sm)",
           letterSpacing: "0.15em",
           color: "var(--muted)",

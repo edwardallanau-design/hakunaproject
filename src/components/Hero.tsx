@@ -223,7 +223,7 @@ export function Hero() {
           <motion.div variants={stagger.item} className="flex flex-col items-center gap-2">
             <h1
               style={{
-                fontFamily: "'VT323', monospace",
+                fontFamily: "var(--font-display)",
                 fontSize: "var(--vt-xl)",
                 color: isVoid ? "#e2d9f3" : "#1e1b0f",
                 letterSpacing: "0.1em",
@@ -234,7 +234,7 @@ export function Hero() {
               Potato Corner
             </h1>
             <p style={{
-              fontFamily: "'Press Start 2P', monospace",
+              fontFamily: "var(--font-ui)",
               fontSize: "var(--px-md)",
               color: "var(--muted)",
               letterSpacing: "0.2em",

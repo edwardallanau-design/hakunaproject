@@ -77,7 +77,7 @@ export function Navbar() {
           <span
             className="hidden-below-520"
             style={{
-              fontFamily: "'VT323', monospace",
+              fontFamily: "var(--font-display)",
               fontSize: "clamp(18px,1.7vw,32px)",
               color: "var(--text)",
               textShadow: "0 0 16px color-mix(in srgb,var(--glow) 70%,transparent)",
@@ -101,7 +101,7 @@ export function Navbar() {
                 key={l.href}
                 href={l.href}
                 style={{
-                  fontFamily: "'Press Start 2P', monospace",
+                  fontFamily: "var(--font-ui)",
                   fontSize: "var(--px-md)",
                   color: isActive ? "var(--glow)" : isVoid ? "rgba(226,217,243,0.6)" : "rgba(30,27,15,0.55)",
                   textShadow: isActive ? "0 0 8px var(--glow)" : "none",
@@ -130,7 +130,7 @@ export function Navbar() {
             onClick={() => setTheme(isVoid ? "light" : "dark")}
             className="flex items-center cursor-pointer"
             style={{
-              fontFamily: "'Press Start 2P', monospace",
+              fontFamily: "var(--font-ui)",
               fontSize: "var(--px-sm)",
               gap: 7,
               padding: "clamp(5px,0.45vw,8px) clamp(8px,0.9vw,14px)",
@@ -152,7 +152,7 @@ export function Navbar() {
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             style={{
-              fontFamily: "'Press Start 2P', monospace",
+              fontFamily: "var(--font-ui)",
               fontSize: "var(--px-md)",
               background: "transparent",
               border: "1px solid var(--border-dim)",
@@ -196,7 +196,7 @@ export function Navbar() {
                     alignItems: "center",
                     gap: 10,
                     padding: "10px 8px",
-                    fontFamily: "'Press Start 2P', monospace",
+                    fontFamily: "var(--font-ui)",
                     fontSize: "var(--px-md)",
                     color: isActive ? "var(--glow)" : "var(--muted)",
                     background: isActive ? "color-mix(in srgb,var(--accent) 10%,transparent)" : "transparent",

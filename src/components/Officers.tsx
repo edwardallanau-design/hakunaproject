@@ -68,7 +68,7 @@ export function Officers({ section }: { section: OfficersSectionProps }) {
           className="text-center mb-14"
         >
           <span style={{
-            fontFamily: "'Press Start 2P', monospace",
+            fontFamily: "var(--font-ui)",
             fontSize: "var(--px-md)",
             color: "var(--muted)",
             letterSpacing: "0.2em",
@@ -76,7 +76,7 @@ export function Officers({ section }: { section: OfficersSectionProps }) {
             marginBottom: 12,
           }}>{section.eyebrow}</span>
           <h2 style={{
-            fontFamily: "'VT323', monospace",
+            fontFamily: "var(--font-display)",
             fontSize: "var(--vt-lg)",
             color: "var(--text)",
             textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)",
@@ -130,34 +130,34 @@ export function Officers({ section }: { section: OfficersSectionProps }) {
                         display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0,
                       }}>
-                        <span style={{ fontFamily: "'VT323', monospace", fontSize: "clamp(24px,2vw,36px)", color: classColor, lineHeight: 1 }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px,2vw,36px)", color: classColor, lineHeight: 1 }}>
                           {member.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <p style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-md)", color: "var(--text)", letterSpacing: "0.05em", lineHeight: 1 }}>
+                        <p style={{ fontFamily: "var(--font-display)", fontSize: "var(--vt-md)", color: "var(--text)", letterSpacing: "0.05em", lineHeight: 1 }}>
                           {member.name}
                         </p>
-                        <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: classColor, marginTop: 3, letterSpacing: "0.08em" }}>
+                        <p style={{ fontFamily: "var(--font-ui)", fontSize: "var(--px-xs)", color: classColor, marginTop: 3, letterSpacing: "0.08em" }}>
                           {member.class}
                         </p>
                       </div>
                     </div>
 
                     {/* Stats */}
-                    <div style={{ borderBottom: "1px solid var(--border-dim)", paddingBottom: "clamp(3px,0.3vw,5px)", display: "flex", justifyContent: "space-between", fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)" }}>
+                    <div style={{ borderBottom: "1px solid var(--border-dim)", paddingBottom: "clamp(3px,0.3vw,5px)", display: "flex", justifyContent: "space-between", fontFamily: "var(--font-ui)", fontSize: "var(--px-xs)", color: "var(--muted)" }}>
                       Spec <span style={{ color: "var(--text)" }}>{member.spec}</span>
                     </div>
-                    <div style={{ borderBottom: "1px solid var(--border-dim)", paddingBottom: "clamp(3px,0.3vw,5px)", display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)" }}>
+                    <div style={{ borderBottom: "1px solid var(--border-dim)", paddingBottom: "clamp(3px,0.3vw,5px)", display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "var(--font-ui)", fontSize: "var(--px-xs)", color: "var(--muted)" }}>
                       Role
                       <span style={{ color: "var(--text)", display: "flex", alignItems: "center", gap: 4 }}>
                         <RoleIcon size={10} style={{ color: classColor, opacity: 0.8 }} />
                         {member.role}
                       </span>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "var(--font-ui)", fontSize: "var(--px-xs)", color: "var(--muted)" }}>
                       ilvl
-                      <span style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-md)", color: "var(--accent2)" }}>
+                      <span style={{ fontFamily: "var(--font-body)", fontSize: "var(--vt-md)", color: "var(--accent2)" }}>
                         {member.ilvl}
                       </span>
                     </div>
@@ -169,7 +169,7 @@ export function Officers({ section }: { section: OfficersSectionProps }) {
                       border: "1px solid var(--border-dim)",
                       background: "color-mix(in srgb,var(--accent) 6%,transparent)",
                       textAlign: "center",
-                      fontFamily: "'Press Start 2P', monospace",
+                      fontFamily: "var(--font-ui)",
                       fontSize: "var(--px-xs)",
                       color: "var(--muted)",
                       letterSpacing: "0.1em",

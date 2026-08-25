@@ -40,7 +40,7 @@ export function SeasonSwitcher({
         onChange={(e) => handleChange(e.target.value)}
         aria-label="Select Season"
         style={{
-          fontFamily: "'Press Start 2P', monospace",
+          fontFamily: "var(--font-ui)",
           fontSize: "var(--px-sm)",
           color: "var(--text)",
           background: "color-mix(in srgb,var(--accent) 8%,transparent)",
@@ -60,7 +60,7 @@ export function SeasonSwitcher({
       {isArchived && (
         <span
           style={{
-            fontFamily: "'Press Start 2P', monospace",
+            fontFamily: "var(--font-ui)",
             fontSize: "var(--px-xs)",
             color: "var(--accent2)",
             border: "1px solid color-mix(in srgb,var(--accent2) 40%,transparent)",

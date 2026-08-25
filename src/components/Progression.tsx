@@ -43,7 +43,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
           className="text-center mb-14"
         >
           <span style={{
-            fontFamily: "'Press Start 2P', monospace",
+            fontFamily: "var(--font-ui)",
             fontSize: "var(--px-md)",
             color: "var(--muted)",
             letterSpacing: "0.2em",
@@ -52,7 +52,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
             marginBottom: 12,
           }}>◆ Current Tier ◆</span>
           <h2 style={{
-            fontFamily: "'VT323', monospace",
+            fontFamily: "var(--font-display)",
             fontSize: "var(--vt-lg)",
             color: "var(--text)",
             textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)",
@@ -61,7 +61,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
             {progression.tier}
           </h2>
           <p style={{
-            fontFamily: "'Press Start 2P', monospace",
+            fontFamily: "var(--font-ui)",
             fontSize: "var(--px-sm)",
             color: "var(--muted)",
             marginTop: 8,
@@ -96,7 +96,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
               }}
             >
               <span style={{
-                fontFamily: "'Press Start 2P', monospace",
+                fontFamily: "var(--font-ui)",
                 fontSize: "var(--px-lg)",
                 letterSpacing: "0.2em",
                 color: "var(--accent)",
@@ -110,7 +110,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
           <div className="flex items-end justify-between mb-4">
             <div>
               <span style={{
-                fontFamily: "'VT323', monospace",
+                fontFamily: "var(--font-display)",
                 fontSize: "var(--vt-2xl)",
                 color: "var(--text)",
                 textShadow: "0 0 20px color-mix(in srgb,var(--glow) 60%,transparent)",
@@ -119,7 +119,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                 {progression.kills}/{progression.totalBosses}
               </span>
               <span style={{
-                fontFamily: "'Press Start 2P', monospace",
+                fontFamily: "var(--font-ui)",
                 fontSize: "var(--px-md)",
                 color: "var(--muted)",
                 marginLeft: 10,
@@ -129,7 +129,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
               </span>
             </div>
             <span style={{
-              fontFamily: "'Press Start 2P', monospace",
+              fontFamily: "var(--font-ui)",
               fontSize: "var(--px-md)",
               color: "var(--accent2)",
               border: "1px solid color-mix(in srgb,var(--accent2) 30%,transparent)",
@@ -168,7 +168,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                   width: "clamp(24px,2vw,34px)", height: "clamp(24px,2vw,34px)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
-                  fontFamily: "'Press Start 2P', monospace",
+                  fontFamily: "var(--font-ui)",
                   fontSize: "var(--px-sm)",
                   border: `1px solid ${boss.killed ? "color-mix(in srgb,var(--accent2) 50%,transparent)" : "color-mix(in srgb,var(--muted) 20%,transparent)"}`,
                   color: boss.killed ? "var(--accent2)" : "var(--muted)",
@@ -178,7 +178,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                 </div>
                 {/* Boss name */}
                 <span style={{
-                  fontFamily: "'VT323', monospace",
+                  fontFamily: "var(--font-body)",
                   fontSize: "var(--vt-sm)",
                   flex: 1,
                   color: boss.killed ? "var(--text)" : "var(--muted)",
@@ -190,7 +190,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                 {/* Kill / progress tag */}
                 {boss.killed ? (
                   <span style={{
-                    fontFamily: "'Press Start 2P', monospace",
+                    fontFamily: "var(--font-ui)",
                     fontSize: "var(--px-xs)",
                     color: "var(--accent2)",
                     background: "color-mix(in srgb,var(--accent2) 10%,transparent)",
@@ -202,7 +202,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                   </span>
                 ) : boss.bestPull != null && boss.bestPull > 0 ? (
                   <span style={{
-                    fontFamily: "'Press Start 2P', monospace",
+                    fontFamily: "var(--font-ui)",
                     fontSize: "var(--px-xs)",
                     color: "var(--muted)",
                     background: "color-mix(in srgb,var(--muted) 8%,transparent)",
@@ -235,7 +235,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
             {/* Header */}
             <div style={{ marginBottom: "clamp(12px,1.1vw,18px)" }}>
               <span style={{
-                fontFamily: "'Press Start 2P', monospace",
+                fontFamily: "var(--font-ui)",
                 fontSize: "var(--px-md)",
                 color: "var(--muted)",
                 letterSpacing: "0.2em",
@@ -269,7 +269,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
                       width: "clamp(22px,1.8vw,30px)", height: "clamp(22px,1.8vw,30px)",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       flexShrink: 0,
-                      fontFamily: "'Press Start 2P', monospace",
+                      fontFamily: "var(--font-ui)",
                       fontSize: "var(--px-sm)",
                       border: `1px solid ${i === 0
                         ? "color-mix(in srgb,var(--accent2) 50%,transparent)"
@@ -284,7 +284,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
 
                     {/* Character name */}
                     <span style={{
-                      fontFamily: "'VT323', monospace",
+                      fontFamily: "var(--font-body)",
                       fontSize: "var(--vt-sm)",
                       color: "var(--text)",
                       flex: 1,
@@ -298,7 +298,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
 
                     {/* Spec + Class badge */}
                     <span style={{
-                      fontFamily: "'Press Start 2P', monospace",
+                      fontFamily: "var(--font-ui)",
                       fontSize: "var(--px-xs)",
                       padding: "clamp(2px,0.2vw,3px) clamp(5px,0.45vw,8px)",
                       border: `1px solid ${classColor}44`,
@@ -312,7 +312,7 @@ export function Progression({ progression }: { progression: ProgressionData }) {
 
                     {/* Score badge */}
                     <span style={{
-                      fontFamily: "'Press Start 2P', monospace",
+                      fontFamily: "var(--font-ui)",
                       fontSize: "var(--px-sm)",
                       color: "var(--accent2)",
                       border: "1px solid color-mix(in srgb,var(--accent2) 30%,transparent)",

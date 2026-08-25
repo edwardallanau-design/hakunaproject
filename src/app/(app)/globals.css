@@ -1,11 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
-
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 /* ── Theme variables ── */
 :root {
+  /* ── Font tokens ──
+     The typography half of a theme package. Every `font-family` on the site —
+     in this stylesheet and in component inline styles — reads one of these
+     three, so a theme class can swap any subset by redeclaring them. The
+     values here are the site default (Season 1's look) and the fallback for
+     any theme that overrides nothing.
+
+     The families are supplied by next/font (src/lib/fonts.ts), which
+     self-hosts the woff2 at build time — no request to fonts.googleapis.com or
+     fonts.gstatic.com at page load. A theme that adds a font declares it
+     there; loading only the viewed Season's font is what next/font's per-face
+     `--font-*` variables plus `preload: false` buy us. */
+  --font-display: var(--font-vt323), monospace;
+  --font-body: var(--font-vt323), monospace;
+  --font-ui: var(--font-press-start-2p), monospace;
+
   --bg: #030710;
   --surface: #080d1e;
   --surface2: #0d1428;
@@ -34,10 +48,30 @@
 
 /* ── Per-Season dark themes ──
    Selected by the Season's `themeSlug` via a class on the page's root wrapper,
-   set server-side from the Season being viewed. Each defines the same 13
-   tokens as :root. `.theme-void` matches Season 1's palette — the same values
-   as :root, kept explicit so :root can stay a true fallback rather than
-   silently doubling as "Season 1's theme". */
+   set server-side from the Season being viewed.
+
+   A theme is a package, not just a palette (ADR 0007). Its elements:
+
+     palette    REQUIRED — all 13 colour tokens, same set as :root above.
+     fonts      optional — override any subset of --font-display/-body/-ui.
+                The family itself is declared in src/lib/fonts.ts.
+     backdrop   optional — page/hero environmental treatment.
+     motifs     optional — card and UI decorations (gems, borders, dividers).
+     key art    optional — hero illustration; declared per theme in the
+                manifest, and a theme without it renders nothing.
+
+   Every optional element falls back to today's look when a theme omits it,
+   which is what lets `void` stay pixel-for-pixel frozen while the seam widens.
+   File assets live slug-keyed under public/themes/<slug>/ when they exist.
+
+   The manifest in src/lib/themes.ts is the source of truth for which themes
+   exist — read its docstring before adding one; a new theme also costs an
+   enum-value migration.
+
+   `.theme-void` matches Season 1's palette — the same values as :root, kept
+   explicit so :root can stay a true fallback rather than silently doubling as
+   "Season 1's theme". It overrides no optional element: void is the theme that
+   proves the fallback contract works. */
 .theme-void {
   --bg: #030710;
   --surface: #080d1e;
@@ -106,7 +140,7 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'VT323', monospace;
+  font-family: var(--font-body);
   font-size: clamp(18px, 1.2vw, 22px);
   line-height: 1.6;
   transition: background-color 0.5s ease, color 0.5s ease;
@@ -195,7 +229,7 @@ body {
 
 /* ── Pixel button ── */
 .px-btn {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-ui);
   font-size: var(--px-lg);
   padding: clamp(10px,0.9vw,16px) clamp(18px,1.6vw,28px);
   background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 60%, black));
@@ -221,7 +255,7 @@ body {
 
 /* ── Pixel badge ── */
 .px-badge {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-ui);
   font-size: var(--px-sm);
   padding: clamp(4px,0.35vw,7px) clamp(8px,0.7vw,13px);
   border: 1px solid var(--border);
@@ -272,7 +306,7 @@ body {
   max-width: 60px;
 }
 .px-divider-label {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-ui);
   font-size: var(--px-sm);
   color: var(--muted);
   letter-spacing: 0.15em;
@@ -344,7 +378,7 @@ body {
 
 .scroll-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-ui);
   font-size: var(--px-md);
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   border: 2px solid var(--border);

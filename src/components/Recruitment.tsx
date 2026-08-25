@@ -75,13 +75,13 @@ export function Recruitment({ section }: { section: RecruitmentSectionProps }) {
           transition={{ duration: 0.7 }}
           className="text-center mb-14"
         >
-          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-md)", color: "var(--accent)", letterSpacing: "0.2em", display: "block", marginBottom: 12 }}>
+          <span style={{ fontFamily: "var(--font-ui)", fontSize: "var(--px-md)", color: "var(--accent)", letterSpacing: "0.2em", display: "block", marginBottom: 12 }}>
             {section.eyebrow}
           </span>
-          <h2 style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-lg)", color: "var(--text)", textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)", letterSpacing: "0.08em", marginBottom: 12 }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--vt-lg)", color: "var(--text)", textShadow: "0 0 20px color-mix(in srgb,var(--glow) 50%,transparent)", letterSpacing: "0.08em", marginBottom: 12 }}>
             {section.heading}
           </h2>
-          <p style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-sm)", color: "var(--muted)", maxWidth: "clamp(380px,44vw,580px)", margin: "0 auto" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "var(--vt-sm)", color: "var(--muted)", maxWidth: "clamp(380px,44vw,580px)", margin: "0 auto" }}>
             {section.description}
           </p>
         </motion.div>
@@ -119,12 +119,12 @@ export function Recruitment({ section }: { section: RecruitmentSectionProps }) {
                         }}>
                           <RoleIcon size={16} style={{ color: "var(--accent)" }} />
                         </div>
-                        <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "var(--vt-md)", color: "var(--text)", letterSpacing: "0.05em" }}>
+                        <h3 style={{ fontFamily: "var(--font-display)", fontSize: "var(--vt-md)", color: "var(--text)", letterSpacing: "0.05em" }}>
                           {r.role}
                         </h3>
                       </div>
                       <span style={{
-                        fontFamily: "'Press Start 2P', monospace",
+                        fontFamily: "var(--font-ui)",
                         fontSize: "var(--px-xs)",
                         padding: "clamp(3px,0.3vw,5px) clamp(7px,0.6vw,10px)",
                         border: `1px solid ${ps.text}44`,
@@ -141,7 +141,7 @@ export function Recruitment({ section }: { section: RecruitmentSectionProps }) {
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "clamp(4px,0.4vw,7px)" }}>
                       {r.specs.map((spec) => (
                         <span key={spec} style={{
-                          fontFamily: "'Press Start 2P', monospace",
+                          fontFamily: "var(--font-ui)",
                           fontSize: "var(--px-xs)",
                           padding: "clamp(3px,0.3vw,5px) clamp(7px,0.6vw,10px)",
                           border: "1px solid var(--border-dim)",
@@ -191,7 +191,7 @@ export function Recruitment({ section }: { section: RecruitmentSectionProps }) {
           >
             {section.ctaLabel}
           </a>
-          <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-sm)", color: "var(--muted)", marginTop: "clamp(10px,1vw,16px)", letterSpacing: "0.1em" }}>
+          <p style={{ fontFamily: "var(--font-ui)", fontSize: "var(--px-sm)", color: "var(--muted)", marginTop: "clamp(10px,1vw,16px)", letterSpacing: "0.1em" }}>
             {section.footerNote}
           </p>
         </motion.div>

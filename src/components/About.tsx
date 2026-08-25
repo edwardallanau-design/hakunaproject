@@ -29,6 +29,12 @@ export function About({ guild }: Props) {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
+          {/* Rajdhani and Bebas Neue below are dead stacks — the 8-bit redesign
+              stopped loading both, so these two elements render in the browser's
+              default sans-serif and have since. Left as-is deliberately: `void`
+              is pixel-for-pixel frozen (ADR 0007), and pointing them at
+              --font-display/--font-ui would change Season 1's look. Fixing it is
+              its own change against a fresh baseline. */}
           <p className="text-xs tracking-[0.3em] uppercase mb-3"
             style={{ fontFamily: "'Rajdhani', sans-serif", color: "var(--accent)" }}>
             {guild.eyebrow}

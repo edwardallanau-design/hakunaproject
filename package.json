@@ -19,7 +19,8 @@
     "generate:importmap": "node node_modules/payload/bin.js generate:importmap --use-swc",
     "generate:types": "node node_modules/payload/bin.js generate:types --use-swc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.check.json"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.79.1",

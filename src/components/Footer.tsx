@@ -55,7 +55,7 @@ export function Footer({ links }: { links: { label: string; href: string }[] }) 
         <div style={{ maxWidth: "clamp(480px,60vw,720px)", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(12px,1.2vw,20px)", textAlign: "center" }}>
           {/* Guild name */}
           <p style={{
-            fontFamily: "'VT323', monospace",
+            fontFamily: "var(--font-display)",
             fontSize: "clamp(24px,2vw,36px)",
             color: "var(--text)",
             textShadow: "0 0 16px color-mix(in srgb,var(--glow) 40%,transparent)",
@@ -73,7 +73,7 @@ export function Footer({ links }: { links: { label: string; href: string }[] }) 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  fontFamily: "'Press Start 2P', monospace",
+                  fontFamily: "var(--font-ui)",
                   fontSize: "var(--px-sm)",
                   color: "var(--muted)",
                   textDecoration: "none",
@@ -94,10 +94,10 @@ export function Footer({ links }: { links: { label: string; href: string }[] }) 
           </div>
 
           {/* Copyright */}
-          <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", color: "var(--muted)", opacity: 0.4, letterSpacing: "0.08em" }}>
+          <p style={{ fontFamily: "var(--font-ui)", fontSize: "var(--px-xs)", color: "var(--muted)", opacity: 0.4, letterSpacing: "0.08em" }}>
             © {new Date().getFullYear()} Potato Corner · Barthilas US · World of Warcraft
           </p>
-          <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "var(--px-xs)", opacity: 0.25, color: "var(--muted)" }}>
+          <p style={{ fontFamily: "var(--font-ui)", fontSize: "var(--px-xs)", opacity: 0.25, color: "var(--muted)" }}>
             World of Warcraft is a trademark of Blizzard Entertainment
           </p>
         </div>
