@@ -6,7 +6,29 @@ Extends the theming decision shipped with the Season rollover (ticket `08`).
 
 ## Status
 
-Accepted
+Accepted — amended 2026-08-25 by the Season 2 design, in two places.
+
+**A theme may declare its own component tree.** This ADR assumed a theme swaps
+tokens under a shared layout. Season 2's design changes *structure* — numbered
+editorial sections, a raid descent timeline, a dungeon grid, a champion
+spotlight — and its hero is a different component entirely, which no amount of
+CSS reaches. Themes therefore carry a `layout` discriminator (`pixel` |
+`editorial`) and the page picks a tree. The "operators choose among reviewed
+wholes" principle is unchanged and now covers more: a theme is a reviewed page,
+not merely a reviewed palette.
+
+**"Light mode stays season-neutral" no longer holds for every theme.** `venom`
+is dark-only by operator decision: it styles `.light .theme-venom` as well as
+`.theme-venom`, and hides the light/dark toggle while it shows. The rule stands
+as the default — `void` still honours it, and a theme must opt out
+deliberately, beating the light override on specificity rather than winning by
+accident.
+
+**The key-art slot in "Decision" below was never built.** Ticket `06` is
+undelivered and the manifest carries no `hasKeyArt` flag: the v2 design bakes
+its serpent-eye crest into its own hero. A theme wanting key art draws it in its
+component tree, which the first amendment above now permits. Backdrop and motifs
+shipped as written.
 
 ## Context
 

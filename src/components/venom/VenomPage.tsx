@@ -1,10 +1,10 @@
 import { MotionConfig } from "framer-motion";
 import type { Season } from "@/payload-types";
-import { initialDifficulty, rankingsAt, difficultyLabel, raidGroups } from "@/lib/venomViewModel";
+import { initialDifficulty, rankingsAt, raidGroups } from "@/lib/venomViewModel";
 import { VenomNavbar, type SwitcherSeason } from "./VenomNavbar";
 import { VenomHero } from "./VenomHero";
 import { RaidTimeline } from "./RaidTimeline";
-import { DungeonGrid, type DungeonRun, type RosterLayout } from "./DungeonGrid";
+import { DungeonGrid, type DungeonRun } from "./DungeonGrid";
 import { Leaderboard, type Runner } from "./Leaderboard";
 import { VenomAbout, VenomOfficers, VenomRecruitment, VenomFooter, BackToTop, type OfficerCard, type RoleCard } from "./VenomSections";
 
@@ -34,7 +34,6 @@ export function VenomPage({
   footerLinks,
   runners,
   dungeons,
-  rosterLayout = "stack",
 }: {
   season: Season;
   seasons: SwitcherSeason[];
@@ -55,8 +54,6 @@ export function VenomPage({
   footerLinks: { label: string; href: string }[];
   runners: Runner[];
   dungeons: DungeonRun[];
-  /** Defaults to the operator-chosen `stack`. */
-  rosterLayout?: RosterLayout;
 }) {
   // Server-computed so the client toggle initialises without a hydration
   // mismatch.
@@ -89,7 +86,6 @@ export function VenomPage({
             region: ranks.region,
             realm: ranks.realm,
           }}
-          rankLabel={difficultyLabel(difficulty)}
         />
 
         {isArchived && (
@@ -116,11 +112,7 @@ export function VenomPage({
             raid does not leave two sections both numbered 02. The raid groups
             take 01..n and everything after continues from there. */}
         <RaidTimeline season={season} groups={groups} />
-        <DungeonGrid
-          dungeons={dungeons}
-          rosterLayout={rosterLayout}
-          numeral={numeralAfter(groups.length)}
-        />
+        <DungeonGrid dungeons={dungeons} numeral={numeralAfter(groups.length)} />
         <Leaderboard runners={runners} numeral={numeralAfter(groups.length + 1)} />
         <VenomAbout
           heading={aboutHeading}

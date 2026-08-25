@@ -107,15 +107,23 @@ export default async function Home({
     // The dungeon grid is decoration over live data, not load-bearing content.
     // An upstream outage should cost the section, never the page — DungeonGrid
     // renders nothing for an empty list, the same way the M+ runners card does.
-    const dungeons = await fetchDungeonRotation({
-      region: process.env.GUILD_REGION ?? "us",
-      realm: process.env.GUILD_REALM ?? "Barthilas",
-      guild: process.env.GUILD_NAME ?? "Potato Corner",
-      seasonSlug: selectedSeason.mythicPlusSeasonSlug,
-    }).catch((err) => {
-      console.error("Dungeon rotation fetch failed; hiding the section.", err);
-      return [];
-    });
+    //
+    // Never for an archived Season (ADR 0005). Raider.IO's M+ endpoints answer
+    // only about the *current* season, so deriving an archive from them does
+    // not show that season's rotation — it shows today's under a past season's
+    // heading. An empty section is the honest answer until the rotation is
+    // persisted at sync time; see the ledger's Open entry.
+    const dungeons = isArchived
+      ? []
+      : await fetchDungeonRotation({
+          region: process.env.GUILD_REGION ?? "us",
+          realm: process.env.GUILD_REALM ?? "Barthilas",
+          guild: process.env.GUILD_NAME ?? "Potato Corner",
+          seasonSlug: selectedSeason.mythicPlusSeasonSlug,
+        }).catch((err) => {
+          console.error("Dungeon rotation fetch failed; hiding the section.", err);
+          return [];
+        });
 
     return (
       <VenomPage

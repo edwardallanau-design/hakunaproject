@@ -125,13 +125,19 @@ export async function fetchDungeonRotation(args: DungeonFetchArgs): Promise<Dung
     }
   }
 
-  return [...best.entries()]
+  const unnamed: number[] = [];
+  const rotation = [...best.entries()]
     .map(([zoneId, run]): DungeonRun | null => {
       const name = names.get(zoneId);
       // A zone we cannot name would render as a blank card, which is worse than
       // omitting it. Skipping keeps the grid honest if upstream adds a dungeon
-      // the static data has not caught up with.
-      if (!name) return null;
+      // the static data has not caught up with — but a silently shorter grid
+      // looks identical to a guild that simply ran fewer dungeons, so the drop
+      // is recorded below.
+      if (!name) {
+        unnamed.push(zoneId);
+        return null;
+      }
       return {
         name,
         pool: currentIds.has(zoneId) ? "midnight" : "legacy",
@@ -150,6 +156,12 @@ export async function fetchDungeonRotation(args: DungeonFetchArgs): Promise<Dung
     })
     .filter((d): d is DungeonRun => d !== null)
     .sort((a, b) => b.bestKey - a.bestKey || a.bestTime.localeCompare(b.bestTime));
+
+  if (unnamed.length > 0) {
+    console.error(`M+ rotation: dropped ${unnamed.length} unnamed zone(s): ${unnamed.join(", ")}`);
+  }
+
+  return rotation;
 }
 
 /** zoneId → name across every expansion, plus the current expansion's ids. */
@@ -164,9 +176,19 @@ async function fetchDungeonNames(): Promise<[Map<number, string>, Set<number>]> 
         // page from making six upstream requests per render.
         next: { revalidate: 3600 },
       });
-      if (!res.ok) return;
+      // Degrade rather than throw — one expansion's static data missing costs
+      // some dungeon *names*, not the section. But say so: ADR 0002 wants a
+      // boundary failure to be loud, and a silent `return` here was
+      // indistinguishable from an expansion that legitimately has no dungeons.
+      if (!res.ok) {
+        console.error(`M+ static data for expansion ${expansion}: ${res.status} ${res.statusText}`);
+        return;
+      }
       const parsed = StaticDataSchema.safeParse(await res.json());
-      if (!parsed.success) return;
+      if (!parsed.success) {
+        console.error(`M+ static data for expansion ${expansion} did not validate`, parsed.error.issues);
+        return;
+      }
       for (const d of parsed.data.dungeons) {
         names.set(d.id, d.name);
         if (expansion === CURRENT_EXPANSION) currentIds.add(d.id);

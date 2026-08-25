@@ -74,13 +74,10 @@ export function VenomHero({
   eyebrow,
   intro,
   stats,
-  rankLabel,
 }: {
   eyebrow: string;
   intro: string;
   stats: HeroStats;
-  /** Which difficulty the ranks belong to, so the bar cannot mislead. */
-  rankLabel: string;
 }) {
   return (
     <section
@@ -339,9 +336,12 @@ export function VenomHero({
           }}
         >
           <Stat value={stats.members} label="Active Members" delay={900} />
-          <Stat value={stats.world} label={`${rankLabel} World`} delay={950} />
-          <Stat value={stats.region} label={`${rankLabel} Region`} delay={1000} />
-          <Stat value={stats.realm} label={`${rankLabel} Realm`} delay={1050} />
+          {/* Plain World/Region/Realm, operator decision 2026-08-25. The values
+              still follow the difficulty being displayed — see VenomPage — but
+              the difficulty is not named here. */}
+          <Stat value={stats.world} label="World" delay={950} />
+          <Stat value={stats.region} label="Region" delay={1000} />
+          <Stat value={stats.realm} label="Realm" delay={1050} />
         </div>
       </div>
     </section>

@@ -11,8 +11,9 @@ import type { GuildDetailsData } from "@/lib/raiderio";
 // derivation is where the guarantee has to live, because a Season can be made
 // current again by a single field edit in the admin panel.
 //
-// These tests pin what actually happens in that case, including one thing that
-// is genuinely unsafe.
+// These tests pin what actually happens in that case. The rank block below was
+// added on 2026-08-25 after a code review found it: bosses and the M+ roster
+// were frozen, ranks were not.
 
 const RAID = "tier-mn-1";
 
@@ -234,5 +235,76 @@ describe("an archived Season's M+ snapshot survives a Sync", () => {
     const result = deriveProgression(details, { ...archivedState, isArchived: false });
 
     expect(result.mythicPlusParticipants.map((p) => p.name)).toEqual(["Buratski", "Chocomann"]);
+  });
+});
+
+describe("an archived Season's ranks survive a Sync", () => {
+  // The gap a code review found on 2026-08-25: bosses and the M+ roster were
+  // frozen, ranks were not. Ranks are as much a part of the snapshot as kills
+  // — upstream answers about a *finished* raid are a live opinion, not history.
+  //
+  // `members` is the worse half. It is not read from the response at all: it is
+  // recounted from today's roster on every Sync, so an archived Season's figure
+  // silently follows the guild's present size. Season 1's 595 would become the
+  // current season's ~160 with nothing in the response having changed.
+
+  it("keeps the stored ranks when upstream reports different ones", () => {
+    const details = makeDetails({
+      raidRankings: [{ raid: RAID, ranks: { mythic: { world: 9999, region: 8888, realm: 77 } } }],
+    });
+
+    const result = deriveProgression(details, archivedState);
+
+    expect(result.rankings).toEqual({ world: 1375, region: 450, realm: 6, members: 595 });
+  });
+
+  it("keeps the stored member count, not today's active roster", () => {
+    const details = makeDetails({
+      members: [member("Buratski", 3386.7), member("Chocomann", 3260.7)],
+    });
+
+    const result = deriveProgression(details, archivedState);
+
+    expect(result.rankings.members).toBe(595);
+  });
+
+  it("freezes the per-difficulty ranks too", () => {
+    const stored = {
+      ...archivedState,
+      rankingsByDifficulty: {
+        normal: { world: 300, region: 90, realm: 2, members: 595 },
+        heroic: { world: 200, region: 60, realm: 1, members: 595 },
+      },
+    };
+    const details = makeDetails({
+      raidRankings: [
+        {
+          raid: RAID,
+          ranks: {
+            mythic: { world: 9999, region: 8888, realm: 77 },
+            heroic: { world: 4444, region: 3333, realm: 22 },
+          },
+        },
+      ],
+      members: [member("Buratski", 3386.7)],
+    });
+
+    const result = deriveProgression(details, stored);
+
+    expect(result.rankingsByDifficulty.heroic).toEqual({ world: 200, region: 60, realm: 1, members: 595 });
+    expect(result.rankingsByDifficulty.normal).toEqual({ world: 300, region: 90, realm: 2, members: 595 });
+  });
+
+  it("does NOT freeze a live Season's ranks", () => {
+    // The guard must not over-fire: a live Season still takes the fresh ranks
+    // and recounts its members.
+    const details = makeDetails({
+      raidRankings: [{ raid: RAID, ranks: { mythic: { world: 9999, region: 8888, realm: 77 } } }],
+      members: [member("Buratski", 3386.7), member("Chocomann", 3260.7)],
+    });
+
+    const result = deriveProgression(details, { ...archivedState, isArchived: false });
+
+    expect(result.rankings).toEqual({ world: 9999, region: 8888, realm: 77, members: 2 });
   });
 });

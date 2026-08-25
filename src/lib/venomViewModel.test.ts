@@ -4,6 +4,7 @@ import {
   availableDifficulties,
   initialDifficulty,
   killsByDifficulty,
+  raidGroups,
   rankingsAt,
   toVenomProgression,
 } from "@/lib/venomViewModel";
@@ -210,5 +211,40 @@ describe("ranks follow the displayed difficulty", () => {
 
   it("returns zeros rather than null when a group is absent", () => {
     expect(rankingsAt(season(), "heroic")).toEqual({ world: 0, region: 0, realm: 0 });
+  });
+});
+
+describe("raidGroups never writes back to its own config", () => {
+  const bosses = (n: number) => Array.from({ length: n }, (_, i) => boss(`Boss ${i + 1}`));
+
+  it("names Season 2's raid as it is actually called upstream", () => {
+    // The design prototype invented "Vaults of Atal'Utek". The real raid is
+    // `the-venomous-abyss`, and no prototype name may reach a real Season row.
+    const groups = raidGroups(season({ bosses: bosses(9) } as Partial<Season>));
+
+    expect(groups.map((g) => g.title)).toEqual(["The Venomous Abyss", "The Tidebound Grotto"]);
+    expect(groups.map((g) => g.eyebrow)).toEqual(["The Raid", "Lair Boss"]);
+  });
+
+  it("widens the last group for one call without keeping the change", () => {
+    // The regression: `filter` returns new array, same objects. Widening the
+    // last group's count wrote straight through to the module-level config and
+    // stuck there for the life of the process, so the next request saw a
+    // two-boss Grotto.
+    expect(raidGroups(season({ bosses: bosses(9) } as Partial<Season>)).map((g) => g.count)).toEqual([8, 1]);
+
+    // A tenth boss must be absorbed rather than dropped...
+    expect(raidGroups(season({ bosses: bosses(10) } as Partial<Season>)).map((g) => g.count)).toEqual([8, 2]);
+
+    // ...but only for that call.
+    expect(raidGroups(season({ bosses: bosses(9) } as Partial<Season>)).map((g) => g.count)).toEqual([8, 1]);
+  });
+
+  it("falls back to one group for a Season with no configured split", () => {
+    const s = season({ urlSlug: "season-1", name: "Midnight Season 1", bosses: bosses(10) } as Partial<Season>);
+
+    expect(raidGroups(s)).toEqual([
+      { title: "Midnight Season 1", eyebrow: "The Raid", start: 0, count: 10 },
+    ]);
   });
 });

@@ -6,18 +6,6 @@ import { SectionHeader } from "./SectionHeader";
 /** A guild member present on a run. */
 export type RunMember = { name: string; class: string; spec: string; role: string };
 
-/**
- * How the run's roster is shown on a card.
- *
- * - `stack` — a column beside the key, growing upward from its baseline.
- *   **The operator's choice**, and the default. Keeps the card compact when
- *   only one name is known, which is the common case, and every card the same
- *   height when a full party lands.
- * - `row` — one line under the key/time. Kept because it reads better for a
- *   full five and costs nothing to retain, but nothing selects it today.
- */
-export type RosterLayout = "row" | "stack";
-
 export type DungeonRun = {
   name: string;
   /** Which rotation the dungeon belongs to. */
@@ -58,11 +46,9 @@ function MemberName({ m, size }: { m: RunMember; size: string }) {
 
 export function DungeonGrid({
   dungeons,
-  rosterLayout = "stack",
   numeral = "02",
 }: {
   dungeons: DungeonRun[];
-  rosterLayout?: RosterLayout;
   numeral?: string;
 }) {
   // Nothing to show is not an error state; the section simply does not exist,
@@ -136,9 +122,8 @@ export function DungeonGrid({
                   // so every card is tall enough for the worst case and none of
                   // them changes height when a big group lands. Without it a
                   // 4-name stack already clipped the dungeon name by 4px, and
-                  // five would have by 19px. Applies to `stack` only; `row`
-                  // grows downward and sizes itself.
-                  ...(rosterLayout === "stack" ? { minHeight: "clamp(178px,14vw,208px)" } : {}),
+                  // five would have by 19px.
+                  minHeight: "clamp(178px,14vw,208px)",
                 }}
               >
                 {/* The triangle filling the clipped corner. */}
@@ -182,29 +167,27 @@ export function DungeonGrid({
                     color: "var(--text)",
                     lineHeight: 1.2,
                     flex: 1,
-                    // In `stack` mode the roster rises into the card's
-                    // right-hand column from below, so the name keeps clear of
-                    // it horizontally. The vertical clearance is handled by the
-                    // card's min-height below — this alone is not enough,
-                    // because the two overlap in the y axis regardless of how
-                    // much horizontal room each has.
-                    ...(rosterLayout === "stack" ? { paddingRight: "46%" } : {}),
+                    // The roster rises into the card's right-hand column from
+                    // below, so the name keeps clear of it horizontally. The
+                    // vertical clearance is handled by the card's min-height
+                    // above — this alone is not enough, because the two overlap
+                    // in the y axis regardless of how much horizontal room each
+                    // has.
+                    paddingRight: "46%",
                   }}
                 >
                   {d.name}
                 </span>
-                {/* Key, time, and — in `stack` mode — the roster on the right
-                    of the same baseline. Unlabelled on purpose: a bare list
-                    reads the same whether it is one name or four, where a
-                    heading or a count would draw attention to how sparse it
-                    usually is. */}
+                {/* Key, time, and the roster on the right of the same baseline.
+                    Unlabelled on purpose: a bare list reads the same whether it
+                    is one name or four, where a heading or a count would draw
+                    attention to how sparse it usually is. */}
                 <div
                   style={{
                     display: "flex",
-                    // `stack` needs the roster column to fill this row's height
-                    // so it can bottom-align inside it; `row` keeps the original
-                    // baseline alignment of key against time.
-                    alignItems: rosterLayout === "stack" ? "flex-end" : "baseline",
+                    // The roster column fills this row's height so it can
+                    // bottom-align inside it.
+                    alignItems: "flex-end",
                     gap: 10,
                     position: "relative",
                   }}
@@ -232,7 +215,7 @@ export function DungeonGrid({
                     {d.bestTime}
                   </span>
 
-                  {rosterLayout === "stack" && d.members.length > 0 && (
+                  {d.members.length > 0 && (
                     // Bottom-aligned in its own column beside the key, so the
                     // names grow upward from the key's baseline. Kept in flow
                     // and paired with the card's reserved min-height below, so
@@ -268,23 +251,6 @@ export function DungeonGrid({
                   )}
                 </div>
 
-                {rosterLayout === "row" && d.members.length > 0 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      alignItems: "baseline",
-                      gap: "0 10px",
-                      borderTop: "1px solid var(--border-dim)",
-                      paddingTop: "clamp(8px,0.7vw,12px)",
-                      minWidth: 0,
-                    }}
-                  >
-                    {d.members.map((m) => (
-                      <MemberName key={m.name} m={m} size="var(--ui-sm)" />
-                    ))}
-                  </div>
-                )}
               </motion.div>
             );
           })}

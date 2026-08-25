@@ -169,7 +169,11 @@ export type RaidGroup = {
 
 const RAID_GROUPS: Record<string, RaidGroup[]> = {
   "season-2": [
-    { title: "Vaults of Atal'Utek", eyebrow: "The Raid", start: 0, count: 8 },
+    // The real raid, per `guilds/details`: `the-venomous-abyss`. The design
+    // prototype called it "Vaults of Atal'Utek", which was invented for the
+    // mockup — design/NOTES.md is explicit that no prototype name may reach a
+    // real Season row.
+    { title: "The Venomous Abyss", eyebrow: "The Raid", start: 0, count: 8 },
     { title: "The Tidebound Grotto", eyebrow: "Lair Boss", start: 8, count: 1 },
   ],
 };
@@ -186,7 +190,11 @@ export function raidGroups(season: Season): RaidGroup[] {
   }
   // Guard against a boss list that has grown or shrunk since the split was
   // written: never slice past the end, and never silently drop a boss off it.
-  const groups = configured.filter((g) => g.start < total);
+  //
+  // Copied, not just filtered: `filter` returns a new array of the *same*
+  // objects, so widening `count` below would write straight through to the
+  // module-level RAID_GROUPS and persist for the life of the process.
+  const groups = configured.filter((g) => g.start < total).map((g) => ({ ...g }));
   const covered = groups.reduce((n, g) => Math.max(n, g.start + g.count), 0);
   if (covered < total) {
     const last = groups[groups.length - 1];

@@ -291,20 +291,36 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
     }));
   const freshRunners: MythicPlusRunner[] = scoredMembers.slice(0, 10);
 
+  // An archived Season's ranks belong to its frozen snapshot exactly as its
+  // bosses do (ADR 0005). Upstream still answers about a finished raid, but
+  // that answer is a live opinion about history, not the record of it.
+  //
+  // `members` is the more dangerous half, and the reason this cannot be left to
+  // the preserve-on-no-data rule below: it is never read from the response at
+  // all. It is recounted from today's roster on every Sync, so an archive's
+  // figure would silently follow the guild's present size — Season 1's 595
+  // becoming the current season's ~160 with nothing upstream having changed.
+  //
   // Preserve existing rankings/runners if the new profile has no data yet (e.g. after a guild rename)
-  const rankings = mythicRanks
-    ? { ...mythicRanks, members: activeCount }
-    : existingRankings
-      ? { ...existingRankings, members: activeCount }
-      : { world: 0, region: 0, realm: 0, members: activeCount };
+  const rankings = current.isArchived
+    ? existingRankings ?? { world: 0, region: 0, realm: 0, members: 0 }
+    : mythicRanks
+      ? { ...mythicRanks, members: activeCount }
+      : existingRankings
+        ? { ...existingRankings, members: activeCount }
+        : { world: 0, region: 0, realm: 0, members: activeCount };
 
   // The same preserve-on-no-data rule, applied per difficulty. A rank source
   // that reports nothing for a difficulty must never wipe what is stored for
-  // it — the guild-rename case, one level down.
+  // it — the guild-rename case, one level down. An archive keeps what it has,
+  // for the reason above.
   const rankingsByDifficulty = Object.fromEntries(
     DIFFICULTIES.map((difficulty) => {
-      const fresh = raidRanking?.ranks[difficulty] ?? null;
       const stored = current.rankingsByDifficulty?.[difficulty] ?? null;
+      if (current.isArchived) {
+        return [difficulty, stored ?? { world: 0, region: 0, realm: 0, members: rankings.members }];
+      }
+      const fresh = raidRanking?.ranks[difficulty] ?? null;
       const chosen = fresh ?? stored ?? { world: 0, region: 0, realm: 0 };
       return [difficulty, { ...chosen, members: activeCount }];
     }),

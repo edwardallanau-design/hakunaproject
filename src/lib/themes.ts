@@ -21,9 +21,10 @@
  *   purely in theme CSS.
  * - **Motifs** (optional) — card and UI decorations: gem corners, border
  *   treatments, section dividers.
- * - **Key art** (optional) — a hero illustration, declared by `hasKeyArt`
- *   below. A theme without it renders nothing in its place — no placeholder,
- *   no reserved space.
+ * - **Key art** (optional) — a hero illustration. No manifest flag declares
+ *   one: ticket 06's generic slot was never built, because the v2 design bakes
+ *   its serpent-eye crest into the hero instead. A theme wanting key art draws
+ *   it in its own component tree.
  *
  * **Every optional element falls back to today's look when a theme omits it.**
  * That fallback contract is what lets `void` stay pixel-for-pixel frozen while
@@ -72,11 +73,6 @@ export type Theme = {
   label: string;
   /** Which component tree renders this theme. */
   layout: ThemeLayout;
-  /**
-   * Whether this theme supplies hero key art. False means the key-art slot
-   * renders nothing at all for this theme.
-   */
-  hasKeyArt: boolean;
 };
 
 export const THEMES = [
@@ -86,7 +82,6 @@ export const THEMES = [
     slug: "void",
     label: "Void — Midnight Season 1",
     layout: "pixel",
-    hasKeyArt: false,
   },
   {
     // Season 2. Palette and all three font roles are live; the page structure
@@ -101,9 +96,6 @@ export const THEMES = [
     slug: "venom",
     label: "Venom — The Curse of Ula'tek",
     layout: "editorial",
-    // The design bakes its serpent-eye crest into the hero rather than filling
-    // a generic slot, so there is no key art in the manifest sense.
-    hasKeyArt: false,
   },
 ] as const satisfies readonly Theme[];
 
