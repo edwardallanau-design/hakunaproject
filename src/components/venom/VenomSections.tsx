@@ -8,7 +8,15 @@ const classColor = (cls: string) => CLASS_COLORS[cls] ?? "#9ca3af";
 
 /* ── 04 · Who We Are ─────────────────────────────────────────────────────── */
 
-export function VenomAbout({ heading, descriptionHTML }: { heading: string; descriptionHTML: string }) {
+export function VenomAbout({
+  heading,
+  descriptionHTML,
+  numeral = "04",
+}: {
+  heading: string;
+  descriptionHTML: string;
+  numeral?: string;
+}) {
   return (
     <section
       id="about"
@@ -35,7 +43,7 @@ export function VenomAbout({ heading, descriptionHTML }: { heading: string; desc
                 WebkitTextStroke: "1.5px var(--border)",
               }}
             >
-              04
+              {numeral}
             </span>
             <div>
               <span
@@ -132,13 +140,13 @@ export function VenomAbout({ heading, descriptionHTML }: { heading: string; desc
 
 export type OfficerCard = { id: string; name: string; class: string; spec: string; rank: string; ilvl: number };
 
-export function VenomOfficers({ officers }: { officers: OfficerCard[] }) {
+export function VenomOfficers({ officers, numeral = "05" }: { officers: OfficerCard[]; numeral?: string }) {
   if (officers.length === 0) return null;
 
   return (
     <section id="roster" style={{ padding: "clamp(80px,9vw,130px) clamp(20px,4vw,64px)", borderTop: "1px solid var(--border-dim)" }}>
       <div style={{ maxWidth: "76rem", margin: "0 auto" }}>
-        <SectionHeader numeral="05" eyebrow="Leadership" heading="The Officers" />
+        <SectionHeader numeral={numeral} eyebrow="Leadership" heading="The Officers" />
         <div className="venom-officer-grid">
           {officers.map((o, i) => {
             const c = classColor(o.class);
@@ -515,3 +523,4 @@ export function BackToTop() {
     </button>
   );
 }
+

@@ -9,7 +9,7 @@ export type Runner = { name: string; class: string; spec: string; score: number 
 // them changed for venom, the colours did not.
 const classColor = (cls: string) => CLASS_COLORS[cls] ?? "#9ca3af";
 
-export function Leaderboard({ runners }: { runners: Runner[] }) {
+export function Leaderboard({ runners, numeral = "03" }: { runners: Runner[]; numeral?: string }) {
   if (runners.length === 0) return null;
 
   const [champion, ...rest] = runners;
@@ -21,7 +21,7 @@ export function Leaderboard({ runners }: { runners: Runner[] }) {
       style={{ padding: "clamp(80px,9vw,130px) clamp(20px,4vw,64px)", borderTop: "1px solid var(--border-dim)" }}
     >
       <div style={{ maxWidth: "66rem", margin: "0 auto" }}>
-        <SectionHeader numeral="03" eyebrow="Leaderboard" heading="Top Mythic+ Runners" />
+        <SectionHeader numeral={numeral} eyebrow="Leaderboard" heading="Top Mythic+ Runners" />
 
         {/* Champion spotlight */}
         <motion.div

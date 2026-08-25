@@ -58,9 +58,11 @@ function MemberName({ m, size }: { m: RunMember; size: string }) {
 export function DungeonGrid({
   dungeons,
   rosterLayout = "row",
+  numeral = "02",
 }: {
   dungeons: DungeonRun[];
   rosterLayout?: RosterLayout;
+  numeral?: string;
 }) {
   // Nothing to show is not an error state; the section simply does not exist,
   // matching how the M+ runners card behaves when a Season has no data yet.
@@ -77,7 +79,7 @@ export function DungeonGrid({
     >
       <div style={{ maxWidth: "76rem", margin: "0 auto" }}>
         <SectionHeader
-          numeral="02"
+          numeral={numeral}
           eyebrow="Mythic+ Season 2"
           heading="Dungeon Rotation"
           meta={
@@ -324,3 +326,5 @@ export function DungeonGrid({
     </section>
   );
 }
+
+

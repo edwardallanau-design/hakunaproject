@@ -69,6 +69,9 @@ export function VenomPage({
   const ranks = rankingsAt(season, difficulty);
   const groups = raidGroups(season);
 
+  /** Section numeral for the nth section after the raid groups, 1-indexed. */
+  const numeralAfter = (n: number) => String(n + 1).padStart(2, "0");
+
   return (
     // Framer's whileInView/initial animations are not gated by the CSS
     // media query the rest of the motion uses, so one MotionConfig covers every
@@ -109,11 +112,22 @@ export function VenomPage({
           </div>
         )}
 
+        {/* Section numerals run in one sequence across the page, so adding a
+            raid does not leave two sections both numbered 02. The raid groups
+            take 01..n and everything after continues from there. */}
         <RaidTimeline season={season} groups={groups} />
-        <DungeonGrid dungeons={dungeons} rosterLayout={rosterLayout} />
-        <Leaderboard runners={runners} />
-        <VenomAbout heading={aboutHeading} descriptionHTML={descriptionHTML} />
-        <VenomOfficers officers={officers} />
+        <DungeonGrid
+          dungeons={dungeons}
+          rosterLayout={rosterLayout}
+          numeral={numeralAfter(groups.length)}
+        />
+        <Leaderboard runners={runners} numeral={numeralAfter(groups.length + 1)} />
+        <VenomAbout
+          heading={aboutHeading}
+          descriptionHTML={descriptionHTML}
+          numeral={numeralAfter(groups.length + 2)}
+        />
+        <VenomOfficers officers={officers} numeral={numeralAfter(groups.length + 3)} />
         <VenomRecruitment {...recruitment} />
       </main>
       <VenomFooter links={footerLinks} />

@@ -632,6 +632,17 @@ body {
 .animate-pulse-dot {
   animation: pulseDot 1.5s ease-in-out infinite;
 }
+/* The dot marks a high-priority recruitment slot, so it must stay visible when
+   the animation stops — hiding it would remove information, not just motion.
+   Held at the animation's bright end.
+   Pre-existing rule, shared with the pixel layout: this adds the guard both
+   layouts were missing rather than introducing anything venom-specific. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-dot {
+    animation: none;
+    opacity: 1;
+  }
+}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
