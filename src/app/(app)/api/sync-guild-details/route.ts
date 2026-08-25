@@ -71,6 +71,12 @@ export async function GET(request: Request) {
         kills: season.kills ?? 0,
         totalBosses: season.totalBosses ?? 0,
         rankings: season.rankings as ProgressionState["rankings"],
+        // Read back so the preserve-on-no-data rule can see what is already
+        // stored per difficulty, exactly as it does for mythic above.
+        rankingsByDifficulty: {
+          normal: season.rankingsNormal as ProgressionState["rankings"] ?? undefined,
+          heroic: season.rankingsHeroic as ProgressionState["rankings"] ?? undefined,
+        },
         mythicPlusRunners: (season.mythicPlusRunners as MythicPlusRunner[] | null) ?? [],
         mythicPlusParticipants: (season.mythicPlusParticipants as ProgressionState["mythicPlusParticipants"] | null) ?? [],
         raidSlugs: (season.raidSlugs ?? []).map((r) => r.slug),
@@ -101,6 +107,8 @@ export async function GET(request: Request) {
           totalBosses: derivedProgression.totalBosses,
           bosses: derivedProgression.bosses,
           rankings: derivedProgression.rankings,
+          rankingsNormal: derivedProgression.rankingsByDifficulty.normal,
+          rankingsHeroic: derivedProgression.rankingsByDifficulty.heroic,
           mythicPlusRunners: derivedProgression.mythicPlusRunners,
           mythicPlusParticipants: derivedProgression.mythicPlusParticipants,
           lastSyncedAt: syncedAt,

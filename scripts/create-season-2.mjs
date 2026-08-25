@@ -33,12 +33,15 @@
  *
  * ## Kill data is deliberately NOT seeded here
  *
- * Every boss is created unkilled with no dates. The Season is currently 0/9 on
- * *mythic*, which is what the site tracks — the 4/8 heroic and 8/8 normal
- * progress upstream is real but not what `deriveProgression` reads. The first
- * Sync after this script fills in mythic kills, pull counts and best-pull
- * percentages from the live API. Typing kill data by hand here would invent
- * history the Sync is about to derive correctly.
+ * Every boss is created unkilled, with no dates and no difficulty groups. The
+ * first Sync fills all of it in from the live API — kills, first-kill dates,
+ * pull counts and best-pull percentages, at every difficulty — and attaches a
+ * normal/heroic group only where the response has something to record. Typing
+ * any of it by hand would invent history the Sync derives correctly.
+ *
+ * For reference, what the first Sync produced locally on 2026-08-25: 9/9
+ * normal, 5/9 heroic, 0/9 mythic, defaulting the site's difficulty toggle to
+ * heroic.
  *
  * Usage
  * -----
@@ -147,6 +150,9 @@ const created = await payload.create({
   collection: "seasons",
   data: {
     ...SEASON_2,
+    // Bosses are created bare — no difficulty groups. Those are attached by the
+    // first Sync, and only for difficulties the response actually has data for,
+    // so the row never carries empty groups it never earned.
     bosses: BOSSES.map((name) => ({
       name,
       killed: false,
