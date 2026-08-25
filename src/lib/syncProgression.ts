@@ -189,11 +189,21 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
       const mythic = deriveOne("mythic", slug, boss);
       const next: Boss = { name: boss.name, ...mythic };
 
-      // A difficulty group is only attached when there is something to say
-      // about it: data stored already, or data in this response. Season 1's
-      // rows are all mythic kills from before difficulties were tracked, and
-      // its raids report nothing new — so a Sync leaves them byte-identical
-      // rather than appending two empty groups to a frozen archive.
+      // A boss killed on mythic with no difficulty groups recorded is a row
+      // from before difficulties were tracked — i.e. an archived Season's. It
+      // is returned exactly as stored.
+      //
+      // This has to be explicit. Upstream still reports normal and heroic kills
+      // for Season 1's raids (8 and 9 for tier-mn-1 today), so "no upstream
+      // data" is not what protects those rows — only this is. An earlier
+      // version relied on the boss names failing to resolve to upstream slugs,
+      // which is a coincidence in the data, not a guarantee, and a test with a
+      // resolvable name caught it.
+      const isPreDifficultyArchiveRow = boss.killed && !boss.normal && !boss.heroic;
+      if (isPreDifficultyArchiveRow) return next;
+
+      // Otherwise a difficulty group is attached when there is something to say
+      // about it: data stored already, or data in this response.
       for (const difficulty of ["normal", "heroic"] as const) {
         const stored = boss[difficulty];
         const hasUpstream =
