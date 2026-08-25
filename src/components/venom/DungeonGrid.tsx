@@ -166,7 +166,7 @@ export function DungeonGrid({
                     reads the same whether it is one name or four, where a
                     heading or a count would draw attention to how sparse it
                     usually is. */}
-                <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, position: "relative" }}>
                   <span
                     style={{
                       fontFamily: "var(--font-display)",
@@ -191,14 +191,34 @@ export function DungeonGrid({
                   </span>
 
                   {rosterLayout === "stack" && d.members.length > 0 && (
+                    // Grows upward: the list is bottom-aligned so its LAST name
+                    // sits level with the key, and extra names extend into the
+                    // card's empty upper space rather than pushing the bottom
+                    // edge down and making the grid row ragged.
+                    //
+                    // `alignSelf: flex-end` is the load-bearing part — the
+                    // parent aligns children on their first baseline, which
+                    // would otherwise pin the FIRST name to the key and send
+                    // the rest downward. Party order still reads top-to-bottom.
+                    // Absolutely positioned against the key/time row and pinned
+                    // to its bottom, so the list contributes no height of its
+                    // own and grows upward into the card's empty space.
+                    //
+                    // In flow it could not do both: bottom-aligning fixed the
+                    // baseline but the tallest roster still stretched its grid
+                    // row, measured at 155px against 172px. Taking it out of
+                    // flow is what keeps every card the same height.
                     <div
                       style={{
-                        marginLeft: "auto",
+                        position: "absolute",
+                        right: 0,
+                        bottom: 0,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "flex-end",
                         gap: 1,
                         minWidth: 0,
+                        maxWidth: "55%",
                       }}
                     >
                       {d.members.map((m) => (
