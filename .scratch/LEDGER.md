@@ -16,13 +16,9 @@ Known issues, not yet actioned. Oldest first.
 
 Tickets `09`–`11` of `.scratch/season-rollover/spec.md`.
 
-- **`09` — create the Season 2 row.** **Script written and rehearsed locally, not yet run against production** — `scripts/create-season-2.mjs`, a verify-first/`--commit` one-shot. The upstream identity is no longer a guess (captured live 2026-08-25): the raid is **`the-venomous-abyss`**, not the placeholder `tier-mn-2`, which does not exist upstream at all; a fourth raid **`the-tidebound-grotto`** (one boss, Nymrissa Wavecaller) also belongs to Season 2, ordered after the Abyss per operator decision; Rank Source is `the-venomous-abyss`. Nine bosses typed by hand.
-
-  **The production sequence is order-dependent, because `npm run build` runs `payload migrate` before `next build`.** Production is still on the pre-rollover schema — `theme_slug` is `varchar`, the enum type does not exist, and the difficulty columns do not exist. So: **push first** (the deploy applies both migrations), *then* run the script, *then* clear `SYNC_DISABLED`. Running the script before the deploy would write `'venom'` as text into a column about to become an enum, and create bosses the difficulty migration then has to accommodate. Nothing is pushed yet — the operator holds that call, since pushing to `main` deploys.
-
-  **All of this work lives on `feature/season-2-theming`, not `main`.** It had been accumulating on the local trunk while `origin/main` stayed at `31549f8`; moved to a branch on 2026-08-25 at the operator's request, and local `main` reset to match the remote. Nothing was lost — the branch holds every commit.
-- **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct in production.
-- **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
+- **`09` — create the Season 2 row. DONE in production 2026-08-25.** See the Shipped entry below for what was deployed and verified.
+- **`10` — re-enable the Sync. Half done.** The hourly schedule is restored (`c63ebbf`); **`SYNC_DISABLED` is still set in Vercel** and is the only thing still holding the Sync closed. It lives in Vercel's environment, not this repo, so it cannot be cleared from here — and neither could its state be probed, since the local `CRON_SECRET` does not match production's (the endpoint answers 401, correctly). **Until the operator clears it, every scheduled run fails with 503.** That is the kill switch working, not a broken workflow. Recommended first move once cleared: a manual `workflow_dispatch` run, watched, before letting the hourly cron take over.
+- **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident. Still correct to hold: no Sync has run yet.
 
 **Note on urgency, correcting an earlier claim in this file's history:** the in-progress pull counts that gating `09` was said to put at risk are on *heroic and normal* difficulty. The site records **mythic** only, and Season 2's mythic progress is genuinely empty upstream as of 2026-08-25 (0 encounters, ranks all zero). No recordable data has been lost by the delay.
 
@@ -48,6 +44,23 @@ Still open:
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — Deployed: Season 2 is live in production
+
+The whole rollover, executed in the order the Open entry had been insisting on. 31 commits merged to `main` (`31549f8..b719a56`), then the cron restore (`c63ebbf`).
+
+1. **Push.** Vercel's build runs `payload migrate && next build`, so the deploy applied both migrations itself — no manual step. Production went from 2 migrations to 4; `add_theme_slug_enum` and `add_difficulty_progress` both landed as batch 3.
+2. **`create-season-2.mjs --commit`.** Season 2 created as id 2 with nine bosses, all unkilled, then `guild-settings.currentSeason` moved to it — created first, pointer last, so there is never a half-built current Season.
+3. **Cron restored.** `SYNC_DISABLED` remains set; see Open `10`.
+
+**A trap worth remembering: the script silently targeted the wrong database.** Its header says it "deliberately targets production", and it did when written — but `@next/env`'s `loadEnvConfig(cwd, true)` loads `.env.local` at higher precedence than `.env`, and a local Postgres container had since been added. The first verify run reported *"Season 2 already exists (id 2)"* — true of the local database, meaningless about production. **Verify-first is what caught it.** Had the script been run straight with `--commit`, it would have succeeded against localhost and reported success, and the deploy would have been declared done with production untouched. Every production command in this session pins `DATABASE_URL` explicitly rather than trusting file precedence; do the same.
+
+**Verified against the production database after the cutover, not assumed:**
+
+- Season 1: **10/10, world 1375, 595 members, 595 M+ participants** — untouched. Salhadaar still reads **41** pulls and Midnight Falls **608**, where upstream now reports 6 and 12. The archive is intact *and* better than its own source.
+- Season 2: id 2, `venom`, 0/9, current.
+- `currentSeason = 2`, so Season 1 is archived and is no longer a Sync target.
+- The live site serves the venom theme, with The Venomous Abyss and The Tidebound Grotto as separate sections and Season 1 reachable from the switcher.
 
 ### 2026-08-25 — What `/code-review` found in the layout, fixed
 
