@@ -172,6 +172,122 @@
   --bd-md: clamp(23px, 1.65vw, 34px);
 }
 
+/* ── venom layout ──
+   Everything below is scoped to the editorial layout and is inert for `void`,
+   which keeps rendering the pixel components untouched.
+
+   Motion is gated: each animation is declared inside a
+   `prefers-reduced-motion: no-preference` block rather than being declared and
+   then switched off, so a visitor who asks for less motion never has it
+   applied even briefly. */
+
+.venom-hero-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  align-items: center;
+  gap: clamp(24px, 4vw, 72px);
+  /* Clears the vertical side label. */
+  padding-left: clamp(72px, 7vw, 110px);
+}
+.venom-side-label { display: block; }
+
+@media (max-width: 899px) {
+  .venom-hero-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-items: center;
+    padding-left: clamp(20px, 4vw, 64px);
+  }
+  .venom-side-label { display: none; }
+  .venom-eye { width: clamp(180px, 44vw, 260px) !important; }
+}
+
+.venom-dungeon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 1vw, 16px); }
+.venom-officer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.2vw, 20px); }
+.venom-role-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.2vw, 20px); }
+.venom-about-grid   { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(28px, 4vw, 64px); align-items: center; }
+
+@media (max-width: 899px) {
+  .venom-dungeon-grid { grid-template-columns: repeat(2, 1fr); }
+  .venom-officer-grid { grid-template-columns: repeat(2, 1fr); }
+  .venom-role-grid    { grid-template-columns: 1fr; }
+  .venom-about-grid   { grid-template-columns: 1fr; }
+}
+@media (max-width: 519px) {
+  .venom-officer-grid { grid-template-columns: 1fr; }
+}
+
+/* Nav links and the class chip disappear at the design's breakpoints. */
+.venom-hide-640 { display: flex; }
+@media (max-width: 639px) { .venom-hide-640 { display: none !important; } }
+.venom-hide-520 { display: inline-block; }
+@media (max-width: 519px) { .venom-hide-520 { display: none !important; } }
+
+/* The clipped top-right corner on a dungeon card. */
+.venom-notch { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); }
+.venom-notch-fill { clip-path: polygon(0 0, 100% 100%, 100% 0); }
+
+.venom-card-hover { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+.venom-card-hover:hover { transform: translateY(-4px); }
+
+/* Hard-shadowed buttons. `--shadow-accent` carries venom's #14320a. */
+.venom-btn {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--ui-lg);
+  padding: clamp(11px, 1vw, 17px) clamp(22px, 2vw, 34px);
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 45%, black));
+  color: #0a1505;
+  border: 2px solid var(--glow);
+  box-shadow: 4px 4px 0 var(--shadow-accent);
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+.venom-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--shadow-accent), 0 0 28px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.venom-btn-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.venom-btn-outline:hover {
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+@keyframes venomCrestFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes venomDripFall {
+  0%   { transform: translateY(-20px); opacity: 0; }
+  8%   { opacity: 0.9; }
+  85%  { opacity: 0.9; }
+  100% { transform: translateY(44vh); opacity: 0; }
+}
+@keyframes venomSporeFloat { 0%, 100% { transform: translateY(0); opacity: 0.35; } 50% { transform: translateY(-26px); opacity: 0.9; } }
+@keyframes venomEyeBlink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } }
+@keyframes venomHeroUp { from { opacity: 0; transform: translateY(34px); } to { opacity: 1; transform: none; } }
+@keyframes venomBorderRun { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+
+/* The hero's staggered entrance. Without motion the elements are simply
+   present — `.venom-rise` sets no opacity of its own outside the block below. */
+@media (prefers-reduced-motion: no-preference) {
+  .venom-rise { opacity: 0; animation: venomHeroUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .venom-crest { animation: venomCrestFloat 7s ease-in-out infinite; }
+  .venom-eye-blink { animation: venomEyeBlink 7s ease-in-out infinite; }
+  .venom-drip { animation: venomDripFall var(--drip-duration, 6s) ease-in var(--drip-delay, 0s) infinite; }
+  .venom-spore { animation: venomSporeFloat var(--spore-duration, 6s) ease-in-out var(--spore-delay, 0s) infinite; }
+  .venom-border-run { animation: venomBorderRun 3s linear infinite; }
+}
+
+/* Ambient hero decoration is decorative only — hidden entirely rather than
+   frozen, since a static drip mid-fall reads as a rendering artefact. */
+@media (prefers-reduced-motion: reduce) {
+  .venom-drip, .venom-spore { display: none; }
+}
+
 /* ── Base ── */
 *, *::before, *::after {
   box-sizing: border-box;

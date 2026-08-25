@@ -5,6 +5,9 @@ import config from "@/payload.config";
 import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
 import { toStatsData, toProgressionData } from "@/lib/seasonViewModel";
 import { resolveRequestedSeason } from "@/lib/resolveRequestedSeason";
+import { findTheme } from "@/lib/themes";
+import { VenomPage } from "@/components/venom/VenomPage";
+import { fetchDungeonRotation } from "@/lib/mythicPlusDungeons";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { StatsBar } from "@/components/StatsBar";
@@ -59,6 +62,13 @@ export default async function Home({
 
   const prog = toProgressionData(selectedSeason);
 
+  const isArchived = selectedSeason.urlSlug !== currentSeason.urlSlug;
+  const switcherSeasons = allSeasons.docs.map((s) => ({
+    urlSlug: s.urlSlug,
+    name: s.name,
+    startedAt: s.startedAt,
+  }));
+
   const officersSectionData = {
     eyebrow: officersSection.eyebrow!,
     heading: officersSection.heading!,
@@ -86,6 +96,62 @@ export default async function Home({
       priority: r.priority!,
     })),
   };
+
+  // ── The layout fork ──
+  // A theme package can only swap tokens; Season 2's design changes structure,
+  // so themes declare which component tree renders them. The branch is on the
+  // *selected* Season, not the current one — switching to an archived Season
+  // must render that Season's own layout, which is how `void` stays frozen.
+  const theme = findTheme(selectedSeason.themeSlug);
+  if (theme?.layout === "editorial") {
+    // The dungeon grid is decoration over live data, not load-bearing content.
+    // An upstream outage should cost the section, never the page — DungeonGrid
+    // renders nothing for an empty list, the same way the M+ runners card does.
+    const dungeons = await fetchDungeonRotation({
+      region: process.env.GUILD_REGION ?? "us",
+      realm: process.env.GUILD_REALM ?? "Barthilas",
+      guild: process.env.GUILD_NAME ?? "Potato Corner",
+      seasonSlug: selectedSeason.mythicPlusSeasonSlug,
+    }).catch((err) => {
+      console.error("Dungeon rotation fetch failed; hiding the section.", err);
+      return [];
+    });
+
+    return (
+      <VenomPage
+        season={selectedSeason}
+        seasons={switcherSeasons}
+        selectedUrlSlug={selectedSeason.urlSlug}
+        currentUrlSlug={currentSeason.urlSlug}
+        isArchived={isArchived}
+        aboutHeading={guild.heading}
+        descriptionHTML={descriptionHTML}
+        officers={officersSectionData.officers.map((o) => ({
+          id: o.id,
+          name: o.name,
+          class: o.class,
+          spec: o.spec,
+          rank: o.rank,
+          ilvl: o.ilvl,
+        }))}
+        recruitment={{
+          heading: "The Vault Needs More Potatoes",
+          description: recruitmentSectionData.description,
+          roles: recruitmentSectionData.roles.map((r) => ({
+            role: r.role,
+            specs: r.specs,
+            priority: r.priority as "High" | "Medium" | "Low",
+          })),
+          ctaLabel: recruitmentSectionData.ctaLabel,
+          discordUrl: recruitmentSectionData.discordUrl,
+          footerNote: recruitmentSectionData.footerNote,
+        }}
+        footerLinks={footerLinks}
+        runners={prog.mythicPlusRunners}
+        dungeons={dungeons}
+      />
+    );
+  }
 
   return (
     <div className={`theme-${selectedSeason.themeSlug}`} style={{ minHeight: "100vh", background: "var(--bg)" }}>

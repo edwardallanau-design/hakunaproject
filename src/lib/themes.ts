@@ -48,11 +48,30 @@
  * 4. Run `npm run generate:types`.
  */
 
+/**
+ * Which component tree renders a Season wearing this theme.
+ *
+ * A theme package can only swap tokens. Season 2's design changes *structure* —
+ * numbered editorial sections, a raid descent timeline, a dungeon grid, a
+ * champion spotlight — and its hero is a different component entirely, so no
+ * amount of CSS reaches it. Themes therefore declare their layout, and the page
+ * picks a tree.
+ *
+ * This is a declaration rather than a `slug === "venom"` check so the next
+ * theme chooses by saying so, and so `page.tsx` never grows a slug cascade.
+ *
+ * - `pixel` — the original 8-bit HD-2D layout. Season 1 and the site default.
+ * - `editorial` — the Season 2 design.
+ */
+export type ThemeLayout = "pixel" | "editorial";
+
 export type Theme = {
   /** Matches the `.theme-<slug>` class in globals.css and the stored value. */
   slug: string;
   /** Shown in the admin dropdown. */
   label: string;
+  /** Which component tree renders this theme. */
+  layout: ThemeLayout;
   /**
    * Whether this theme supplies hero key art. False means the key-art slot
    * renders nothing at all for this theme.
@@ -66,6 +85,7 @@ export const THEMES = [
     // proves the fallback contract, so it is deliberately never retrofitted.
     slug: "void",
     label: "Void — Midnight Season 1",
+    layout: "pixel",
     hasKeyArt: false,
   },
   {
@@ -80,6 +100,7 @@ export const THEMES = [
     // beaten deliberately, it does not just lose.
     slug: "venom",
     label: "Venom — The Curse of Ula'tek",
+    layout: "editorial",
     // The design bakes its serpent-eye crest into the hero rather than filling
     // a generic slot, so there is no key art in the manifest sense.
     hasKeyArt: false,
@@ -90,3 +111,15 @@ export type ThemeSlug = (typeof THEMES)[number]["slug"];
 
 /** Options for the `themeSlug` select field on the Seasons collection. */
 export const THEME_OPTIONS = THEMES.map((t) => ({ label: t.label, value: t.slug }));
+
+/**
+ * Looks a theme up by slug, for the page's layout fork.
+ *
+ * Returns undefined for an unknown slug rather than throwing: the dropdown
+ * constrains what can be stored now, but a Season row written before it existed
+ * — or by a script — can still hold anything, and an unrecognised theme should
+ * fall back to the default look rather than break the page.
+ */
+export function findTheme(slug: string | null | undefined): Theme | undefined {
+  return THEMES.find((t) => t.slug === slug);
+}
