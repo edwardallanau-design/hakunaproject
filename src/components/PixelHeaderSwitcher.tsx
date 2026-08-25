@@ -59,31 +59,57 @@ export function PixelHeaderSwitcher({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // How far to sit from the right edge, measured from the controls Navbar
-  // actually rendered rather than guessed.
-  const [rightOffset, setRightOffset] = useState<number | null>(null);
+  // Where the switcher may sit: clear of the controls on its right AND the nav
+  // links on its left. `null` means there is no room, so it does not render.
+  const [slot, setSlot] = useState<{ right: number; maxWidth: number } | null>(null);
+  // Nothing renders until the first measurement, so the switcher never appears
+  // in the header and then jumps below it.
+  const [measured, setMeasured] = useState(false);
 
   useEffect(() => {
-    // A fixed `paddingRight` cannot track this: the navbar sizes its controls
-    // with clamp() and hides the hamburger above 640px, so the space they
-    // occupy is not a simple function of viewport width. Guessing produced a
-    // real overlap at 1440px — the select ran under the theme toggle.
+    // The switcher has to fit *between* two moving things. Positioning it from
+    // one side only is what caused two separate overlaps: first a fixed offset
+    // ran it under the theme toggle at 1440px, then measuring only the right
+    // side let it run over the RECRUITMENT link everywhere from 640 to 880px.
+    // Both sides get measured, and if the gap is too small it steps aside.
+    const GAP = 12;
+    const MIN_WIDTH = 120;
+
     const measure = () => {
       const nav = document.querySelector("nav");
-      if (!nav) return;
-      const controls = [
-        nav.querySelector<HTMLElement>('button[aria-label="Toggle theme"]'),
-        nav.querySelector<HTMLElement>('button[aria-label="Menu"]'),
-      ].filter((el): el is HTMLElement => {
+      if (!nav) { setMeasured(true); return setSlot(null); }
+
+      const visible = (el: Element | null): el is HTMLElement => {
         if (!el) return false;
         const r = el.getBoundingClientRect();
         return r.width > 0 && getComputedStyle(el).display !== "none";
+      };
+
+      const controls = [
+        nav.querySelector('button[aria-label="Toggle theme"]'),
+        nav.querySelector('button[aria-label="Menu"]'),
+      ].filter(visible);
+      if (controls.length === 0) { setMeasured(true); return setSlot(null); }
+
+      const rightEdge = Math.min(...controls.map((el) => el.getBoundingClientRect().left)) - GAP;
+
+      // The nav links, when shown, set the left boundary.
+      const links = [...nav.querySelectorAll('a[href^="#"]')].filter(visible);
+      const leftEdge =
+        links.length > 0 ? Math.max(...links.map((el) => el.getBoundingClientRect().right)) + GAP : GAP;
+
+      const available = rightEdge - leftEdge;
+      // Too tight to sit between them without covering something.
+      if (available < MIN_WIDTH) { setMeasured(true); return setSlot(null); }
+
+      setMeasured(true);
+
+      setSlot({
+        right: Math.max(0, Math.round(window.innerWidth - rightEdge)),
+        maxWidth: Math.min(220, Math.floor(available)),
       });
-      if (controls.length === 0) return setRightOffset(null);
-      // Sit left of the leftmost control, with a gap matching the navbar's own.
-      const leftmost = Math.min(...controls.map((el) => el.getBoundingClientRect().left));
-      setRightOffset(Math.max(0, Math.round(window.innerWidth - leftmost + 12)));
     };
+
     measure();
     window.addEventListener("resize", measure, { passive: true });
     // The navbar mounts its controls after hydration, so measure once more.
@@ -95,6 +121,7 @@ export function PixelHeaderSwitcher({
   }, []);
 
   if (seasons.length <= 1) return null;
+  if (!measured) return null;
 
   const ordered = [...seasons].sort(
     (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
@@ -108,16 +135,57 @@ export function PixelHeaderSwitcher({
     router.push(query ? `/?${query}` : "/");
   }
 
+  const select = (
+    <select
+      value={selectedUrlSlug}
+      onChange={(e) => handleChange(e.target.value)}
+      aria-label="Select Season"
+      style={{
+        pointerEvents: "auto",
+        fontFamily: "var(--font-ui)",
+        fontSize: "var(--px-xs)",
+        color: "var(--text)",
+        background: "color-mix(in srgb,var(--accent) 12%,transparent)",
+        border: "2px solid var(--border)",
+        padding: "clamp(4px,0.4vw,7px) clamp(6px,0.6vw,10px)",
+        letterSpacing: "0.06em",
+        maxWidth: slot ? slot.maxWidth : undefined,
+        minWidth: 0,
+      }}
+    >
+      {ordered.map((s) => (
+        <option key={s.urlSlug} value={s.urlSlug}>
+          {s.name}
+          {s.urlSlug === currentUrlSlug ? "" : " (archived)"}
+        </option>
+      ))}
+    </select>
+  );
+
+  // No room between the links and the controls — below 640px, or wherever the
+  // links grow enough to close the gap. It falls back to sitting under the
+  // navbar rather than covering something, which is the failure the two
+  // earlier attempts made.
+  if (!slot) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          paddingTop: "calc(clamp(52px,4.5vw,72px) + 16px)",
+        }}
+      >
+        {select}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
         position: "fixed",
         top: 0,
-        right: 0,
-        // Measured clearance for whatever controls the navbar is showing.
-        // Hidden until measured, so it never flashes in the wrong place.
-        paddingRight: rightOffset ?? 0,
-        visibility: rightOffset === null ? "hidden" : "visible",
+        right: slot.right,
         height: "clamp(52px,4.5vw,72px)",
         display: "flex",
         alignItems: "center",
@@ -125,30 +193,8 @@ export function PixelHeaderSwitcher({
         pointerEvents: "none",
       }}
     >
-      <select
-        className="hidden-below-640"
-        value={selectedUrlSlug}
-        onChange={(e) => handleChange(e.target.value)}
-        aria-label="Select Season"
-        style={{
-          pointerEvents: "auto",
-          fontFamily: "var(--font-ui)",
-          fontSize: "var(--px-xs)",
-          color: "var(--text)",
-          background: "color-mix(in srgb,var(--accent) 12%,transparent)",
-          border: "2px solid var(--border)",
-          padding: "clamp(4px,0.4vw,7px) clamp(6px,0.6vw,10px)",
-          letterSpacing: "0.06em",
-          maxWidth: "clamp(140px,14vw,220px)",
-        }}
-      >
-        {ordered.map((s) => (
-          <option key={s.urlSlug} value={s.urlSlug}>
-            {s.name}
-            {s.urlSlug === currentUrlSlug ? "" : " (archived)"}
-          </option>
-        ))}
-      </select>
+      {select}
     </div>
   );
 }
+
