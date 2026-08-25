@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { Access, CollectionConfig, Field } from 'payload'
 import { THEME_OPTIONS } from '../lib/themes'
 
 // Per-difficulty progress for one boss, for the difficulties that are NOT
@@ -47,12 +47,58 @@ const rankingsByDifficulty: Field[] = (['normal', 'heroic'] as const).map((diffi
   ],
 }))
 
+/**
+ * Only the current Season can be changed from the admin panel.
+ *
+ * ADR 0005 freezes archived Seasons, and the Sync has enforced that in code
+ * since — but the admin panel did not, so Season 1 sat there fully editable
+ * with nothing but care standing between it and a typo. Its 595 M+ participants
+ * are the least recoverable data in the project: two of those members
+ * (Exyie, Brunogarzz) no longer exist upstream, so a bad write cannot be
+ * repaired by re-syncing.
+ *
+ * "Archived" is not a stored flag — it is *not being the Season that
+ * `guild-settings.currentSeason` points at*, which is the same definition the
+ * page and the Sync already use. Returning a `Where` rather than a boolean lets
+ * Payload apply it per document, so the current Season stays editable and every
+ * other one renders read-only.
+ *
+ * **The Sync is unaffected.** It writes through the Local API, which defaults to
+ * `overrideAccess: true`; the `current.isArchived` branches in
+ * `syncProgression.ts` are what protect archived rows there (covered by
+ * `syncArchiveSafety.test.ts`), and they are untouched by this.
+ *
+ * **To edit an archived Season deliberately**, point `currentSeason` at it, make
+ * the change, and point it back — or write a script, as
+ * `correct-season-1-started-at.mjs` did. Both are awkward on purpose.
+ */
+const onlyCurrentSeason: Access = async ({ req }) => {
+  const settings = await req.payload.findGlobal({ slug: 'guild-settings', depth: 0 })
+  const ref = settings.currentSeason
+  const currentId = ref && typeof ref === 'object' ? ref.id : ref
+  // No pointer configured is a broken install, not a reason to lock the whole
+  // collection — that would leave nobody able to set the pointer.
+  if (currentId === null || currentId === undefined) return true
+  return { id: { equals: currentId } }
+}
+
 export const Seasons: CollectionConfig = {
   slug: 'seasons',
   labels: { singular: 'Season', plural: 'Seasons' },
+  access: {
+    update: onlyCurrentSeason,
+    // Delete is locked with it. A Season that cannot be corrected but can be
+    // destroyed is the worst of both, and deletion is the less recoverable of
+    // the two accidents.
+    delete: onlyCurrentSeason,
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'urlSlug', 'startedAt'],
+    description:
+      '⚠ Written by the hourly Raider.IO Sync — not by hand. Almost every field here is auto-filled and read-only, and the values feed the live site directly. ' +
+      'Archived Seasons are locked: only the Season that Guild Settings → Current Season points at can be edited at all. ' +
+      'If something looks wrong, run the Sync from Guild Details rather than typing over it — a hand edit is overwritten within the hour, or worse, is not.',
   },
   fields: [
     { name: 'name', type: 'text', required: true, admin: { description: 'Display label, e.g. "Midnight Season 1".' } },
