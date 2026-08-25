@@ -59,6 +59,15 @@ Append-only. Newest first.
 
 **Found, deliberately not fixed:** `About.tsx` names `'Rajdhani'` and `'Bebas Neue'`, which nothing has loaded since the 8-bit redesign — so its eyebrow and heading render in the browser's default sans-serif and have since. Fixing it would change Season 1's look, which ticket `01`'s gate forbids. Commented in place; it needs its own change against a fresh baseline.
 
+**Four `/code-review` findings fixed before this landed** (`2497a93`), all documentation-or-dead-code rather than behaviour:
+
+- **Comments asserted `preload: false` was set; it is not.** Both fonts are site defaults and correctly preload. The rule still matters and now reads as a rule rather than a description: the theme-specific font ticket `03` adds **must** be declared `preload: false`, or it downloads for every visitor and the per-Season saving evaporates.
+- **`hasKeyArt: true` for venom claimed art that does not exist.** Now `false` until ticket `06` ships it — otherwise the first code to read the flag reserves space for nothing.
+- **`findTheme` deleted** — no callers, speculative. `ThemeSlug`/`hasKeyArt` kept deliberately.
+- **The package convention lived in three places** (ADR, manifest, CSS comment) and would have drifted; the CSS comment now points at the manifest. **`tsconfig.check.json`'s `scripts/**/*.mjs` glob was inert** — `allowJs` without `checkJs` means tsc loads those files and reports nothing.
+
+**Also verified:** `npx next build` succeeds, so `next/font`'s build-time Google fetch works in a production build; and selecting venom end-to-end through Payload's own write path renders the default look rather than an unstyled page — the fallback contract observed, not assumed.
+
 ### 2026-08-11 — Season 1's real start date: 2026-03-17
 
 Closes the `startedAt`-placeholder issue that was open above, clearing the data prerequisite for ticket `09` — switcher ordering is now correct before a second Season can exist. The operator confirmed Season 1 began **2026-03-17**; the `2026-01-01` placeholder was corrected everywhere it lived: the committed snapshot, `seed-local.mjs`, `snapshot-season-1.mjs` (constant renamed `SEASON_1_STARTED_AT` — it is no longer a placeholder, and a re-run can't resurrect one), and both database rows via `scripts/correct-season-1-started-at.mjs`.
