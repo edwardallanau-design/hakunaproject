@@ -67,6 +67,12 @@ Also: dead options deleted (`hasKeyArt`, the never-selected `row` roster layout)
 
 **Judged and skipped, so they are not re-found as new:** the archived-Season banner exists in three places, `{seasons, selectedUrlSlug, currentUrlSlug}` is a data clump threaded through four components, kill-counting from the flat/group asymmetry is duplicated between `syncProgression` and `venomViewModel`, `numeralAfter(groups.length + N)` keeps hand-maintained offsets, and `SeasonSwitcher.tsx` is now dead but frozen. All judgement calls, some inside frozen files.
 
+Three more, dispositioned rather than fixed:
+
+- **The `#progression` anchor was dropped.** The old mid-page `SeasonSwitcher` scrolled to `#progression` on change; the header one does not. Intended — a control in the navbar landing at the top of the page is ordinary, and it matches what the venom navbar does, which was the whole point of moving it.
+- **`killsByDifficulty` is returned but never persisted.** It is used internally to derive the canonical `kills`, and `venomViewModel` recomputes its own from stored bosses. Not dead, just not stored.
+- **`rankingsByDifficulty.mythic` is computed and never written.** By design: mythic ranks live in the flat `rankings` group, so writing them twice would create two sources for one number.
+
 **One finding has no code fix and is documented as by-design:** the Sync route hardcodes `isArchived: false`. There is no data signal for "archived" beyond "not the current Season", and the route syncs the current Season by definition. Re-pointing `currentSeason` in the admin makes an archive current — at which point it is, correctly, the current Season. The guard exists for a caller that derives some *other* Season, and no such caller exists yet.
 
 85 tests, typecheck clean.

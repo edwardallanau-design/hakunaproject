@@ -6,9 +6,15 @@
 
 Season 2's Rank Source slug is a guess (`tier-mn-2`) until a real response confirms it. Raid and Mythic+ open around 2026-08-17.
 
-**Blocked by:** 06 — Capture every M+ Participant, .scratch/season-2-theming/issues/07 — Venom complete
+> **Unblocked 2026-08-25.** The theming gate is lifted: the operator reversed the sequencing to **palette-first**, so this ticket no longer waits on `season-2-theming/issues/07`. Ticket `07` has itself narrowed to a QA matrix.
+>
+> **The guess in the paragraph above was wrong**, exactly as this ticket predicted it might be. Captured live 2026-08-25: `tier-mn-2` does not exist upstream. The real raid is **`the-venomous-abyss`**, and a fourth raid nobody anticipated — **`the-tidebound-grotto`**, one boss (Nymrissa Wavecaller) — also belongs to Season 2, ordered after the Abyss per operator decision. Rank Source is `the-venomous-abyss`.
+>
+> `scripts/create-season-2.mjs` implements this ticket: verify-first/`--commit`, inert after first use, rehearsed locally end to end. **It has not been run against production**, and the order matters — see the Open entry in `.scratch/LEDGER.md`: push first (the deploy runs both migrations), then the script, then clear `SYNC_DISABLED`.
 
-**Status:** ready-for-agent
+**Blocked by:** 06 — Capture every M+ Participant
+
+**Status:** ready-for-agent — script written and rehearsed, awaiting the production run
 
 - [ ] A Season 2 row is created with display name, URL slug, theme slug and started-at date
 - [ ] Contributing Raid slugs and Rank Source Raid slug are set from a **real** upstream response, not from the guessed value
