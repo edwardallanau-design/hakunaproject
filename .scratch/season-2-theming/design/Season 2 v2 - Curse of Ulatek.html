@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Almendra+Display&family=Grenze:wght@400;500;600;700&family=Cormorant+SC:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#050f08;color:#e3f0da;font-family:'Grenze',serif;font-size:clamp(17px,1.15vw,21px);line-height:1.6;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+a{color:#84cc16}a:hover{color:#a3e635}
+::selection{background:rgba(132,204,22,.28);color:#e3f0da}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#081810}::-webkit-scrollbar-thumb{background:#84cc16;border-radius:3px}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes crestFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes dripFall{0%{transform:translateY(-20px);opacity:0}8%{opacity:.9}85%{opacity:.9}100%{transform:translateY(44vh);opacity:0}}
+@keyframes sporeFloat{0%,100%{transform:translateY(0);opacity:.35}50%{transform:translateY(-26px);opacity:.9}}
+@keyframes pulseDot{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+@keyframes eyeBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(0.08)}}
+@keyframes heroUp{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
+@keyframes borderRun{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+@keyframes rvIn{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes rvLeft{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+@keyframes rvScale{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.hu{opacity:0;animation:heroUp .9s cubic-bezier(.22,1,.36,1) forwards}
+@supports (animation-timeline: view()){
+.rv{animation:rvIn both;animation-timeline:view();animation-range:entry 5% entry 45%}
+.rvl{animation:rvLeft both;animation-timeline:view();animation-range:entry 5% entry 45%}
+.rvs{animation:rvScale both;animation-timeline:view();animation-range:entry 5% entry 50%}
+}
+.hb640{display:flex}
+@media(max-width:639px){.hb640{display:none!important}}
+@media(max-width:519px){.hb520{display:none!important}}
+.hero-grid{display:grid;grid-template-columns:1.25fr 1fr;align-items:center;gap:clamp(24px,4vw,72px);padding-left:clamp(72px,7vw,110px)!important}
+.vert{display:block}
+@media(max-width:899px){.hero-grid{grid-template-columns:1fr;text-align:center;justify-items:center;padding-left:clamp(20px,4vw,64px)!important}.vert{display:none}.hero-eye{width:clamp(180px,44vw,260px)!important}}
+.dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1vw,16px)}
+@media(max-width:899px){.dgrid{grid-template-columns:repeat(2,1fr)}}
+.ogrid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.2vw,20px)}
+@media(max-width:899px){.ogrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:519px){.ogrid{grid-template-columns:1fr}}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.2vw,20px)}
+@media(max-width:899px){.rgrid{grid-template-columns:1fr}}
+.abgrid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:clamp(28px,4vw,64px);align-items:center}
+@media(max-width:899px){.abgrid{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div data-screen-label="Season 2 v2 — Curse of Ula'tek" style="--bg:#050f08;--surface:#081810;--accent:#84cc16;--accent2:#2dd4bf;--glow:#a3e635;--text:#e3f0da;--muted:#7d9a80;--border:rgba(132,204,22,0.45);--border-dim:rgba(132,204,22,0.22);--card-bg:rgba(8,24,16,0.85);--fd:'Almendra Display',serif;--fb:'Grenze',serif;--fu:'Cormorant SC',serif;--ui-xs:clamp(11px,0.7vw,14px);--ui-sm:clamp(12px,0.78vw,16px);--ui-md:clamp(13px,0.88vw,18px);--ui-lg:clamp(15px,1vw,20px);--bd-sm:clamp(19px,1.35vw,28px);--bd-md:clamp(23px,1.65vw,34px);min-height:100vh;background:var(--bg)">
+
+<nav style="position:fixed;top:0;left:0;right:0;z-index:50;transition:all 0.5s;background:{{ navBg }};backdrop-filter:{{ navBlur }};border-bottom:{{ navBorder }}">
+  <div style="max-width:88rem;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 clamp(16px,2.5vw,48px);height:clamp(54px,4.5vw,74px)">
+    <a href="#home" style="display:flex;align-items:center;gap:9px;min-width:0;text-decoration:none">
+      <div style="width:15px;height:11px;flex-shrink:0;background:radial-gradient(circle at 40% 35%, #e3bc7f, #b9854a 60%, #6e4a24);border-radius:52% 60% 55% 62%;transform:rotate(-16deg);box-shadow:0 0 9px var(--glow)"></div>
+      <span class="hb520" style="font-family:var(--fd);font-size:clamp(19px,1.7vw,32px);color:var(--text);letter-spacing:0.08em;white-space:nowrap">Potato Corner</span>
+    </a>
+    <div class="hb640" style="align-items:center;gap:clamp(18px,2vw,36px)">
+      <sc-for list="{{ navLinks }}" as="l" hint-placeholder-count="5">
+        <a href="{{ l.href }}" style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:{{ l.color }};letter-spacing:0.16em;text-decoration:none;position:relative">{{ l.label }}<sc-if value="{{ l.active }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;bottom:-4px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))"></span></sc-if></a>
+      </sc-for>
+    </div>
+    <select aria-label="Select Season" onChange="{{ seasonChange }}" defaultValue="season-2" style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--glow);background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid var(--border);padding:clamp(5px,0.5vw,9px) clamp(8px,0.8vw,13px);letter-spacing:0.1em;flex-shrink:0">
+      <option value="season-2">Season 2 · Ula'tek</option>
+      <option value="season-1">Season 1 · Midnight</option>
+    </select>
+  </div>
+</nav>
+
+<main>
+<section id="home" style="position:relative;min-height:100vh;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 70% 20%, rgba(20,50,10,0.7) 0%, transparent 55%), radial-gradient(ellipse at 10% 90%, rgba(45,212,191,0.09) 0%, transparent 50%), #050f08">
+  <div style="position:absolute;inset:0;pointer-events:none;opacity:0.45;background-image:radial-gradient(circle at 6px 0px, rgba(132,204,22,0.10) 4px, transparent 5px),radial-gradient(circle at 18px 12px, rgba(45,212,191,0.07) 4px, transparent 5px);background-size:24px 24px"></div>
+  <sc-if value="{{ heroFx }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;top:0;left:8%;width:2px;height:64px;background:linear-gradient(to bottom,var(--glow),transparent);opacity:0.55"></div>
+    <div style="position:absolute;top:0;left:8%;width:4px;height:10px;border-radius:0 0 50% 50%;background:var(--glow);box-shadow:0 0 8px var(--glow);animation:dripFall 5.5s ease-in 0.6s infinite"></div>
+    <div style="position:absolute;top:0;left:44%;width:2px;height:92px;background:linear-gradient(to bottom,var(--accent),transparent);opacity:0.4"></div>
+    <div style="position:absolute;top:0;left:44%;width:4px;height:10px;border-radius:0 0 50% 50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:dripFall 7.5s ease-in 2.4s infinite"></div>
+    <div style="position:absolute;top:0;left:91%;width:2px;height:52px;background:linear-gradient(to bottom,var(--accent2),transparent);opacity:0.5"></div>
+    <div style="position:absolute;top:0;left:91%;width:4px;height:10px;border-radius:0 0 50% 50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:dripFall 6.2s ease-in 1.2s infinite"></div>
+    <div style="position:absolute;top:26%;left:6%;width:11px;height:8px;border-radius:52% 60% 55% 62%;background:radial-gradient(circle at 40% 35%, #e3bc7f, #b9854a 65%);transform:rotate(-20deg);box-shadow:0 0 10px var(--glow);animation:sporeFloat 6s ease-in-out infinite"></div>
+    <div style="position:absolute;top:60%;right:8%;width:5px;height:5px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:sporeFloat 7s ease-in-out 1.4s infinite"></div>
+    <div style="position:absolute;bottom:30%;left:38%;width:9px;height:7px;border-radius:55% 58% 60% 52%;background:radial-gradient(circle at 40% 35%, #e3bc7f, #a06e3a 65%);transform:rotate(14deg);box-shadow:0 0 9px var(--accent);animation:sporeFloat 5.5s ease-in-out 0.8s infinite"></div>
+  </sc-if>
+  <span class="vert" style="position:absolute;left:clamp(10px,1.6vw,30px);top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);letter-spacing:0.5em;color:var(--muted);opacity:0.7">BARTHILAS · OCE · HORDE · EST. LEGION</span>
+  <div class="hero-grid" style="position:relative;z-index:10;flex:1;max-width:88rem;margin:0 auto;padding:clamp(96px,12vh,150px) clamp(20px,4vw,64px) clamp(70px,9vh,110px);width:100%">
+    <div style="display:flex;flex-direction:column;gap:clamp(14px,1.6vw,24px)">
+      <span class="hu" style="animation-delay:.1s;font-family:var(--fu);font-weight:600;font-size:var(--ui-lg);color:var(--accent2);letter-spacing:0.34em;text-transform:uppercase">Season 2 · The Curse of Ula'tek</span>
+      <h1 style="margin:0;font-family:var(--fd);font-weight:400;line-height:0.92;letter-spacing:0.02em">
+        <span class="hu" style="animation-delay:.25s;display:block;font-size:clamp(58px,9.5vw,170px);color:var(--text);text-shadow:0 0 30px color-mix(in srgb,var(--glow) 55%,transparent)">Potato</span>
+        <span class="hu" style="animation-delay:.4s;display:block;font-size:clamp(58px,9.5vw,170px);color:transparent;-webkit-text-stroke:2px var(--accent);text-shadow:none">Corner</span>
+      </h1>
+      <p class="hu" style="animation-delay:.55s;margin:0;font-family:var(--fb);font-size:var(--bd-sm);color:var(--muted);max-width:34ch">Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding.</p>
+      <div class="hu" style="animation-delay:.7s;display:flex;flex-wrap:wrap;gap:16px;margin-top:6px;justify-content:inherit">
+        <a href="#progression" style-hover="transform:translate(-1px,-1px);box-shadow:5px 5px 0 #14320a, 0 0 28px color-mix(in srgb,var(--accent) 55%,transparent)" style="font-family:var(--fu);font-weight:700;font-size:var(--ui-lg);padding:clamp(11px,1vw,17px) clamp(22px,2vw,34px);background:linear-gradient(135deg, #84cc16, #3f6212);color:#0a1505;border:2px solid var(--glow);box-shadow:4px 4px 0 #14320a;letter-spacing:0.14em;text-decoration:none;transition:transform 100ms ease, box-shadow 100ms ease">View Progression</a>
+        <a href="#recruitment" style-hover="transform:translate(-1px,-1px)" style="font-family:var(--fu);font-weight:700;font-size:var(--ui-lg);padding:clamp(11px,1vw,17px) clamp(22px,2vw,34px);background:transparent;border:2px solid var(--border);color:var(--text);box-shadow:4px 4px 0 color-mix(in srgb,var(--accent) 20%,transparent);letter-spacing:0.14em;text-decoration:none;transition:transform 100ms ease">Apply Now</a>
+      </div>
+    </div>
+    <div class="hu" style="animation-delay:.45s;display:flex;justify-content:center">
+      <svg id="serpent-eye" class="hero-eye" viewBox="0 0 200 200" aria-hidden="true" style="width:clamp(220px,24vw,380px);animation:crestFloat 7s ease-in-out infinite;filter:drop-shadow(0 0 40px rgba(132,204,22,0.25))">
+        <defs>
+          <radialGradient id="w2o" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1f4a0e" stop-opacity="0.95"></stop><stop offset="70%" stop-color="#0a2408" stop-opacity="0.5"></stop><stop offset="100%" stop-color="#050f08" stop-opacity="0"></stop></radialGradient>
+          <radialGradient id="w2i" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d9f99d"></stop><stop offset="55%" stop-color="#84cc16"></stop><stop offset="100%" stop-color="#1f4a0e"></stop></radialGradient>
+          <radialGradient id="w2p" cx="42%" cy="38%" r="70%"><stop offset="0%" stop-color="#e3bc7f"></stop><stop offset="60%" stop-color="#b9854a"></stop><stop offset="100%" stop-color="#6e4a24"></stop></radialGradient>
+          <filter id="w2g"><feGaussianBlur stdDeviation="6" result="blur"></feGaussianBlur><feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
+        </defs>
+        <circle cx="100" cy="100" r="92" fill="url(#w2o)"></circle>
+        <circle cx="100" cy="100" r="76" fill="none" stroke="#84cc16" stroke-width="1.3" opacity="0.4" stroke-dasharray="3 7"></circle>
+        <circle cx="100" cy="100" r="62" fill="none" stroke="#a3e635" stroke-width="1.7" opacity="0.5"></circle>
+        <circle cx="100" cy="100" r="48" fill="none" stroke="#2dd4bf" stroke-width="1.1" opacity="0.4" stroke-dasharray="8 5"></circle>
+        <g fill="#a3e635" opacity="0.75">
+          <polygon points="100,20 104,33 96,33"></polygon><polygon points="180,100 167,104 167,96"></polygon><polygon points="100,180 96,167 104,167"></polygon><polygon points="20,100 33,96 33,104"></polygon>
+        </g>
+        <g transform="rotate(-16 100 100)">
+          <ellipse cx="100" cy="100" rx="42" ry="31" fill="url(#w2p)" filter="url(#w2g)"></ellipse>
+          <circle cx="78" cy="88" r="3.5" fill="#5c3d1e" opacity="0.55"></circle>
+          <circle cx="124" cy="112" r="3" fill="#5c3d1e" opacity="0.5"></circle>
+          <circle cx="112" cy="80" r="2.5" fill="#5c3d1e" opacity="0.45"></circle>
+          <circle cx="84" cy="116" r="2.5" fill="#5c3d1e" opacity="0.45"></circle>
+        </g>
+        <line x1="82" y1="72" x2="76" y2="60" stroke="#a3e635" stroke-width="2.5" stroke-linecap="round"></line>
+        <circle cx="75" cy="58" r="3" fill="#a3e635"></circle>
+        <line x1="120" y1="70" x2="126" y2="61" stroke="#84cc16" stroke-width="2" stroke-linecap="round"></line>
+        <circle cx="127" cy="59" r="2.4" fill="#84cc16"></circle>
+        <g style="transform-origin:100px 100px;animation:eyeBlink 7s ease-in-out infinite">
+          <ellipse cx="100" cy="100" rx="21" ry="17" fill="#06120a"></ellipse>
+          <circle cx="100" cy="100" r="13" fill="url(#w2i)" opacity="0.95"></circle>
+          <g id="pupil"><ellipse cx="100" cy="100" rx="3.4" ry="11.5" fill="#06120a"></ellipse><circle cx="96" cy="94" r="2.2" fill="#f0fdf4" opacity="0.85"></circle></g>
+        </g>
+        <g fill="#2dd4bf" opacity="0.7">
+          <polygon points="160,94 164,103 156,103"></polygon><polygon points="118.5,151.1 122.5,160.1 114.5,160.1"></polygon><polygon points="51.5,129.3 55.5,138.3 47.5,138.3"></polygon><polygon points="51.5,58.7 55.5,67.7 47.5,67.7"></polygon><polygon points="118.5,36.9 122.5,45.9 114.5,45.9"></polygon>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div id="statsbar" style="position:relative;z-index:10;border-top:1px solid var(--border-dim);background:rgba(8,24,16,0.7);backdrop-filter:blur(8px);padding:clamp(20px,2vw,32px) 20px">
+    <div style="max-width:56rem;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0">
+      <sc-for list="{{ statItems }}" as="st" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 20px">
+          <span style="font-family:var(--fd);font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1;color:var(--text);text-shadow:0 0 20px color-mix(in srgb,var(--glow) 40%,transparent)">{{ st.value }}</span>
+          <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);letter-spacing:0.18em;color:var(--muted);text-transform:uppercase">{{ st.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="progression" style="padding:clamp(80px,9vw,130px) clamp(20px,4vw,64px)">
+  <div style="max-width:76rem;margin:0 auto">
+    <div class="rvl" style="display:flex;align-items:baseline;gap:clamp(14px,1.8vw,30px);flex-wrap:wrap;margin-bottom:clamp(40px,4.5vw,70px);border-bottom:1px solid var(--border-dim);padding-bottom:clamp(16px,1.8vw,28px)">
+      <span style="font-family:var(--fd);font-size:clamp(46px,5vw,92px);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--border)">01</span>
+      <div style="flex:1;min-width:min(100%,300px)">
+        <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:var(--accent2);letter-spacing:0.3em;text-transform:uppercase;display:block">The Raid</span>
+        <h2 style="margin:2px 0 0;font-family:var(--fd);font-size:clamp(34px,3.6vw,64px);font-weight:400;color:var(--text);letter-spacing:0.03em;line-height:1.05;text-shadow:0 0 20px color-mix(in srgb,var(--glow) 45%,transparent)">Vaults of Atal'Utek</h2>
+      </div>
+      <div style="text-align:right">
+        <span style="font-family:var(--fd);font-size:clamp(40px,4.2vw,76px);line-height:1;color:var(--glow);text-shadow:0 0 24px color-mix(in srgb,var(--glow) 60%,transparent)">5/8</span>
+        <span style="display:block;font-family:var(--fu);font-weight:600;font-size:var(--ui-sm);color:var(--muted);letter-spacing:0.2em">HEROIC · 63%</span>
+      </div>
+    </div>
+    <div style="position:relative;padding-left:clamp(30px,3.4vw,54px)">
+      <div style="position:absolute;left:clamp(11px,1.25vw,20px);top:8px;bottom:8px;width:2px;background:color-mix(in srgb,var(--accent) 15%,transparent)"></div>
+      <div style="position:absolute;left:clamp(11px,1.25vw,20px);top:8px;height:63%;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2));box-shadow:0 0 10px color-mix(in srgb,var(--accent) 60%,transparent)"></div>
+      <div style="display:flex;flex-direction:column;gap:clamp(6px,0.7vw,12px)">
+        <sc-for list="{{ bosses }}" as="b" hint-placeholder-count="8">
+          <div class="rvl" style="position:relative;display:flex;align-items:center;gap:clamp(12px,1.2vw,20px);padding:clamp(10px,1vw,16px) clamp(12px,1.3vw,22px);background:{{ b.bg }};border:1px solid {{ b.rowBorder }}">
+            <div style="position:absolute;left:calc(clamp(11px,1.25vw,20px) - clamp(30px,3.4vw,54px) - 5px);width:12px;height:12px;transform:rotate(45deg);background:{{ b.node }};box-shadow:{{ b.nodeGlow }};border:1px solid {{ b.nodeBorder }}"></div>
+            <span style="font-family:var(--fu);font-weight:700;font-size:var(--ui-xs);color:{{ b.numColor }};letter-spacing:0.1em;width:2.2em;flex-shrink:0">{{ b.num }}</span>
+            <span style="font-family:var(--fb);font-weight:500;font-size:var(--bd-md);flex:1;color:{{ b.nameColor }};opacity:{{ b.nameOpacity }};line-height:1.2">{{ b.name }}</span>
+            <sc-if value="{{ b.killed }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--fu);font-weight:700;font-size:var(--ui-xs);color:var(--accent2);background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.3);padding:3px 12px;letter-spacing:0.16em;flex-shrink:0">DEAD</span></sc-if>
+            <sc-if value="{{ b.progressing }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:7px;font-family:var(--fu);font-weight:700;font-size:var(--ui-xs);color:#fbbf24;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);padding:3px 12px;letter-spacing:0.12em;flex-shrink:0"><span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;animation:pulseDot 1.5s ease-in-out infinite"></span>BEST {{ b.pull }}</span></sc-if>
+            <sc-if value="{{ b.locked }}" hint-placeholder-val="{{ false }}"><span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);opacity:0.6;border:1px solid color-mix(in srgb,var(--muted) 20%,transparent);padding:3px 12px;letter-spacing:0.16em;flex-shrink:0">SEALED</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dungeons" style="padding:clamp(80px,9vw,130px) clamp(20px,4vw,64px);background:linear-gradient(180deg, transparent, rgba(12,33,20,0.5) 50%, transparent);border-top:1px solid var(--border-dim)">
+  <div style="max-width:76rem;margin:0 auto">
+    <div class="rvl" style="display:flex;align-items:baseline;gap:clamp(14px,1.8vw,30px);flex-wrap:wrap;margin-bottom:clamp(40px,4.5vw,70px);border-bottom:1px solid var(--border-dim);padding-bottom:clamp(16px,1.8vw,28px)">
+      <span style="font-family:var(--fd);font-size:clamp(46px,5vw,92px);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--border)">02</span>
+      <div style="flex:1;min-width:min(100%,300px)">
+        <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:var(--accent2);letter-spacing:0.3em;text-transform:uppercase;display:block">Mythic+ Season 2</span>
+        <h2 style="margin:2px 0 0;font-family:var(--fd);font-size:clamp(34px,3.6vw,64px);font-weight:400;color:var(--text);letter-spacing:0.03em;line-height:1.05;text-shadow:0 0 20px color-mix(in srgb,var(--glow) 45%,transparent)">Dungeon Rotation</h2>
+      </div>
+      <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-sm);color:var(--muted);letter-spacing:0.16em">GUILD BEST KEYS</span>
+    </div>
+    <div class="dgrid">
+      <sc-for list="{{ dungeons }}" as="d" hint-placeholder-count="8">
+        <div class="rvs" style-hover="transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 32px rgba(0,0,0,0.4), 0 0 20px color-mix(in srgb,var(--accent) 25%,transparent)" style="position:relative;background:var(--card-bg);border:1px solid var(--border-dim);clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);padding:clamp(14px,1.3vw,22px);display:flex;flex-direction:column;gap:clamp(10px,0.9vw,15px);transition:transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease">
+          <div style="position:absolute;top:0;right:0;width:16px;height:16px;background:{{ d.tagColor }};clip-path:polygon(0 0,100% 100%,100% 0);opacity:0.8"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:{{ d.tagColor }};letter-spacing:0.2em">{{ d.tag }}</span>
+            <span style="font-family:var(--fu);font-weight:700;font-size:var(--ui-xs);color:{{ d.timedColor }};border:1px solid {{ d.timedBorder }};background:{{ d.timedBg }};padding:2px 9px;letter-spacing:0.12em">{{ d.timedLabel }}</span>
+          </div>
+          <span style="font-family:var(--fb);font-weight:500;font-size:var(--bd-sm);color:var(--text);line-height:1.2;flex:1">{{ d.name }}</span>
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-family:var(--fd);font-size:clamp(36px,3vw,56px);line-height:1;color:var(--glow);text-shadow:0 0 16px color-mix(in srgb,var(--glow) 55%,transparent)">{{ d.key }}</span>
+            <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);letter-spacing:0.1em">{{ d.time }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="rv" style="display:flex;justify-content:center;gap:clamp(16px,2vw,32px);margin-top:clamp(20px,2vw,32px);flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:7px;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);letter-spacing:0.16em"><span style="width:8px;height:8px;background:var(--glow);transform:rotate(45deg);box-shadow:0 0 5px var(--glow)"></span>MIDNIGHT DUNGEONS</span>
+      <span style="display:flex;align-items:center;gap:7px;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);letter-spacing:0.16em"><span style="width:8px;height:8px;background:var(--accent2);transform:rotate(45deg);box-shadow:0 0 5px var(--accent2)"></span>LEGACY DUNGEONS</span>
+    </div>
+  </div>
+</section>
+
+<section id="leaderboard" style="padding:clamp(80px,9vw,130px) clamp(20px,4vw,64px);border-top:1px solid var(--border-dim)">
+  <div style="max-width:66rem;margin:0 auto">
+    <div class="rvl" style="display:flex;align-items:baseline;gap:clamp(14px,1.8vw,30px);flex-wrap:wrap;margin-bottom:clamp(40px,4.5vw,70px);border-bottom:1px solid var(--border-dim);padding-bottom:clamp(16px,1.8vw,28px)">
+      <span style="font-family:var(--fd);font-size:clamp(46px,5vw,92px);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--border)">03</span>
+      <div style="flex:1;min-width:min(100%,300px)">
+        <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:var(--accent2);letter-spacing:0.3em;text-transform:uppercase;display:block">Leaderboard</span>
+        <h2 style="margin:2px 0 0;font-family:var(--fd);font-size:clamp(34px,3.6vw,64px);font-weight:400;color:var(--text);letter-spacing:0.03em;line-height:1.05;text-shadow:0 0 20px color-mix(in srgb,var(--glow) 45%,transparent)">Top Mythic+ Runners</h2>
+      </div>
+    </div>
+    <div class="rvs" style="position:relative;display:flex;align-items:center;gap:clamp(14px,1.6vw,26px);padding:clamp(18px,1.8vw,30px);margin-bottom:clamp(10px,1vw,16px);background:linear-gradient(135deg, color-mix(in srgb,var(--accent) 14%,transparent), rgba(8,24,16,0.9) 60%);border:2px solid var(--border);flex-wrap:wrap">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200% 100%;animation:borderRun 3s linear infinite"></div>
+      <div style="width:clamp(52px,4.5vw,74px);height:clamp(52px,4.5vw,74px);border:2px solid {{ champ.color }};background:radial-gradient(circle, {{ champ.color }}30, {{ champ.color }}08);box-shadow:0 0 20px {{ champ.color }}40;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-family:var(--fd);font-size:clamp(28px,2.4vw,44px);color:{{ champ.color }};line-height:1">{{ champ.initial }}</span>
+      </div>
+      <div style="flex:1;min-width:150px">
+        <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--glow);letter-spacing:0.24em">◆ SEASON CHAMPION</span>
+        <p style="margin:2px 0 0;font-family:var(--fd);font-size:clamp(28px,2.6vw,46px);color:var(--text);line-height:1">{{ champ.name }}</p>
+        <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:{{ champ.color }};letter-spacing:0.1em">{{ champ.specClass }}</span>
+      </div>
+      <div style="text-align:right">
+        <span style="font-family:var(--fd);font-size:clamp(38px,3.6vw,66px);line-height:1;color:var(--accent2);text-shadow:0 0 20px rgba(45,212,191,0.5)">{{ champ.score }}</span>
+        <span style="display:block;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);letter-spacing:0.2em">M+ RATING</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ runners }}" as="r" hint-placeholder-count="4">
+        <div class="rv" style="display:flex;align-items:center;gap:clamp(10px,1vw,16px);padding:clamp(10px,0.9vw,14px) clamp(12px,1.2vw,20px);border-bottom:1px solid var(--border-dim)">
+          <span style="font-family:var(--fd);font-size:var(--bd-md);color:var(--muted);opacity:0.7;width:1.6em;flex-shrink:0">{{ r.n }}</span>
+          <span style="font-family:var(--fb);font-weight:500;font-size:var(--bd-sm);color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</span>
+          <span class="hb520" style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);padding:2px 9px;border:1px solid {{ r.classBorder }};background:{{ r.classBg }};color:{{ r.classColor }};flex-shrink:0;white-space:nowrap;letter-spacing:0.06em">{{ r.specClass }}</span>
+          <span style="font-family:var(--fu);font-weight:700;font-size:var(--ui-md);color:var(--accent2);flex-shrink:0">{{ r.score }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="about" style="padding:clamp(80px,9vw,130px) clamp(20px,4vw,64px);background:linear-gradient(180deg, transparent, rgba(20,50,10,0.12) 50%, transparent);border-top:1px solid var(--border-dim)">
+  <div class="abgrid" style="max-width:76rem;margin:0 auto">
+    <div class="rvl">
+      <div style="display:flex;align-items:baseline;gap:clamp(14px,1.8vw,30px);margin-bottom:clamp(18px,2vw,30px)">
+        <span style="font-family:var(--fd);font-size:clamp(46px,5vw,92px);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--border)">04</span>
+        <div>
+          <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:var(--accent2);letter-spacing:0.3em;text-transform:uppercase;display:block">Who We Are</span>
+          <h2 style="margin:2px 0 0;font-family:var(--fd);font-size:clamp(30px,3vw,54px);font-weight:400;color:var(--text);letter-spacing:0.03em;line-height:1.05;text-shadow:0 0 20px color-mix(in srgb,var(--glow) 45%,transparent)">Semi-hardcore. Fully committed.</h2>
+        </div>
+      </div>
+      <div style="font-family:var(--fb);font-size:var(--bd-sm);line-height:1.6;color:var(--muted)">
+        <p style="margin:0 0 0.75em">Potato Corner is a semi-hardcore Mythic progression guild on Barthilas-US, raiding two nights a week since Legion. We clear content while it matters, without turning the game into a second job.</p>
+        <p style="margin:0">Outside raid we push keys, run old content for mogs, and argue about loot in Discord. Bring consumables and a sense of humour.</p>
+      </div>
+    </div>
+    <div class="rvs" style="position:relative">
+      <div style="position:relative;overflow:hidden;aspect-ratio:4/3;border:1px solid var(--border)">
+        <img src="assets/guild-logo.png" alt="Guild Logo" style="width:100%;height:100%;object-fit:contain;background:#081810;padding:clamp(16px,4%,32px)">
+        <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:linear-gradient(to top, #081810, transparent)"></div>
+      </div>
+      <div style="position:absolute;width:22px;height:22px;top:-6px;left:-6px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)"></div>
+      <div style="position:absolute;width:22px;height:22px;top:-6px;right:-6px;border-top:2px solid var(--accent);border-right:2px solid var(--accent)"></div>
+      <div style="position:absolute;width:22px;height:22px;bottom:-6px;left:-6px;border-bottom:2px solid var(--accent);border-left:2px solid var(--accent)"></div>
+      <div style="position:absolute;width:22px;height:22px;bottom:-6px;right:-6px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)"></div>
+    </div>
+  </div>
+</section>
+
+<section id="roster" style="padding:clamp(80px,9vw,130px) clamp(20px,4vw,64px);border-top:1px solid var(--border-dim)">
+  <div style="max-width:76rem;margin:0 auto">
+    <div class="rvl" style="display:flex;align-items:baseline;gap:clamp(14px,1.8vw,30px);flex-wrap:wrap;margin-bottom:clamp(40px,4.5vw,70px);border-bottom:1px solid var(--border-dim);padding-bottom:clamp(16px,1.8vw,28px)">
+      <span style="font-family:var(--fd);font-size:clamp(46px,5vw,92px);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--border)">05</span>
+      <div style="flex:1;min-width:min(100%,300px)">
+        <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:var(--accent2);letter-spacing:0.3em;text-transform:uppercase;display:block">Leadership</span>
+        <h2 style="margin:2px 0 0;font-family:var(--fd);font-size:clamp(34px,3.6vw,64px);font-weight:400;color:var(--text);letter-spacing:0.03em;line-height:1.05;text-shadow:0 0 20px color-mix(in srgb,var(--glow) 45%,transparent)">The Officers</h2>
+      </div>
+    </div>
+    <div class="ogrid">
+      <sc-for list="{{ officers }}" as="o" hint-placeholder-count="4">
+        <div class="rvs" style-hover="transform:translateY(-4px);border-color:{{ o.color }}" style="position:relative;background:var(--card-bg);border:1px solid var(--border-dim);padding:clamp(16px,1.4vw,24px);display:flex;flex-direction:column;gap:clamp(9px,0.8vw,13px);transition:transform 180ms ease, border-color 180ms ease">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg, {{ o.color }}, {{ o.color }}88, transparent)"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:clamp(44px,3.6vw,60px);height:clamp(44px,3.6vw,60px);border:2px solid {{ o.color }}50;background:radial-gradient(circle, {{ o.color }}24, {{ o.color }}08);box-shadow:0 0 16px {{ o.color }}30;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font-family:var(--fd);font-size:clamp(24px,2vw,36px);color:{{ o.color }};line-height:1">{{ o.initial }}</span>
+            </div>
+            <div>
+              <p style="margin:0;font-family:var(--fd);font-size:var(--bd-md);color:var(--text);line-height:1">{{ o.name }}</p>
+              <p style="margin:4px 0 0;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:{{ o.color }};letter-spacing:0.1em">{{ o.spec }} {{ o.cls }}</p>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border-dim);padding-top:clamp(8px,0.7vw,12px);font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);letter-spacing:0.1em">
+            <span>{{ o.rank }}</span>
+            <span style="font-family:var(--fd);font-size:var(--bd-md);color:var(--accent2)">{{ o.ilvl }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="recruitment" style="padding:clamp(90px,10vw,150px) clamp(20px,4vw,64px);position:relative;overflow:hidden;background:linear-gradient(135deg, rgba(20,50,10,0.45) 0%, rgba(5,15,8,0.95) 55%, rgba(132,204,22,0.10) 100%);border-top:1px solid var(--border)">
+  <div style="max-width:66rem;margin:0 auto;position:relative;z-index:10">
+    <div class="rv" style="text-align:center;margin-bottom:clamp(40px,4.5vw,64px)">
+      <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-md);color:var(--accent);letter-spacing:0.34em;display:block;margin-bottom:12px;text-transform:uppercase">◆ Join Us ◆</span>
+      <h2 style="margin:0 0 12px;font-family:var(--fd);font-size:clamp(38px,4.4vw,80px);font-weight:400;color:var(--text);text-shadow:0 0 24px color-mix(in srgb,var(--glow) 50%,transparent);letter-spacing:0.03em;line-height:1">The Vault Needs More Potatoes</h2>
+      <p style="margin:0 auto;font-family:var(--fb);font-size:var(--bd-sm);color:var(--muted);max-width:44ch">Raids Wednesday + Sunday, 8–11pm server time. We take progression seriously and ourselves less so.</p>
+    </div>
+    <div class="rgrid" style="margin-bottom:clamp(32px,3.2vw,52px)">
+      <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+        <div class="rvs" style="position:relative;background:var(--card-bg);border:1px solid var(--border-dim);padding:clamp(16px,1.4vw,24px)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(10px,1vw,16px);gap:8px">
+            <h3 style="margin:0;font-family:var(--fd);font-size:var(--bd-md);font-weight:400;color:var(--text)">{{ r.role }}</h3>
+            <span style="font-family:var(--fu);font-weight:700;font-size:var(--ui-xs);padding:3px 10px;border:1px solid {{ r.pBorder }};background:{{ r.pBg }};color:{{ r.pText }};display:flex;align-items:center;gap:6px;letter-spacing:0.14em"><sc-if value="{{ r.high }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;background:{{ r.pText }};border-radius:50%;display:inline-block;animation:pulseDot 1.5s ease-in-out infinite"></span></sc-if>{{ r.priority }}</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ r.specs }}" as="spec" hint-placeholder-count="3">
+              <span style="font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);padding:3px 10px;border:1px solid var(--border-dim);background:color-mix(in srgb,var(--accent) 6%,transparent);color:var(--muted);letter-spacing:0.06em">{{ spec }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="rv" style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" style-hover="transform:translate(-1px,-1px);box-shadow:5px 5px 0 #14320a, 0 0 28px color-mix(in srgb,var(--accent) 55%,transparent)" style="font-family:var(--fu);font-weight:700;font-size:var(--ui-lg);padding:clamp(13px,1.2vw,20px) clamp(30px,2.8vw,48px);background:linear-gradient(135deg, #84cc16, #3f6212);color:#0a1505;border:2px solid var(--glow);box-shadow:4px 4px 0 #14320a;letter-spacing:0.16em;text-decoration:none;transition:transform 100ms ease, box-shadow 100ms ease">Join Our Discord</a>
+      <p style="margin:8px 0 0;font-family:var(--fu);font-weight:600;font-size:var(--ui-sm);color:var(--muted);letter-spacing:0.16em">Exceptional applicants always considered, regardless of role.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<sc-if value="{{ showTop }}" hint-placeholder-val="{{ false }}">
+  <button onClick="{{ scrollTop }}" aria-label="Back to top" style-hover="transform:translateY(-2px)" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:40;width:44px;height:44px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;background:var(--card-bg);border:2px solid var(--border);box-shadow:0 0 20px color-mix(in srgb,var(--accent) 18%,transparent);backdrop-filter:blur(8px);transition:transform 150ms ease">
+    <span style="font-family:var(--fu);color:var(--accent);font-size:18px;line-height:1">▲</span>
+  </button>
+</sc-if>
+
+<footer style="border-top:2px solid var(--border-dim);padding:clamp(36px,4vw,60px) clamp(24px,3vw,48px)">
+  <div style="max-width:clamp(480px,60vw,720px);margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,1.2vw,20px);text-align:center">
+    <p style="margin:0;font-family:var(--fd);font-size:clamp(26px,2.1vw,38px);color:var(--text);text-shadow:0 0 16px color-mix(in srgb,var(--glow) 40%,transparent);letter-spacing:0.06em">Potato Corner</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(16px,1.8vw,32px)">
+      <a href="https://raider.io" target="_blank" rel="noopener noreferrer" style-hover="color:var(--glow)" style="font-family:var(--fu);font-weight:600;font-size:var(--ui-sm);color:var(--muted);text-decoration:none;letter-spacing:0.14em;transition:color 200ms ease">Raider.IO ↗</a>
+      <a href="https://warcraftlogs.com" target="_blank" rel="noopener noreferrer" style-hover="color:var(--glow)" style="font-family:var(--fu);font-weight:600;font-size:var(--ui-sm);color:var(--muted);text-decoration:none;letter-spacing:0.14em;transition:color 200ms ease">Warcraft Logs ↗</a>
+      <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" style-hover="color:var(--glow)" style="font-family:var(--fu);font-weight:600;font-size:var(--ui-sm);color:var(--muted);text-decoration:none;letter-spacing:0.14em;transition:color 200ms ease">Discord ↗</a>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:260px">
+      <span style="flex:1;height:1px;background:linear-gradient(to right, transparent, var(--border), transparent);max-width:60px"></span>
+      <span style="font-family:var(--fu);font-size:var(--ui-sm);color:var(--muted);letter-spacing:0.15em">◆</span>
+      <span style="flex:1;height:1px;background:linear-gradient(to right, transparent, var(--border), transparent);max-width:60px"></span>
+    </div>
+    <p style="margin:0;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);color:var(--muted);opacity:0.5;letter-spacing:0.1em">© 2026 Potato Corner · Barthilas US · World of Warcraft</p>
+    <p style="margin:0;font-family:var(--fu);font-weight:600;font-size:var(--ui-xs);opacity:0.3;color:var(--muted)">World of Warcraft is a trademark of Blizzard Entertainment</p>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;heroFx&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Hero&quot;},
+  &quot;palette&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: [&quot;#84cc16&quot;, &quot;#2dd4bf&quot;, &quot;#a3e635&quot;], &quot;tsType&quot;: &quot;string[]&quot;, &quot;section&quot;: &quot;Theme&quot;, &quot;options&quot;: [[&quot;#84cc16&quot;, &quot;#2dd4bf&quot;, &quot;#a3e635&quot;], [&quot;#22c55e&quot;, &quot;#facc15&quot;, &quot;#4ade80&quot;], [&quot;#65a30d&quot;, &quot;#d946ef&quot;, &quot;#bef264&quot;]]}
+}">
+class Component extends DCLogic {
+  state = { scrolled: false, active: "home", showTop: false, stats: { m: 0, w: 0, r: 0, rl: 0 }, statsStarted: false };
+  componentDidMount() {
+    this.applyPalette();
+    this._onScroll = () => {
+      const y = window.scrollY;
+      const trigger = y + window.innerHeight * 0.38;
+      let current = "home";
+      for (const id of ["home", "progression", "dungeons", "leaderboard", "roster", "recruitment"]) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= trigger) current = id;
+      }
+      if ((y > 40) !== this.state.scrolled || (y > 500) !== this.state.showTop || current !== this.state.active)
+        this.setState({ scrolled: y > 40, showTop: y > 500, active: current });
+    };
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+    setTimeout(() => this.startCount(), 900);
+    // Serpent eye pupil tracks the cursor
+    this._onMove = (e) => {
+      const svg = document.getElementById("serpent-eye");
+      const pupil = document.getElementById("pupil");
+      if (!svg || !pupil) return;
+      const r = svg.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+      const d = Math.hypot(dx, dy) || 1, m = Math.min(d / 40, 1) * 9;
+      pupil.setAttribute("transform", `translate(${(dx / d) * m},${(dy / d) * m * 0.6})`);
+    };
+    window.addEventListener("mousemove", this._onMove, { passive: true });
+    setTimeout(this._onScroll, 100);
+  }
+  componentDidUpdate() { this.applyPalette(); }
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this._onScroll);
+    window.removeEventListener("mousemove", this._onMove);
+  }
+  startCount() {
+    if (this.state.statsStarted) return;
+    this.setState({ statsStarted: true });
+    const T = { m: 92, w: 1204, r: 213, rl: 4 }, dur = 1600, t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min((t - t0) / dur, 1);
+      this.setState({ stats: { m: Math.floor(T.m * p), w: Math.floor(T.w * p), r: Math.floor(T.r * p), rl: Math.floor(T.rl * p) } });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  applyPalette() {
+    const p = this.props.palette;
+    const root = document.querySelector('[data-screen-label]');
+    if (!root || !Array.isArray(p) || p.length < 3) return;
+    const [a, a2, g] = p;
+    const hex2rgba = (h, al) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${al})`; };
+    root.style.setProperty("--accent", a); root.style.setProperty("--accent2", a2); root.style.setProperty("--glow", g);
+    root.style.setProperty("--border", hex2rgba(a, 0.45)); root.style.setProperty("--border-dim", hex2rgba(a, 0.22));
+  }
+  renderVals() {
+    const s = this.state;
+    const navLinks = [["home", "Home"], ["progression", "Raid"], ["dungeons", "Dungeons"], ["leaderboard", "Leaderboard"], ["recruitment", "Join"]].map(([id, label]) => ({
+      href: "#" + id, label, active: s.active === id,
+      color: s.active === id ? "var(--glow)" : "rgba(227,240,218,0.6)",
+    }));
+    const CC = { "Death Knight": "#C41E3A", Warrior: "#C69B3A", Hunter: "#AAD372", Paladin: "#F48CBA", Mage: "#3FC7EB" };
+    const bossData = [
+      ["Nek'zali the Soulcoiler", "dead"], ["Entombed Sentinels", "dead"], ["The Lost Explorers", "dead"],
+      ["Vashnik the Malignant", "dead"], ["Sszorak", "dead"],
+      ["The Twin Fangs", "prog", 18.7], ["The Coiled Altar", "prog", 71.5], ["Ula'tek", "locked"],
+    ];
+    const bosses = bossData.map(([name, st, pull], i) => {
+      const dead = st === "dead", prog = st === "prog";
+      return {
+        num: String(i + 1).padStart(2, "0"), name, killed: dead, progressing: prog, locked: st === "locked",
+        pull: pull != null ? pull.toFixed(1) + "%" : "",
+        bg: dead ? "rgba(45,212,191,0.04)" : prog ? "rgba(245,158,11,0.03)" : "transparent",
+        rowBorder: dead ? "rgba(45,212,191,0.14)" : prog ? "rgba(245,158,11,0.18)" : "color-mix(in srgb,var(--muted) 10%,transparent)",
+        node: dead ? "var(--accent2)" : prog ? "#fbbf24" : "#0c2114",
+        nodeGlow: dead ? "0 0 8px var(--accent2)" : prog ? "0 0 8px #fbbf24" : "none",
+        nodeBorder: dead ? "var(--accent2)" : prog ? "#fbbf24" : "color-mix(in srgb,var(--muted) 30%,transparent)",
+        numColor: dead ? "var(--accent2)" : prog ? "#fbbf24" : "var(--muted)",
+        nameColor: dead ? "var(--text)" : prog ? "var(--text)" : "var(--muted)",
+        nameOpacity: st === "locked" ? 0.5 : 1,
+      };
+    });
+    const dungeonData = [
+      ["Altar of Fangs", "MIDNIGHT", 14, true, "28:41"], ["Murder Row", "MIDNIGHT", 13, true, "31:02"],
+      ["Den of Nalorakk", "MIDNIGHT", 15, true, "26:19"], ["The Blinding Vale", "MIDNIGHT", 12, false, "34:55"],
+      ["Voidscar Arena", "MIDNIGHT", 14, true, "29:47"], ["Kings' Rest", "LEGACY", 13, true, "33:28"],
+      ["Ruby Life Pools", "LEGACY", 14, true, "27:36"], ["Temple of Sethraliss", "LEGACY", 15, false, "36:12"],
+    ];
+    const dungeons = dungeonData.map(([name, tag, key, timed, time]) => ({
+      name, tag, key: "+" + key, time, timedLabel: timed ? "TIMED" : "OVER",
+      tagColor: tag === "MIDNIGHT" ? "var(--glow)" : "var(--accent2)",
+      timedColor: timed ? "var(--accent2)" : "var(--muted)",
+      timedBorder: timed ? "rgba(45,212,191,0.35)" : "color-mix(in srgb,var(--muted) 25%,transparent)",
+      timedBg: timed ? "rgba(45,212,191,0.08)" : "transparent",
+    }));
+    const runnersRaw = [
+      ["Isami", "Unholy", "Death Knight", 2417], ["Xorakk", "Fury", "Warrior", 2286],
+      ["Libat", "Beast Mastery", "Hunter", 2194], ["Avengers", "Retribution", "Paladin", 2071],
+      ["Bonechewer", "Marksmanship", "Hunter", 1963],
+    ];
+    const mk = ([name, spec, cls, score], i) => {
+      const c = CC[cls] || "#9ca3af";
+      return { n: String(i + 2).padStart(2, "0"), name, initial: name.charAt(0).toUpperCase(), specClass: spec + " " + cls, score: score.toLocaleString(), color: c, classBorder: c + "44", classBg: c + "18", classColor: c };
+    };
+    const champ = mk(runnersRaw[0], -1);
+    const runners = runnersRaw.slice(1).map(mk);
+    const officersRaw = [
+      ["Isami", "Death Knight", "Unholy", "Guild Master", 492],
+      ["Xorakk", "Warrior", "Protection", "Raid Leader", 490],
+      ["Libat", "Hunter", "Beast Mastery", "Officer", 488],
+      ["Avengers", "Paladin", "Holy", "Officer", 489],
+    ];
+    const officers = officersRaw.map(([name, cls, spec, rank, ilvl]) => ({
+      name, cls, spec, rank, ilvl, initial: name.charAt(0).toUpperCase(), color: CC[cls] || "#9ca3af",
+    }));
+    const P = { High: { bg: "rgba(239,68,68,0.15)", text: "#f87171" }, Medium: { bg: "rgba(245,158,11,0.12)", text: "#fbbf24" }, Low: { bg: "rgba(45,212,191,0.1)", text: "#2dd4bf" } };
+    const roles = [
+      ["Tank", ["Protection Warrior", "Blood DK"], "Low"],
+      ["Healer", ["Restoration Shaman", "Holy Paladin", "Mistweaver Monk"], "High"],
+      ["DPS", ["Mage", "Warlock", "Demon Hunter"], "Medium"],
+    ].map(([role, specs, priority]) => ({
+      role, specs, priority, high: priority === "High",
+      pBorder: P[priority].text + "44", pBg: P[priority].bg, pText: P[priority].text,
+    }));
+    const statItems = [
+      { value: s.stats.m.toLocaleString(), label: "Active Members" },
+      { value: s.stats.w.toLocaleString(), label: "World" },
+      { value: s.stats.r.toLocaleString(), label: "Region" },
+      { value: s.stats.rl.toLocaleString(), label: "Realm" },
+    ];
+    return {
+      navLinks, bosses, dungeons, champ, runners, officers, roles, statItems,
+      heroFx: this.props.heroFx ?? true,
+      navBg: s.scrolled ? "rgba(5,15,8,0.92)" : "transparent",
+      navBlur: s.scrolled ? "blur(16px)" : "none",
+      navBorder: s.scrolled ? "1px solid var(--border-dim)" : "1px solid transparent",
+      showTop: s.showTop,
+      scrollTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
+      seasonChange: (e) => { if (e.target.value === "season-1") window.location.href = "Season 1 - Void.dc.html"; },
+    };
+  }
+}
+</script>
+</body>
+</html>
