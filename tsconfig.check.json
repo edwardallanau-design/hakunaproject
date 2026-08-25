@@ -1,5 +1,17 @@
+// `npm run typecheck`. Same compiler options as tsconfig.json, but scoped to
+// hand-written source.
+//
+// The root config includes `.next/dev/types/**/*.ts`, which is generated. A
+// stale `validator.ts` there fails the whole check with `Cannot find module
+// './routes.js'` — an error in a file nobody wrote and that a rebuild
+// regenerates. That noise made `tsc --noEmit` useless as a signal, so this
+// config exists to give a real one.
+//
+// Deliberately no `scripts/**/*.mjs`: the root config sets `allowJs` without
+// `checkJs`, so tsc would load those files and report nothing from them —
+// coverage that looks real and is not.
 {
   "extends": "./tsconfig.json",
-  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", "scripts/**/*.mjs"],
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", ".next"]
 }

@@ -10,16 +10,20 @@ import { VT323, Press_Start_2P } from "next/font/google";
 // can point at any of them and a theme class can repoint them without a
 // component ever naming a family.
 //
-// `preload: false` on everything except the site defaults is what makes
-// per-Season fonts affordable: the @font-face rule ships in the stylesheet for
-// every page (harmless, a few hundred bytes), but the browser only downloads
-// the font file when a rendered element actually resolves to that family. A
-// visitor reading Season 1 therefore pays for VT323 and Press Start 2P and
-// nothing else, even though venom's faces are declared.
+// Both fonts below are site defaults — every page uses them whichever Season is
+// being viewed — so both preload, which is next/font's default. Nothing here
+// sets `preload: false` yet, because there is no theme-specific font yet.
 //
-// Adding a font for a new theme means adding it here and pointing the theme's
-// `--font-*` tokens at its variable in globals.css — see the theme package
-// convention documented in src/lib/themes.ts.
+// That changes when a theme adds its own font (ticket 03). Such a font must be
+// declared with `preload: false`: its @font-face rule still ships in the
+// stylesheet for every page (harmless, a few hundred bytes), but the browser
+// only downloads the file when a rendered element actually resolves to that
+// family — so a visitor reading Season 1 does not pay for Season 2's font.
+// Preloading it instead would fetch it for everyone and defeat the point.
+//
+// Adding a font for a new theme means adding it here with `preload: false` and
+// pointing the theme's `--font-*` tokens at its variable in globals.css — see
+// the theme package convention documented in src/lib/themes.ts.
 
 export const vt323 = VT323({
   subsets: ["latin"],

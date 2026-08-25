@@ -50,23 +50,18 @@
    Selected by the Season's `themeSlug` via a class on the page's root wrapper,
    set server-side from the Season being viewed.
 
-   A theme is a package, not just a palette (ADR 0007). Its elements:
+   A theme is a package, not just a palette: a required 13-token palette plus
+   optional fonts, backdrop, motifs and key art, each falling back to today's
+   look when omitted (ADR 0007).
 
-     palette    REQUIRED — all 13 colour tokens, same set as :root above.
-     fonts      optional — override any subset of --font-display/-body/-ui.
-                The family itself is declared in src/lib/fonts.ts.
-     backdrop   optional — page/hero environmental treatment.
-     motifs     optional — card and UI decorations (gems, borders, dividers).
-     key art    optional — hero illustration; declared per theme in the
-                manifest, and a theme without it renders nothing.
+   **src/lib/themes.ts is the source of truth** — for which themes exist, for
+   what each element means, and for what adding a theme costs. Read its
+   docstring before adding one; deliberately not restated here, so the two
+   cannot drift apart.
 
-   Every optional element falls back to today's look when a theme omits it,
-   which is what lets `void` stay pixel-for-pixel frozen while the seam widens.
-   File assets live slug-keyed under public/themes/<slug>/ when they exist.
-
-   The manifest in src/lib/themes.ts is the source of truth for which themes
-   exist — read its docstring before adding one; a new theme also costs an
-   enum-value migration.
+   What belongs in *this* file is the CSS half: each theme's `.theme-<slug>`
+   block below declares its 13 colour tokens, and overrides whatever optional
+   elements it uses.
 
    `.theme-void` matches Season 1's palette — the same values as :root, kept
    explicit so :root can stay a true fallback rather than silently doubling as

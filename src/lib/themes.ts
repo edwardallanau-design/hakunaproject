@@ -15,8 +15,8 @@
  *   --shadow-accent.
  * - **Typography** (optional) — override any subset of --font-display,
  *   --font-body, --font-ui under the theme class. The font itself is declared
- *   in src/lib/fonts.ts with `preload: false` so only the viewed Season's font
- *   is downloaded.
+ *   in src/lib/fonts.ts, and a theme-specific font must be declared there with
+ *   `preload: false` so only the viewed Season's font is downloaded.
  * - **Backdrop** (optional) — a page/hero environmental treatment, applied
  *   purely in theme CSS.
  * - **Motifs** (optional) — card and UI decorations: gem corners, border
@@ -62,14 +62,23 @@ export type Theme = {
 
 export const THEMES = [
   {
+    // Season 1, frozen. Uses no optional element — void is the theme that
+    // proves the fallback contract, so it is deliberately never retrofitted.
     slug: "void",
     label: "Void — Midnight Season 1",
     hasKeyArt: false,
   },
   {
+    // The theme exists as a selectable name before it exists as a look: there
+    // is no `.theme-venom` block yet, so a Season wearing venom renders the
+    // default look. That is the fallback contract working, not a bug — the
+    // palette and the rest arrive with tickets 03-06.
     slug: "venom",
     label: "Venom — The Curse of Ula'tek",
-    hasKeyArt: true,
+    // False until ticket 06 actually ships the art. The flag describes what a
+    // theme *has*, so claiming art that does not exist would make the slot
+    // reserve space for nothing the moment it starts reading this.
+    hasKeyArt: false,
   },
 ] as const satisfies readonly Theme[];
 
@@ -77,13 +86,3 @@ export type ThemeSlug = (typeof THEMES)[number]["slug"];
 
 /** Options for the `themeSlug` select field on the Seasons collection. */
 export const THEME_OPTIONS = THEMES.map((t) => ({ label: t.label, value: t.slug }));
-
-/**
- * Looks a theme up by slug. Returns undefined for an unknown slug — callers
- * decide whether that is a fallback or a failure. The dropdown means stored
- * values are constrained, but a Season row written before the dropdown existed,
- * or by a script, can still hold anything.
- */
-export function findTheme(slug: string | null | undefined): Theme | undefined {
-  return THEMES.find((t) => t.slug === slug);
-}
