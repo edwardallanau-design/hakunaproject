@@ -16,7 +16,9 @@ Known issues, not yet actioned. Oldest first.
 
 Tickets `09`–`11` of `.scratch/season-rollover/spec.md`.
 
-- **`09` — create the Season 2 row.** **Script written and rehearsed locally, not yet run against production** — `scripts/create-season-2.mjs`, a verify-first/`--commit` one-shot. The upstream identity is no longer a guess (captured live 2026-08-25): the raid is **`the-venomous-abyss`**, not the placeholder `tier-mn-2`, which does not exist upstream at all; a fourth raid **`the-tidebound-grotto`** (one boss, Nymrissa Wavecaller) also belongs to Season 2, ordered after the Abyss per operator decision; Rank Source is `the-venomous-abyss`. Nine bosses typed by hand. Remaining: run it against production.
+- **`09` — create the Season 2 row.** **Script written and rehearsed locally, not yet run against production** — `scripts/create-season-2.mjs`, a verify-first/`--commit` one-shot. The upstream identity is no longer a guess (captured live 2026-08-25): the raid is **`the-venomous-abyss`**, not the placeholder `tier-mn-2`, which does not exist upstream at all; a fourth raid **`the-tidebound-grotto`** (one boss, Nymrissa Wavecaller) also belongs to Season 2, ordered after the Abyss per operator decision; Rank Source is `the-venomous-abyss`. Nine bosses typed by hand.
+
+  **The production sequence is order-dependent, because `npm run build` runs `payload migrate` before `next build`.** Production is still on the pre-rollover schema — `theme_slug` is `varchar`, the enum type does not exist, and the difficulty columns do not exist. So: **push first** (the deploy applies both migrations), *then* run the script, *then* clear `SYNC_DISABLED`. Running the script before the deploy would write `'venom'` as text into a column about to become an enum, and create bosses the difficulty migration then has to accommodate. Nothing is pushed yet — the operator holds that call, since pushing to `main` deploys.
 - **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct in production.
 - **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
 
@@ -46,6 +48,26 @@ What remains:
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — Raid progress at all three difficulties
+
+Operator decision: a visitor-facing difficulty toggle defaulting to the highest difficulty with progress, with first-kill dates per difficulty. This is the **data half** — derivation, schema, route. No UI yet.
+
+The upstream payload always carried normal, heroic and mythic; the Zod boundary already validated them as records. Derivation was discarding two thirds of what arrived, which is why Season 2 read `0/9` while the guild was 9/9 normal, 5/9 heroic. It now derives all three, and `defaultDifficulty` returns the hardest one with an **actual kill** — attempts deliberately don't count, since one exploratory mythic pull would flip the page to "0/9 Mythic" and hide real heroic progress.
+
+**The stored shape is asymmetric on purpose:** flat `killed`/`firstDefeated`/`pulls`/`bestPull` stay canonical mythic; normal and heroic are their own groups. Symmetry would have meant a backfill migration over Season 1's frozen rows. The migration is 14 pure `ADD COLUMN`s — no `UPDATE`, no data movement — so the archive is safe by construction.
+
+**Three attempts were needed to actually protect the archive, and the first two both looked right.**
+
+1. *"Season 1's raids report nothing new."* False — upstream still reports 8 normal and 9 heroic kills for `tier-mn-1`. What really prevented groups being attached was that Season 1's boss names happen not to resolve to those slugs: a coincidence in the data, not a guarantee. A fixture test with a resolvable name caught it.
+2. *"An archived row has no difficulty groups."* Also false, and this one was inert **in production only**. The migration's `DEFAULT false` makes Payload hydrate a full `{killed:false, …}` group onto every untouched boss, so `!boss.normal` is never true against a real row. **A local probe against the real database passed and gave false confidence — it read a database that predated the migration.** `/code-review` found it.
+3. **`ProgressionState.isArchived`, set by the caller.** A hydrated archive row and a live Season's mythic-first kill are the same shape, so the two guarantees collided as a failing test the moment both were pinned. Only the caller knows which Season it is deriving.
+
+**Lesson worth keeping: a guard inferred from data shape is a guess.** Twice the inference was defensible and twice it was wrong, and the failure mode differed between tests (bare objects) and production (hydrated ones).
+
+The flag also closes a hazard that predates this work: `mythicPlusRunners`/`mythicPlusParticipants` preserved only when the *fetch* returned nothing, with no notion of the Season being archived. Since Raider.IO's roster exposes only the **current** M+ season's scores, deriving Season 1 from a live response would replace its 595-participant snapshot with ~160 and change its champion from Heyems. Nothing reaches that today — the Sync writes only to the current Season — but re-pointing `currentSeason` is one admin field edit, and that is the documented rollback path.
+
+Verified through the real authenticated route, not just the pure functions: Season 2 derives 9/5/0 with per-difficulty dates and pull counts (14 pulls on Entombed Sentinels heroic against 2 on normal) and ranks (heroic world 2450), while Season 1's ten boss rows stay byte-identical and its 595 participants intact. 62 tests.
 
 ### 2026-08-25 — The venom theme: palette, typography, and the Season 2 row
 
