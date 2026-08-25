@@ -19,35 +19,75 @@ Tickets `09`–`11` of `.scratch/season-rollover/spec.md`.
 - **`09` — create the Season 2 row.** **Script written and rehearsed locally, not yet run against production** — `scripts/create-season-2.mjs`, a verify-first/`--commit` one-shot. The upstream identity is no longer a guess (captured live 2026-08-25): the raid is **`the-venomous-abyss`**, not the placeholder `tier-mn-2`, which does not exist upstream at all; a fourth raid **`the-tidebound-grotto`** (one boss, Nymrissa Wavecaller) also belongs to Season 2, ordered after the Abyss per operator decision; Rank Source is `the-venomous-abyss`. Nine bosses typed by hand.
 
   **The production sequence is order-dependent, because `npm run build` runs `payload migrate` before `next build`.** Production is still on the pre-rollover schema — `theme_slug` is `varchar`, the enum type does not exist, and the difficulty columns do not exist. So: **push first** (the deploy applies both migrations), *then* run the script, *then* clear `SYNC_DISABLED`. Running the script before the deploy would write `'venom'` as text into a column about to become an enum, and create bosses the difficulty migration then has to accommodate. Nothing is pushed yet — the operator holds that call, since pushing to `main` deploys.
+
+  **All of this work lives on `feature/season-2-theming`, not `main`.** It had been accumulating on the local trunk while `origin/main` stayed at `31549f8`; moved to a branch on 2026-08-25 at the operator's request, and local `main` reset to match the remote. Nothing was lost — the branch holds every commit.
 - **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct in production.
 - **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
 
 **Note on urgency, correcting an earlier claim in this file's history:** the in-progress pull counts that gating `09` was said to put at risk are on *heroic and normal* difficulty. The site records **mythic** only, and Season 2's mythic progress is genuinely empty upstream as of 2026-08-25 (0 encounters, ranks all zero). No recordable data has been lost by the delay.
 
-### Season 2 theming: the venom theme and the widened seam
+### Season 2 theming: what is left after the v2 layout
 
-`.scratch/season-2-theming/spec.md`, tickets `01`–`07`. ADR `0007`. Grilled and specced 2026-08-11. **Tickets `01`–`02` shipped 2026-08-25 (see Shipped); `03`–`07` remain, all waiting on the operator's design.**
+`.scratch/season-2-theming/spec.md`, tickets `01`–`07`. ADR `0007`. Specced 2026-08-11. **Tickets `01`–`03` shipped, and the v2 editorial layout shipped on top of them (see Shipped). What follows is only what genuinely remains.**
 
-The theming seam widens from 13 colour tokens to a full theme package — font tokens (all three roles), optional backdrop, motifs, and key art, all committed slug-keyed and picked per Season from a `themeSlug` **dropdown** (free text → select, one enum migration covering `void` and `venom`). Season 1 stays pixel-for-pixel frozen — that's the seam refactor's verification gate. Light mode stays season-neutral.
+**The sequencing question is closed, and the losing half has been deleted from this file.** The spec gated rollover ticket `09` on the full venom theme; the operator reversed that on 2026-08-25 in favour of **palette-first** — ship colours and type, create the Season 2 row, re-enable the Sync, *then* build the layout. That is what happened. `09` no longer waits on `07`. Both paragraphs stood here side by side for several commits, each contradicting the other; a `/code-review` found it.
 
-**The operator delivered a full design on 2026-08-25** (`.scratch/season-2-theming/design/`), which is larger than the tickets assumed: not a theme package over today's layout, but a **different page** — editorial numbered sections, a raid descent timeline, a new M+ dungeon-rotation grid, and a champion-spotlight leaderboard. Palette and typography shipped; the layout has not.
+Resolved, recorded so nobody re-opens them:
 
-**Sequencing changed by operator decision, 2026-08-25: palette-first.** Ship venom's colours and type, create the Season 2 row, re-enable the Sync, *then* build the layout — rather than gating the row on the whole design.
+- **`04` backdrop and `05` motifs — shipped, inside the layout** rather than as standalone theme-package elements. The venom backdrop, gem corners, notched cards and section dividers are all in `globals.css` and the `venom/` tree.
+- **`06` key art — deliberately not built**, and the generic slot with it. `hasKeyArt` is deleted from the manifest: the design bakes its serpent-eye crest into the venom hero, so nothing generic was ever needed. A theme wanting key art draws it in its own component tree, which ADR `0007`'s amendment now permits.
+- **Ticket `03`'s light-mode criterion is reversed** — venom is dark-only, and ADR `0007` carries the amendment (2026-08-25) rather than a code comment claiming to supersede it.
 
-What remains:
+Still open:
 
-- **`04`/`05`/`06` are superseded by the design.** No separate backdrop/motifs/key-art tickets: the backdrop and motifs are part of the layout, and the serpent-eye crest is baked into the venom hero rather than filling a generic slot. **`hasKeyArt` is now dead** — nothing will read it; delete it when re-cutting.
-- **The layout work, not yet ticketed.** Must fork by theme rather than restyle in place: `void` renders today's component tree untouched (the frozen gate), `venom` renders a new tree. Blocking detail found while shipping the palette: **12 sites across 6 components hardcode light-mode colours** in `isVoid ? dark : light` literals no token can reach, which is why the design hides the light toggle under venom rather than styling a light variant.
-- **New data: the dungeon rotation.** `mythicPlusDungeons` has no field yet — needs a committed migration, and its `pool` select becomes another pg enum (same hand-inspection drill as ticket `02`).
-- **`07` — the gate.** Full QA matrix. Its purpose has narrowed now that `09` no longer waits on it.
-
-**Superseded ticket criteria, so a future session does not verify against stale paper:** ticket `03`'s "light mode still renders the season-neutral light palette with venom selected" is **reversed** — venom is dark-only, and ADR `0007`'s "light stays season-neutral" is amended for this theme.
-
-**Sequencing, by operator decision made eyes-open:** the **full venom theme gates rollover ticket `09`** (gate ticket: `07`). This costs nothing if the theme lands before the raid opens (~2026-08-17), since `09` can't run earlier anyway — but **if `07` is not cleared by then, that is a fresh operator decision** (launch palette-only vs. hold `09` while in-progress pull counts go unrecorded), not a silent wait. A session hitting that date with the theme incomplete must put the choice back to the operator.
+- **The dungeon rotation is derived at request time, not stored.** `design/README.md` asked for `mythicPlusDungeons` fields "via a committed migration … and derive from Raider.IO in the sync"; it shipped as seven request-time fetches instead. It works and it degrades safely, but it makes the section depend on a live host at render, and it is **why an archived Season now renders no dungeon grid at all** — Raider.IO answers only about the current M+ season, so refetching an archive would show today's dungeons under a past season's heading (ADR `0005` names that as the rejected alternative). Persisting the rotation at sync time is the real fix, and it needs a migration whose `pool` select becomes another pg enum.
+- **Ticket files `03`–`07` still read `Status: ready-for-agent` with unchecked boxes.** The work is done or superseded; the paper was never reconciled. The operator deferred this explicitly on 2026-08-25 ("we'll reconcile the specs later") — it is bookkeeping, not risk, but a future session reading the tickets alone would draw the wrong conclusion.
+- **`07` — the gate.** Narrowed to a QA matrix now that `09` does not wait on it. Not formally run end to end.
+- **12 sites across 6 components hardcode light-mode colours** in `isVoid ? dark : light` literals no CSS token can reach. Not blocking — it is precisely why venom hides the light toggle — but it is the reason a future theme cannot ship a light variant without touching frozen files.
 
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — What `/code-review` found in the layout, fixed
+
+Two-axis review of 26 commits against `31549f8`. The commits were moved off `main` onto `feature/season-2-theming` first — `origin/main` was still `31549f8`, so they had been accumulating on the local trunk.
+
+**An archived Season's ranks were never frozen.** Bosses and the M+ roster were guarded by `isArchived`; ranks were not, so a Sync over an archive would take live `raidRankings` — and `members` is worse, because it is never read from the response at all. It is recounted from today's roster, so Season 1's 595 would have silently become the current season's count with nothing upstream having changed. This is the same ADR `0005` hole as the boss guard, one field over, and the existing safety tests covered bosses and M+ while asserting nothing about ranks.
+
+**Section 01 rendered a raid that does not exist.** The title was "Vaults of Atal'Utek" — invented for the design prototype, which `design/NOTES.md` explicitly forbids reaching a real Season row. The real raid is `the-venomous-abyss`. It survived review because the Grotto beside it was already correct, so half the row looked right.
+
+**`raidGroups` wrote back to its own module-level config.** `filter` returns a new array of the *same objects*, so widening the last group's count mutated `RAID_GROUPS` for the life of the process — the next request would have seen a two-boss Grotto. Latent today (8+1 exactly covers 9) and it fires the first time a boss is added. **Both review axes found it independently**, which is the strongest signal the two-axis split has produced so far. The regression test was checked against the old code before being kept.
+
+**The frozen-look gate had lost its reference.** `PixelHeaderSwitcher` claimed the committed baselines "were updated to match" the operator-approved header change. They had been committed once and never touched again, three commits earlier — so the gate was being measured against a picture of a page that no longer existed. Baselines recaptured; the claim is now true. **Lesson: a doc comment asserting that an artefact was updated is worth nothing unless the artefact moves in the same commit.**
+
+**Ranks lost their difficulty word** (operator decision). The hero read "Heroic World"; it reads "World". The values still follow the difficulty on display, and that distinction was worth stopping for: Season 2 has no mythic kills, so the mythic-sourced group is `0/0/0` while heroic holds the real 2452/804/13. Reading the instruction literally would have replaced live numbers with zeros on the page being delivered. Labels changed, data did not, no migration.
+
+Also: dead options deleted (`hasKeyArt`, the never-selected `row` roster layout); ADR `0007` given a real Status amendment in ADR `0003`'s style, covering both the light-mode reversal and themes declaring their own component tree; the static-data fetch now logs `!ok` and parse failures instead of returning bare, and dropped unnamed zones are counted (ADR `0002` — deliberately *not* converted to throws, since it runs at page render).
+
+**Judged and skipped, so they are not re-found as new:** the archived-Season banner exists in three places, `{seasons, selectedUrlSlug, currentUrlSlug}` is a data clump threaded through four components, kill-counting from the flat/group asymmetry is duplicated between `syncProgression` and `venomViewModel`, `numeralAfter(groups.length + N)` keeps hand-maintained offsets, and `SeasonSwitcher.tsx` is now dead but frozen. All judgement calls, some inside frozen files.
+
+**One finding has no code fix and is documented as by-design:** the Sync route hardcodes `isArchived: false`. There is no data signal for "archived" beyond "not the current Season", and the route syncs the current Season by definition. Re-pointing `currentSeason` in the admin makes an archive current — at which point it is, correctly, the current Season. The guard exists for a caller that derives some *other* Season, and no such caller exists yet.
+
+85 tests, typecheck clean.
+
+### 2026-08-25 — The Season 2 editorial layout
+
+The v2 design built: a parallel component tree under `src/components/venom/`, picked by the theme manifest's `layout` discriminator rather than a slug check. `void` renders the same eight components it always has — Season 1 is frozen **by construction**, not by careful editing, and the nine original components were verified byte-identical since `3da38d5`.
+
+Sections: hero with a pointer-tracking serpent eye, the Venomous Abyss descent timeline, the Tidebound Grotto as its own **Lair Boss** section, the M+ dungeon rotation grid, the champion-spotlight leaderboard, about, officers, recruitment, footer.
+
+**The raid difficulty toggle is per-raid, not per-page**, because the Grotto and the Abyss have independent progress. Highest-with-a-kill is the default (operator), and a visitor can switch.
+
+**The dungeon rotation turned out to be fully derivable** — no new CMS fields. All 8 dungeons resolve by `zoneId` against `mythic-plus/static-data`, and the midnight/legacy pool split falls out of expansion membership. Run rosters come from grouping runs by `keystoneRunId` across every ranked character, sorted tank → healer → dps. **The `page` param on that endpoint is ignored by upstream** — paginating it counted 6972 runs instead of 581.
+
+**Three attempts to make the stacked roster grow upward**, each failing differently and each caught by measuring rather than looking: reversing the flex direction fixed the baseline but left the grid ragged (155px against 172px); absolute positioning fixed the heights but let a 4-name stack rise 4px through the dungeon name and a 5-name stack 19px; in-flow bottom-alignment plus a reserved `min-height` gives 13px constant clearance at any party size.
+
+**Hover states were specified by the design and silently not applying.** Inline styles beat classes, and framer-motion writes `transform` inline — so CSS `:hover` rules on those elements were dead. Moved to `whileHover`; footer links go through a custom property instead. Then the lift *felt* sluggish: the element-level `transition` was being inherited by the hover, carrying a 0.5s reveal duration plus the stagger delay. Hover now has its own timing — measured 30ms to start, 160ms to settle.
+
+**Season 1's header changed, deliberately and with operator approval**, so both layouts place the season switcher the same way: it moves from mid-page into the navbar. Done by *addition* — a new `PixelHeaderSwitcher.tsx` — so the frozen components stay untouched and reverting is deleting one file and one line. **Three attempts to place it without overlap**, the first two caught by the operator, not by me: a fixed clamp offset ran under the theme toggle at 1440px, then measuring only the right-hand side let it run over RECRUITMENT everywhere from 640–880px. It now measures **both** edges and drops below the navbar when the gap is too small. **My own verification was faulty twice** — the first sweep sampled three widths and compared the wrong elements; the second compared horizontal extents only, giving false passes. Both axes, every width, or it proves nothing.
+
+Motion is gated on `prefers-reduced-motion` throughout, including one pre-existing gap: `.animate-pulse-dot` was the only animation still running under reduced motion, and it is shared with the pixel layout.
 
 ### 2026-08-25 — Raid progress at all three difficulties
 
