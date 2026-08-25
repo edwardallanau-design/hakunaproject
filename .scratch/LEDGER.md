@@ -17,10 +17,12 @@ Known issues, not yet actioned. Oldest first.
 Tickets `09`–`11` of `.scratch/season-rollover/spec.md`.
 
 - **`09` — create the Season 2 row. DONE in production 2026-08-25.** See the Shipped entry below for what was deployed and verified.
-- **`10` — re-enable the Sync. Half done.** The hourly schedule is restored (`c63ebbf`); **`SYNC_DISABLED` is still set in Vercel** and is the only thing still holding the Sync closed. It lives in Vercel's environment, not this repo, so it cannot be cleared from here — and neither could its state be probed, since the local `CRON_SECRET` does not match production's (the endpoint answers 401, correctly). **Until the operator clears it, every scheduled run fails with 503.** That is the kill switch working, not a broken workflow. Recommended first move once cleared: a manual `workflow_dispatch` run, watched, before letting the hourly cron take over.
-- **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident. Still correct to hold: no Sync has run yet.
+- **`10` — re-enable the Sync. DONE 2026-08-25.** Schedule restored (`c63ebbf`), `SYNC_DISABLED` cleared by the operator, first Sync ran clean. See the Shipped entry.
+- **`11` — remove the `progression` global. Unblocked, not yet done.** Its condition — one full production Sync against the Seasons collection with no incident — is now met.
 
-**Note on urgency, correcting an earlier claim in this file's history:** the in-progress pull counts that gating `09` was said to put at risk are on *heroic and normal* difficulty. The site records **mythic** only, and Season 2's mythic progress is genuinely empty upstream as of 2026-08-25 (0 encounters, ranks all zero). No recordable data has been lost by the delay.
+  **Nothing reads it.** The page renders `toProgressionData(selectedSeason)` from the Season row; the Sync route writes Seasons only; the sole remaining reader anywhere is `scripts/snapshot-season-1.mjs`, which has already served its purpose. Production's copy was last written 2026-08-11 and still holds Season 1 complete (10/10, world 1375, 595 members, 10 bosses, 10 runners) — it was the fallback, and the fallback is no longer needed.
+
+  **It is not merely clutter.** A global that looks authoritative in the admin panel and changes nothing on the site is a trap: someone will edit it and reasonably conclude the site is broken. Removing it needs a migration dropping `progression`, `progression_bosses` and `progression_mythic_plus_runners` (ADR `0004`). A one-line `admin: { hidden: true }` is the reversible interim if the drop is not wanted yet.
 
 ### Season 2 theming: what is left after the v2 layout
 
@@ -44,6 +46,18 @@ Still open:
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — The first production Sync against the Seasons collection
+
+Rollover ticket `10` complete: the operator cleared `SYNC_DISABLED` and ran the Sync. It wrote at 18:19:46, and this is the first time the Seasons path has executed in production.
+
+**Season 2 filled exactly as the local rehearsal predicted** — 9/9 normal, 5/9 heroic, 0/9 mythic, with per-difficulty first-kill dates (Aug 21–25) and heroic pull counts (Entombed Sentinels 14, The Lost Explorers 14, Nymrissa 6), heroic ranks 2460/806/13, and ten M+ runners. The per-raid split works on real data: the Abyss reads 4/8 heroic and the Grotto 1/1, which is the 5/9 total the season-wide figure would have flattened.
+
+**The archive guard held under live fire, and there is a clean proof of it.** Season 1's `lastSyncedAt` still reads **2026-08-11 12:25:04** — the Sync never wrote to it at all. Its 10/10, world 1375, 595 members, 595 M+ participants, and Salhadaar's 41 pulls against Midnight Falls' 608 are all unchanged. `lastSyncedAt` is the useful assertion here: comparing *values* only proves nothing was corrupted, while an unmoved sync timestamp proves the write never happened.
+
+**Verified in a real browser, not from the HTML.** A raw `curl` of the page reports `0 Active Members / 0 World / 0 Region / 0 Realm`, which looks like a total failure and is not — the hero stats count up from zero, so the server-rendered markup holds the pre-animation state. Rendered with JS, production reads **167 active members, 2,460 world, 806 region, 13 realm**. Anyone checking this site's numbers with `curl` will misdiagnose it.
+
+With this, ticket `11`'s condition is satisfied: production has run a full Sync cycle against the Seasons collection with no incident, so the `progression` global's job as the fallback copy of Season 1 is over.
 
 ### 2026-08-25 — Deployed: Season 2 is live in production
 
