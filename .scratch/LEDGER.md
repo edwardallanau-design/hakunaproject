@@ -14,11 +14,13 @@ Known issues, not yet actioned. Oldest first.
 
 ### Season 2 rollover: creating the row and re-enabling the Sync
 
-Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are gated on the outside world, not on more engineering:
+Tickets `09`–`11` of `.scratch/season-rollover/spec.md`.
 
-- **`09` — create the Season 2 row.** Blocked until Season 2's raid opens (~2026-08-17) so its boss list, contributing Raid slugs, and real Rank Source slug (`tier-mn-2` is a guess) can be typed in from a live response — the API omits un-pulled and even some killed encounters, so nothing upstream can be trusted to generate this automatically. **Additionally gated on the venom theme** (below) by operator decision.
-- **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct.
+- **`09` — create the Season 2 row.** **Script written and rehearsed locally, not yet run against production** — `scripts/create-season-2.mjs`, a verify-first/`--commit` one-shot. The upstream identity is no longer a guess (captured live 2026-08-25): the raid is **`the-venomous-abyss`**, not the placeholder `tier-mn-2`, which does not exist upstream at all; a fourth raid **`the-tidebound-grotto`** (one boss, Nymrissa Wavecaller) also belongs to Season 2, ordered after the Abyss per operator decision; Rank Source is `the-venomous-abyss`. Nine bosses typed by hand. Remaining: run it against production.
+- **`10` — re-enable the Sync.** `SYNC_DISABLED` cleared and the schedule trigger restored, deliberately as its own reviewed change once `09` has proven the Season 2 row correct in production.
 - **`11` — remove the `progression` global.** Held back until production has run at least one full scheduled Sync cycle against the Seasons collection with no incident.
+
+**Note on urgency, correcting an earlier claim in this file's history:** the in-progress pull counts that gating `09` was said to put at risk are on *heroic and normal* difficulty. The site records **mythic** only, and Season 2's mythic progress is genuinely empty upstream as of 2026-08-25 (0 encounters, ranks all zero). No recordable data has been lost by the delay.
 
 ### Season 2 theming: the venom theme and the widened seam
 
@@ -26,17 +28,50 @@ Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are 
 
 The theming seam widens from 13 colour tokens to a full theme package — font tokens (all three roles), optional backdrop, motifs, and key art, all committed slug-keyed and picked per Season from a `themeSlug` **dropdown** (free text → select, one enum migration covering `void` and `venom`). Season 1 stays pixel-for-pixel frozen — that's the seam refactor's verification gate. Light mode stays season-neutral.
 
-**The mechanism is built and the venom theme is not.** `venom` is selectable in the dropdown today and legally renders the default look, because no `.theme-venom` block exists yet — the fallback contract doing its job. What remains:
+**The operator delivered a full design on 2026-08-25** (`.scratch/season-2-theming/design/`), which is larger than the tickets assumed: not a theme package over today's layout, but a **different page** — editorial numbered sections, a raid descent timeline, a new M+ dungeon-rotation grid, and a champion-spotlight leaderboard. Palette and typography shipped; the layout has not.
 
-- **`03` — venom palette and typography.** Waiting on the operator's design, which supersedes the spec's "code-drawn in the site's 8-bit language" assumption. Two things to reconcile when it lands: the spec says a theme defines its **dark look only** (light stays season-neutral, ADR `0007`), and it assumed inline SVG/CSS rather than image assets — real assets are fine and land under `public/themes/venom/`, but that is worth confirming rather than inferring.
-- **`04`/`05`/`06` — backdrop, motifs, key art.** `06` also carries the one piece of *mechanism* not yet built: the generic manifest-driven key-art slot (`hasKeyArt` is already declared per theme in `src/lib/themes.ts`, but nothing reads it yet).
-- **`07` — the gate.** Full QA matrix, then clearing rollover ticket `09` in writing.
+**Sequencing changed by operator decision, 2026-08-25: palette-first.** Ship venom's colours and type, create the Season 2 row, re-enable the Sync, *then* build the layout — rather than gating the row on the whole design.
+
+What remains:
+
+- **`04`/`05`/`06` are superseded by the design.** No separate backdrop/motifs/key-art tickets: the backdrop and motifs are part of the layout, and the serpent-eye crest is baked into the venom hero rather than filling a generic slot. **`hasKeyArt` is now dead** — nothing will read it; delete it when re-cutting.
+- **The layout work, not yet ticketed.** Must fork by theme rather than restyle in place: `void` renders today's component tree untouched (the frozen gate), `venom` renders a new tree. Blocking detail found while shipping the palette: **12 sites across 6 components hardcode light-mode colours** in `isVoid ? dark : light` literals no token can reach, which is why the design hides the light toggle under venom rather than styling a light variant.
+- **New data: the dungeon rotation.** `mythicPlusDungeons` has no field yet — needs a committed migration, and its `pool` select becomes another pg enum (same hand-inspection drill as ticket `02`).
+- **`07` — the gate.** Full QA matrix. Its purpose has narrowed now that `09` no longer waits on it.
+
+**Superseded ticket criteria, so a future session does not verify against stale paper:** ticket `03`'s "light mode still renders the season-neutral light palette with venom selected" is **reversed** — venom is dark-only, and ADR `0007`'s "light stays season-neutral" is amended for this theme.
 
 **Sequencing, by operator decision made eyes-open:** the **full venom theme gates rollover ticket `09`** (gate ticket: `07`). This costs nothing if the theme lands before the raid opens (~2026-08-17), since `09` can't run earlier anyway — but **if `07` is not cleared by then, that is a fresh operator decision** (launch palette-only vs. hold `09` while in-progress pull counts go unrecorded), not a silent wait. A session hitting that date with the theme incomplete must put the choice back to the operator.
 
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — The venom theme: palette, typography, and the Season 2 row
+
+`.scratch/season-2-theming/design/` — the operator's design bundle, committed as the durable reference. Ticket `03`, plus rollover `09`'s script.
+
+**Palette-first, by operator decision.** Venom's colours and type ship now so the Season 2 row can exist and the Sync can resume, with the design's new page structure to follow.
+
+`.theme-venom` carries all 13 colour tokens, all three font roles, and the design's own `--ui-*`/`--bd-*` scale — kept separate from Season 1's `--px-*`/`--vt-*` pixel ramp, which stays frozen. Three fonts via `next/font`, all `preload: false`: Almendra Display, Grenze 400/500/600, Cormorant SC 500/600/700.
+
+**The conditional-loading proof ticket `01` deferred, now real:** viewing Season 1 downloads **2** woff2 files, viewing Season 2 downloads **5**. Verified with both Seasons coexisting, not simulated.
+
+**`.theme-venom` alone is not enough, and this is the trap worth remembering.** `.light [class*="theme-"]` matches every theme class and outweighs a bare `.theme-venom` (0-2-0 against 0-1-0), so a visitor with a stored light preference would have got the cream palette under the venom look. The selector is `.theme-venom, .light .theme-venom` — the second half ties the specificity and wins on source order. **venom is dark-only**, amending ADR `0007` for this theme.
+
+Verifying that surfaced why the design hides the toggle rather than shipping a light variant: **12 sites across 6 components hardcode light-mode colours** in `isVoid ? dark : light` literals that no CSS token can reach. Light mode under venom paints cream and silver bands behind venom content. Fixing that means editing every existing component — exactly what the `void` gate forbids.
+
+**The Season 2 row: the ticket was right that its identity could not be guessed, and the guess was wrong.** `tier-mn-2` does not exist upstream. Captured live 2026-08-25:
+
+- The raid is **`the-venomous-abyss`**; Rank Source is the same, per ADR `0003` (ranks cannot merge across raids).
+- A **fourth raid** nobody anticipated — **`the-tidebound-grotto`**, one boss (Nymrissa Wavecaller), AOTC 2026-08-24 — also belongs to Season 2, ordered after the Abyss. Same shape as Season 1's `tier-mn-1` + `sporefall`.
+- Nine bosses typed by hand, all created **unkilled**: the site tracks mythic, and mythic is genuinely empty upstream. The first Sync derives the rest rather than having history typed for it.
+
+`scripts/create-season-2.mjs` is a verify-first/`--commit` one-shot, inert after first use. Rehearsed locally: created the row, moved the pointer last (never a half-built current Season), and a real Sync against the live API ran clean — 165 active members, 162 M+ participants. **Season 1 was untouched by that Sync**, still 10/10 with its 595 archived members: the archived-Season freeze observed rather than assumed.
+
+**Season 1's M+ data was checked for a final refresh and deliberately left alone.** Raider.IO's roster returns only the *current* M+ season's scores, with no season parameter available. A refresh would have replaced Season 1's 595-participant archive with Season 2's 164 partial scores; of the stored 595, **476 have no live score at all**. Only 1 of the stored top ten still appears in the live top ten. The 2026-08-11 capture landed before the Season 2 reset and is the best record that exists — better than the live API's own, which has separately rewritten four Season 1 boss rows (Salhadaar's pull count fell from 41 to 6; Chimaerus's vanished).
+
+**Correcting a claim made earlier in this work:** the in-progress pull counts described as bleeding away are heroic/normal. The site records mythic only, and Season 2 has no mythic progress yet, so nothing recordable was lost by the delay.
 
 ### 2026-08-25 — Season 2 theming, tickets 01–02: the widened seam and the dropdown
 
