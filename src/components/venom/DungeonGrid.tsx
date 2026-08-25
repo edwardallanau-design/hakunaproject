@@ -114,6 +114,13 @@ export function DungeonGrid({
                   display: "flex",
                   flexDirection: "column",
                   gap: "clamp(10px,0.9vw,15px)",
+                  // Reserve room for a full 5-man roster rising beside the key,
+                  // so every card is tall enough for the worst case and none of
+                  // them changes height when a big group lands. Without it a
+                  // 4-name stack already clipped the dungeon name by 4px, and
+                  // five would have by 19px. Applies to `stack` only; `row`
+                  // grows downward and sizes itself.
+                  ...(rosterLayout === "stack" ? { minHeight: "clamp(178px,14vw,208px)" } : {}),
                 }}
               >
                 {/* The triangle filling the clipped corner. */}
@@ -157,6 +164,13 @@ export function DungeonGrid({
                     color: "var(--text)",
                     lineHeight: 1.2,
                     flex: 1,
+                    // In `stack` mode the roster rises into the card's
+                    // right-hand column from below, so the name keeps clear of
+                    // it horizontally. The vertical clearance is handled by the
+                    // card's min-height below — this alone is not enough,
+                    // because the two overlap in the y axis regardless of how
+                    // much horizontal room each has.
+                    ...(rosterLayout === "stack" ? { paddingRight: "46%" } : {}),
                   }}
                 >
                   {d.name}
@@ -166,7 +180,17 @@ export function DungeonGrid({
                     reads the same whether it is one name or four, where a
                     heading or a count would draw attention to how sparse it
                     usually is. */}
-                <div style={{ display: "flex", alignItems: "baseline", gap: 10, position: "relative" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    // `stack` needs the roster column to fill this row's height
+                    // so it can bottom-align inside it; `row` keeps the original
+                    // baseline alignment of key against time.
+                    alignItems: rosterLayout === "stack" ? "flex-end" : "baseline",
+                    gap: 10,
+                    position: "relative",
+                  }}
+                >
                   <span
                     style={{
                       fontFamily: "var(--font-display)",
@@ -191,37 +215,35 @@ export function DungeonGrid({
                   </span>
 
                   {rosterLayout === "stack" && d.members.length > 0 && (
-                    // Grows upward: the list is bottom-aligned so its LAST name
-                    // sits level with the key, and extra names extend into the
-                    // card's empty upper space rather than pushing the bottom
-                    // edge down and making the grid row ragged.
+                    // Bottom-aligned in its own column beside the key, so the
+                    // names grow upward from the key's baseline. Kept in flow
+                    // and paired with the card's reserved min-height below, so
+                    // every card is the same height whether it shows one name
+                    // or five, and the list can never reach the dungeon name.
                     //
-                    // `alignSelf: flex-end` is the load-bearing part — the
-                    // parent aligns children on their first baseline, which
-                    // would otherwise pin the FIRST name to the key and send
-                    // the rest downward. Party order still reads top-to-bottom.
-                    // Absolutely positioned against the key/time row and pinned
-                    // to its bottom, so the list contributes no height of its
-                    // own and grows upward into the card's empty space.
-                    //
-                    // In flow it could not do both: bottom-aligning fixed the
-                    // baseline but the tallest roster still stretched its grid
-                    // row, measured at 155px against 172px. Taking it out of
-                    // flow is what keeps every card the same height.
+                    // Two earlier attempts got one half each: reversing the
+                    // flex direction fixed the baseline but left the grid row
+                    // ragged (155px against 172px), and positioning it
+                    // absolutely fixed the heights but let the stack rise
+                    // through the name — 4px of overlap at four names, 19px at
+                    // five. Both were caught by measuring, not by looking.
                     <div
                       style={{
-                        position: "absolute",
-                        right: 0,
-                        bottom: 0,
+                        marginLeft: "auto",
+                        alignSelf: "stretch",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "flex-end",
+                        justifyContent: "flex-end",
                         gap: 1,
                         minWidth: 0,
-                        maxWidth: "55%",
+                        maxWidth: "52%",
                       }}
                     >
-                      {d.members.map((m) => (
+                      {/* A keystone party is five, so five is the ceiling. The
+                          slice is a guard against upstream ever returning more
+                          for one keystoneRunId, not an expected case. */}
+                      {d.members.slice(0, 5).map((m) => (
                         <MemberName key={m.name} m={m} size="var(--ui-xs)" />
                       ))}
                     </div>
