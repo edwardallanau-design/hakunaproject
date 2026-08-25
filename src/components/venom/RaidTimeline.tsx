@@ -132,7 +132,14 @@ function RaidGroupSection({
                   letterSpacing: "0.2em",
                 }}
               >
-                {difficultyLabel(difficulty)} · {prog.pct}%
+                {/* No percentage. "8/8" already says cleared and "4/8" already
+                    says halfway, so "· 100%" was the same fact twice — and the
+                    weaker of the two, since it drops how big the raid is. The
+                    difficulty label stays: it is what the count is measured
+                    against, and the toggle that would otherwise say so only
+                    appears when a raid has more than one difficulty. `pct` is
+                    still what fills the progress rail below. */}
+                {difficultyLabel(difficulty)}
               </span>
             </div>
           }
