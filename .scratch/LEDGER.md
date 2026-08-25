@@ -22,15 +22,42 @@ Tickets `09`–`11` of `.scratch/season-rollover/spec.md` remain. All three are 
 
 ### Season 2 theming: the venom theme and the widened seam
 
-`.scratch/season-2-theming/spec.md`, tickets `01`–`07`. ADR `0007`. Grilled and specced 2026-08-11; nothing implemented yet.
+`.scratch/season-2-theming/spec.md`, tickets `01`–`07`. ADR `0007`. Grilled and specced 2026-08-11. **Tickets `01`–`02` shipped 2026-08-25 (see Shipped); `03`–`07` remain, all waiting on the operator's design.**
 
-The theming seam widens from 13 colour tokens to a full theme package — font tokens (all three roles), optional backdrop, motifs, and key art, all committed slug-keyed and picked per Season from a `themeSlug` **dropdown** (free text → select, one enum migration covering `void` and `venom`). Season 1 stays pixel-for-pixel frozen — that's the seam refactor's verification gate. Light mode stays season-neutral. Assets are code-drawn SVG/CSS pixel art so the deadline stays in our control.
+The theming seam widens from 13 colour tokens to a full theme package — font tokens (all three roles), optional backdrop, motifs, and key art, all committed slug-keyed and picked per Season from a `themeSlug` **dropdown** (free text → select, one enum migration covering `void` and `venom`). Season 1 stays pixel-for-pixel frozen — that's the seam refactor's verification gate. Light mode stays season-neutral.
+
+**The mechanism is built and the venom theme is not.** `venom` is selectable in the dropdown today and legally renders the default look, because no `.theme-venom` block exists yet — the fallback contract doing its job. What remains:
+
+- **`03` — venom palette and typography.** Waiting on the operator's design, which supersedes the spec's "code-drawn in the site's 8-bit language" assumption. Two things to reconcile when it lands: the spec says a theme defines its **dark look only** (light stays season-neutral, ADR `0007`), and it assumed inline SVG/CSS rather than image assets — real assets are fine and land under `public/themes/venom/`, but that is worth confirming rather than inferring.
+- **`04`/`05`/`06` — backdrop, motifs, key art.** `06` also carries the one piece of *mechanism* not yet built: the generic manifest-driven key-art slot (`hasKeyArt` is already declared per theme in `src/lib/themes.ts`, but nothing reads it yet).
+- **`07` — the gate.** Full QA matrix, then clearing rollover ticket `09` in writing.
 
 **Sequencing, by operator decision made eyes-open:** the **full venom theme gates rollover ticket `09`** (gate ticket: `07`). This costs nothing if the theme lands before the raid opens (~2026-08-17), since `09` can't run earlier anyway — but **if `07` is not cleared by then, that is a fresh operator decision** (launch palette-only vs. hold `09` while in-progress pull counts go unrecorded), not a silent wait. A session hitting that date with the theme incomplete must put the choice back to the operator.
 
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — Season 2 theming, tickets 01–02: the widened seam and the dropdown
+
+`.scratch/season-2-theming/spec.md`, ADR `0007`. The theming *mechanism*, with no theme built on it yet — `venom` is selectable and renders the default look, which is the fallback contract working as designed.
+
+**A theme is now a package, not 13 colours.** Three font tokens (`--font-display`, `--font-body`, `--font-ui`) at `:root` are consumed by every `font-family` site — five in `globals.css` and, less obviously, **48 inline `fontFamily` styles across the components**, which would have made per-Season fonts dead on arrival if missed. VT323 split by role: headings, wordmarks and display numerals are display; running text and list rows are body. `src/lib/themes.ts` is the manifest and the place the package convention is documented.
+
+**Fonts are self-hosted.** The Google Fonts `@import` is gone, replaced by `next/font`. A page load now makes **zero requests to `fonts.googleapis.com`/`gstatic`** — verified in the network tab, not assumed. `preload: false` on non-default faces is the mechanism that will keep a future theme's font from downloading for visitors not viewing that Season; its real proof needs a second font and belongs to ticket `03`.
+
+**`themeSlug` is a dropdown over the manifest**, stored as a pg enum. Both values ship in one migration; every *future* theme costs an enum-value migration, per ADR `0007`.
+
+**Verification notes worth keeping:**
+
+- **The pixel gate needed a better instrument.** `next/font` leaves a residual ~0.4% pixel delta from sub-pixel glyph antialiasing — `adjustFontFallback: false` does not remove it (tested), and zero offset is already the best alignment, so nothing moved. The gate was settled on *layout* instead: **all 270 non-animated elements match exactly** on position, size, font-size, colour, background and text, both modes. Hero crystals, crest rings and the pulse dot are excluded as animated — a same-build re-run churns those on its own, which is the control that makes the exclusion honest. **A pixel-diff gate on this site will always be noisy; compare geometry.**
+- **The `USING` cast is safe, not lossy.** Postgres aborts the migration if any row is outside the enum — verified by rehearsing a typo'd `'voidd'`, which failed naming the value rather than nulling the row. `down` round-trips (enum → varchar, *then* drop the type).
+- **The admin panel has to be opened, not inferred.** The first check reported a plain text input with the old description — a stale `.next` cache, not a config error. A config-only assertion would have passed while the panel was still wrong.
+- Type regeneration narrows `themeSlug` to `'void' | 'venom'`; the only fallout was the Seasons migration, whose snapshot type honestly describes untrusted JSON as `string`. Asserted at the call site, matching the neighbouring `difficulty`.
+
+**Also added:** `npm run typecheck`, scoped to `src/` via `tsconfig.check.json` so it is not defeated by a stale generated `.next/dev/types/validator.ts`.
+
+**Found, deliberately not fixed:** `About.tsx` names `'Rajdhani'` and `'Bebas Neue'`, which nothing has loaded since the 8-bit redesign — so its eyebrow and heading render in the browser's default sans-serif and have since. Fixing it would change Season 1's look, which ticket `01`'s gate forbids. Commented in place; it needs its own change against a fresh baseline.
 
 ### 2026-08-11 — Season 1's real start date: 2026-03-17
 
