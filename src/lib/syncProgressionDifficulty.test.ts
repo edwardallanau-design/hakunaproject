@@ -100,7 +100,7 @@ type Progress = {
   pulls?: number | null;
   bestPull?: number | null;
 };
-type StoredBoss = Progress & { name: string; normal?: Progress | null; heroic?: Progress | null };
+type StoredBoss = Progress & { name: string; normal?: Progress; heroic?: Progress };
 
 // Groups are optional, mirroring the stored shape: a boss row only carries
 // `normal`/`heroic` once there is something to record for them.

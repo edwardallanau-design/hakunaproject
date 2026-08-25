@@ -1,6 +1,7 @@
 import * as migration_20260804_235225_baseline from './20260804_235225_baseline';
 import * as migration_20260811_030341_add_seasons_collection from './20260811_030341_add_seasons_collection';
 import * as migration_20260825_023852_add_theme_slug_enum from './20260825_023852_add_theme_slug_enum';
+import * as migration_20260825_043421_add_difficulty_progress from './20260825_043421_add_difficulty_progress';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260825_023852_add_theme_slug_enum.up,
     down: migration_20260825_023852_add_theme_slug_enum.down,
-    name: '20260825_023852_add_theme_slug_enum'
+    name: '20260825_023852_add_theme_slug_enum',
+  },
+  {
+    up: migration_20260825_043421_add_difficulty_progress.up,
+    down: migration_20260825_043421_add_difficulty_progress.down,
+    name: '20260825_043421_add_difficulty_progress'
   },
 ];

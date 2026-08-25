@@ -28,8 +28,11 @@ type BossProgress = {
  */
 type Boss = BossProgress & {
   name: string;
-  normal?: BossProgress | null;
-  heroic?: BossProgress | null;
+  // Optional but never explicitly null: Payload's generated type for a group
+  // field admits `undefined` only, and an absent group is how "no data at this
+  // difficulty" is represented.
+  normal?: BossProgress;
+  heroic?: BossProgress;
 };
 
 type Rankings = { world: number; region: number; realm: number; members: number };

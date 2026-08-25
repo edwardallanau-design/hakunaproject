@@ -1,5 +1,51 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 import { THEME_OPTIONS } from '../lib/themes'
+
+// Per-difficulty progress for one boss, for the difficulties that are NOT
+// mythic. Mythic lives in the flat fields alongside these, for the historical
+// reason noted at the boss field below.
+const difficultyGroups: Field[] = (['normal', 'heroic'] as const).map((difficulty) => ({
+  name: difficulty,
+  type: 'group',
+  label: difficulty === 'normal' ? 'Normal' : 'Heroic',
+  admin: {
+    description: `Progress on ${difficulty} difficulty. Auto-filled by the Raider.IO sync and frozen once killed, like mythic above.`,
+  },
+  fields: [
+    { name: 'killed', type: 'checkbox', defaultValue: false, admin: { readOnly: true } },
+    {
+      name: 'firstDefeated',
+      type: 'date',
+      admin: { description: `Date the boss was first killed on ${difficulty}`, readOnly: true },
+    },
+    {
+      name: 'pulls',
+      type: 'number',
+      admin: { description: 'Total pulls — frozen at time of kill, or live while in progress', readOnly: true },
+    },
+    {
+      name: 'bestPull',
+      type: 'number',
+      admin: { description: 'Best pull % (in-progress only — cleared once killed)', readOnly: true },
+    },
+  ],
+}))
+
+// Ranks for the non-mythic difficulties; mythic stays in the flat `rankings`
+// group. Same asymmetry, same reason.
+const rankingsByDifficulty: Field[] = (['normal', 'heroic'] as const).map((difficulty) => ({
+  name: `rankings${difficulty === 'normal' ? 'Normal' : 'Heroic'}`,
+  type: 'group',
+  label: `Rankings — ${difficulty === 'normal' ? 'Normal' : 'Heroic'}`,
+  admin: {
+    description: `World/region/realm ranks on ${difficulty}, from the Rank Source Raid. Auto-filled by sync.`,
+  },
+  fields: [
+    { name: 'world', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    { name: 'region', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    { name: 'realm', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+  ],
+}))
 
 export const Seasons: CollectionConfig = {
   slug: 'seasons',
@@ -72,6 +118,7 @@ export const Seasons: CollectionConfig = {
         { name: 'realm', type: 'number', defaultValue: 0, admin: { readOnly: true } },
       ],
     },
+    ...rankingsByDifficulty,
     {
       name: 'bosses',
       type: 'array',
@@ -84,10 +131,16 @@ export const Seasons: CollectionConfig = {
       },
       fields: [
         { name: 'name', type: 'text', required: true },
+        // The flat fields below are canonical MYTHIC. Normal and heroic live in
+        // their own groups underneath. The asymmetry is deliberate: these
+        // fields predate difficulty tracking and Season 1's rows hold mythic
+        // data in them, so restructuring would mean a backfill over a frozen
+        // archive (ADR 0005). Adding groups touches no existing column.
         { name: 'killed', type: 'checkbox', defaultValue: false, admin: { readOnly: true } },
         { name: 'firstDefeated', type: 'date', admin: { description: 'Date the boss was first killed on mythic', readOnly: true } },
         { name: 'pulls', type: 'number', admin: { description: 'Total pulls — auto-set at time of kill and frozen, or live pull count while in progress', readOnly: true } },
         { name: 'bestPull', type: 'number', admin: { description: 'Best pull % (in-progress bosses only — auto-updated by sync until killed)', readOnly: true } },
+        ...difficultyGroups,
       ],
     },
     {

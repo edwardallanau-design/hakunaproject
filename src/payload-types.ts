@@ -238,6 +238,22 @@ export interface Season {
     region?: number | null;
     realm?: number | null;
   };
+  /**
+   * World/region/realm ranks on normal, from the Rank Source Raid. Auto-filled by sync.
+   */
+  rankingsNormal?: {
+    world?: number | null;
+    region?: number | null;
+    realm?: number | null;
+  };
+  /**
+   * World/region/realm ranks on heroic, from the Rank Source Raid. Auto-filled by sync.
+   */
+  rankingsHeroic?: {
+    world?: number | null;
+    region?: number | null;
+    realm?: number | null;
+  };
   bosses?:
     | {
         name: string;
@@ -254,6 +270,42 @@ export interface Season {
          * Best pull % (in-progress bosses only — auto-updated by sync until killed)
          */
         bestPull?: number | null;
+        /**
+         * Progress on normal difficulty. Auto-filled by the Raider.IO sync and frozen once killed, like mythic above.
+         */
+        normal?: {
+          killed?: boolean | null;
+          /**
+           * Date the boss was first killed on normal
+           */
+          firstDefeated?: string | null;
+          /**
+           * Total pulls — frozen at time of kill, or live while in progress
+           */
+          pulls?: number | null;
+          /**
+           * Best pull % (in-progress only — cleared once killed)
+           */
+          bestPull?: number | null;
+        };
+        /**
+         * Progress on heroic difficulty. Auto-filled by the Raider.IO sync and frozen once killed, like mythic above.
+         */
+        heroic?: {
+          killed?: boolean | null;
+          /**
+           * Date the boss was first killed on heroic
+           */
+          firstDefeated?: string | null;
+          /**
+           * Total pulls — frozen at time of kill, or live while in progress
+           */
+          pulls?: number | null;
+          /**
+           * Best pull % (in-progress only — cleared once killed)
+           */
+          bestPull?: number | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -433,6 +485,20 @@ export interface SeasonsSelect<T extends boolean = true> {
         region?: T;
         realm?: T;
       };
+  rankingsNormal?:
+    | T
+    | {
+        world?: T;
+        region?: T;
+        realm?: T;
+      };
+  rankingsHeroic?:
+    | T
+    | {
+        world?: T;
+        region?: T;
+        realm?: T;
+      };
   bosses?:
     | T
     | {
@@ -441,6 +507,22 @@ export interface SeasonsSelect<T extends boolean = true> {
         firstDefeated?: T;
         pulls?: T;
         bestPull?: T;
+        normal?:
+          | T
+          | {
+              killed?: T;
+              firstDefeated?: T;
+              pulls?: T;
+              bestPull?: T;
+            };
+        heroic?:
+          | T
+          | {
+              killed?: T;
+              firstDefeated?: T;
+              pulls?: T;
+              bestPull?: T;
+            };
         id?: T;
       };
   mythicPlusRunners?:
