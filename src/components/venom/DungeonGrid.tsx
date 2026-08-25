@@ -114,6 +114,11 @@ export function DungeonGrid({
                   borderColor: "var(--accent)",
                   boxShadow:
                     "0 12px 32px rgba(0,0,0,0.4), 0 0 20px color-mix(in srgb,var(--accent) 25%,transparent)",
+                  // Hover needs its own timing. Without it the element-level
+                  // `transition` below applies to every animation, so the lift
+                  // inherited the reveal's 0.5s duration AND its stagger delay
+                  // — up to 0.8s before the last card even started moving.
+                  transition: { duration: 0.16, delay: 0, ease: "easeOut" },
                 }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
                 style={{

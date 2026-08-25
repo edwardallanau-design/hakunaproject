@@ -155,6 +155,9 @@ export function VenomOfficers({ officers }: { officers: OfficerCard[] }) {
                   y: -4,
                   borderColor: c,
                   boxShadow: `0 12px 32px rgba(0,0,0,0.4), 0 0 18px ${c}4d`,
+                  // Own timing, or the lift inherits the reveal's duration and
+                  // stagger delay below and feels sluggish.
+                  transition: { duration: 0.16, delay: 0, ease: "easeOut" },
                 }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.3) }}
                 style={{
