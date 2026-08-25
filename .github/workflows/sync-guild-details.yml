@@ -1,6 +1,17 @@
 name: Sync Guild Details
 
 on:
+  # Restored 2026-08-25, after the Season 2 row was created in production and
+  # `guild-settings.currentSeason` moved to it. Removed on 2026-08-11 for the
+  # rollover: while the pointer still named Season 1, an hourly Sync would have
+  # overwritten its M+ leaderboard with Season 2 keys. That can no longer
+  # happen — Season 1 is archived and is not a Sync target.
+  #
+  # This is rollover ticket `10`. The route-side `SYNC_DISABLED` kill switch is
+  # the other half and is cleared in Vercel, not here; until it is, every run
+  # below fails with 503 by design.
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 jobs:
