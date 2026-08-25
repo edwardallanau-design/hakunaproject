@@ -80,6 +80,22 @@ export type ProgressionState = {
   // values at the same time.
   raidSlugs: string[];
   rankSourceRaidSlug: string;
+  /**
+   * True when the Season being derived is an archive rather than the live one.
+   *
+   * An archived Season is a frozen snapshot (ADR 0005): its bosses, ranks and
+   * M+ roster are the record of a season that has ended, and upstream can no
+   * longer describe it. Raider.IO reports only the *current* M+ season's
+   * scores, and it rewrites raid history — four of Season 1's rows changed
+   * after the fact, one losing its pull count entirely — so deriving an
+   * archived Season from a live response degrades it.
+   *
+   * The Sync writes only to the current Season, so this is normally false. It
+   * exists because "unreachable" is a property of the caller, and one field
+   * edit in the admin panel — re-pointing `currentSeason`, the documented
+   * rollback path — makes an archive reachable again.
+   */
+  isArchived?: boolean;
 };
 
 export type DerivedProgression = {
@@ -164,6 +180,15 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
     // while mythic keeps progressing. Upstream rewrites its own history — four
     // of Season 1's rows changed after the fact, one losing its pull count
     // entirely — so a recorded kill is never re-derived.
+    // Whether a stored group actually says anything. Presence is not enough:
+    // the migration adds `killed` as `DEFAULT false`, so Payload hydrates a
+    // full `{killed: false, firstDefeated: null, pulls: null, bestPull: null}`
+    // group for every boss that has never been touched at that difficulty —
+    // including all of Season 1's. Testing `if (stored)` therefore matches
+    // everything and protects nothing, which is exactly the bug this replaced.
+    const hasContent = (p: BossProgress | null | undefined): boolean =>
+      Boolean(p && (p.killed || p.firstDefeated != null || p.pulls != null || p.bestPull != null));
+
     const deriveOne = (
       difficulty: Difficulty,
       slug: string,
@@ -189,27 +214,33 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
       const mythic = deriveOne("mythic", slug, boss);
       const next: Boss = { name: boss.name, ...mythic };
 
-      // A boss killed on mythic with no difficulty groups recorded is a row
-      // from before difficulties were tracked — i.e. an archived Season's. It
-      // is returned exactly as stored.
+      // An archived Season is returned exactly as stored — every boss, every
+      // group, byte for byte.
       //
-      // This has to be explicit. Upstream still reports normal and heroic kills
-      // for Season 1's raids (8 and 9 for tier-mn-1 today), so "no upstream
-      // data" is not what protects those rows — only this is. An earlier
-      // version relied on the boss names failing to resolve to upstream slugs,
-      // which is a coincidence in the data, not a guarantee, and a test with a
-      // resolvable name caught it.
-      const isPreDifficultyArchiveRow = boss.killed && !boss.normal && !boss.heroic;
-      if (isPreDifficultyArchiveRow) return next;
+      // This has to be an explicit caller-supplied flag rather than something
+      // inferred from the row. Two earlier attempts inferred it and both were
+      // wrong: "the raids report nothing new" is false (upstream still reports
+      // 8 normal and 9 heroic kills for tier-mn-1), and "the boss has no
+      // difficulty groups" is false too (the migration's DEFAULT false makes
+      // Payload hydrate an empty group on every row). The shape of an archived
+      // row is genuinely indistinguishable from a live Season's boss that has
+      // been killed on mythic first — so only the caller knows.
+      if (current.isArchived) {
+        if (boss.normal) next.normal = boss.normal;
+        if (boss.heroic) next.heroic = boss.heroic;
+        return next;
+      }
 
-      // Otherwise a difficulty group is attached when there is something to say
-      // about it: data stored already, or data in this response.
+      // A difficulty group is attached when there is something to say about
+      // it: meaningful data stored already, or data in this response.
       for (const difficulty of ["normal", "heroic"] as const) {
         const stored = boss[difficulty];
         const hasUpstream =
           defeated[difficulty].has(slug) || pullData[difficulty].has(slug);
-        if (stored || hasUpstream) {
+        if (hasContent(stored) || hasUpstream) {
           next[difficulty] = deriveOne(difficulty, slug, stored);
+        } else if (stored) {
+          next[difficulty] = stored;
         }
       }
 
@@ -279,7 +310,11 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
     }),
   ) as Record<Difficulty, Rankings>;
 
-  const mythicPlusRunners = freshRunners.length > 0 ? freshRunners : current.mythicPlusRunners ?? [];
+  const mythicPlusRunners = current.isArchived
+    ? current.mythicPlusRunners ?? []
+    : freshRunners.length > 0
+      ? freshRunners
+      : current.mythicPlusRunners ?? [];
 
   // Every Character with a score, not just the displayed top ten — this is what
   // an archived Season's Snapshot preserves. Costs no extra upstream request:
@@ -287,8 +322,17 @@ export function deriveProgression(details: GuildDetailsData, current: Progressio
   // on the same no-data condition as mythicPlusRunners (e.g. a guild rename)
   // rather than wiped — a Sync must never be the thing that destroys the
   // roster history ADR 0005 exists to protect.
-  const mythicPlusParticipants: MythicPlusParticipant[] =
-    scoredMembers.length > 0 ? scoredMembers : current.mythicPlusParticipants ?? [];
+  // ...and never at all for an archived Season, whose roster is the record of
+  // a finished season. The live roster carries only the CURRENT M+ season's
+  // scores, so deriving an archive from it does not refresh the snapshot, it
+  // replaces it with different data wearing the same label: Season 1's 595
+  // participants would become the current season's ~160, and its champion
+  // would change from Heyems to whoever leads today.
+  const mythicPlusParticipants: MythicPlusParticipant[] = current.isArchived
+    ? current.mythicPlusParticipants ?? []
+    : scoredMembers.length > 0
+      ? scoredMembers
+      : current.mythicPlusParticipants ?? [];
 
   return {
     kills,

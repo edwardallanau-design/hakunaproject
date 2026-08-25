@@ -108,6 +108,8 @@ const archivedState = {
   ],
   raidSlugs: [RAID],
   rankSourceRaidSlug: RAID,
+  // The whole point: the caller declares this Season is an archive.
+  isArchived: true,
 };
 
 describe("an archived Season's bosses survive a Sync", () => {
@@ -133,37 +135,104 @@ describe("an archived Season's bosses survive a Sync", () => {
   });
 });
 
-describe("an archived Season's M+ snapshot does NOT survive a Sync", () => {
-  it("replaces the stored participants with the live roster", () => {
-    // Documents a REAL HAZARD rather than a guarantee.
-    //
-    // `mythicPlusParticipants` preserves only when the fetch returns nothing —
-    // the guild-rename case. It has no notion of the Season being archived. So
-    // making Season 1 current again and syncing would overwrite its 595-strong
-    // Season 1 roster with whatever the CURRENT M+ season reports, because
-    // Raider.IO's roster exposes only current-season scores.
-    //
-    // Nothing reaches this today (the Sync writes only to the current Season),
-    // and the difficulty work neither caused nor worsened it. It is pinned here
-    // so the exposure is visible instead of implicit, and so a future guard has
-    // a failing test to flip.
+describe("the archive guard survives Payload's hydration", () => {
+  // The shape that actually reaches the route. The migration adds `killed` as
+  // DEFAULT false, so Payload materialises a full empty group on every boss
+  // that has never been touched at that difficulty — including all ten of
+  // Season 1's.
+  //
+  // This is why the guard cannot be inferred from the row: a hydrated archive
+  // boss and a live Season's mythic-first kill are the same shape. Two earlier
+  // attempts inferred it and both were wrong, and neither the unit tests
+  // (which passed bare objects) nor a live probe (which read a pre-migration
+  // database) caught the second one — a code review did.
+  const hydratedArchiveBoss = {
+    ...archivedBoss,
+    normal: { killed: false, firstDefeated: null, pulls: null, bestPull: null },
+    heroic: { killed: false, firstDefeated: null, pulls: null, bestPull: null },
+  };
+
+  it("leaves a hydrated archive row unchanged", () => {
+    const result = deriveProgression(makeDetails(), {
+      ...archivedState,
+      bosses: [hydratedArchiveBoss],
+    });
+
+    expect(result.bosses[0]).toEqual(hydratedArchiveBoss);
+  });
+
+  it("does not let upstream fill the hydrated empty groups", () => {
+    // Upstream has real normal and heroic kills for this exact slug. Without
+    // the content check they would be written into the archive.
+    const result = deriveProgression(makeDetails(), {
+      ...archivedState,
+      bosses: [hydratedArchiveBoss],
+    });
+
+    expect(result.bosses[0].normal?.killed).toBe(false);
+    expect(result.bosses[0].normal?.firstDefeated).toBeNull();
+    expect(result.bosses[0].heroic?.killed).toBe(false);
+    expect(result.bosses[0].pulls).toBe(608);
+  });
+
+  it("still records difficulties for a live Season with hydrated empties", () => {
+    // The guard must not over-fire: a boss NOT killed on mythic still derives
+    // normally, even though its groups arrive hydrated-empty too.
+    const liveBoss = {
+      name: "Midnight Falls",
+      killed: false,
+      firstDefeated: null,
+      pulls: null,
+      bestPull: null,
+      normal: { killed: false, firstDefeated: null, pulls: null, bestPull: null },
+      heroic: { killed: false, firstDefeated: null, pulls: null, bestPull: null },
+    };
+
+    const result = deriveProgression(makeDetails(), {
+      ...archivedState,
+      isArchived: false,
+      bosses: [liveBoss],
+    });
+
+    expect(result.bosses[0].normal?.killed).toBe(true);
+    expect(result.bosses[0].heroic?.killed).toBe(true);
+    expect(result.bosses[0].killed).toBe(true);
+  });
+});
+
+describe("an archived Season's M+ snapshot survives a Sync", () => {
+  it("keeps the stored roster even when the live roster is full", () => {
+    // The dangerous case. Raider.IO's roster exposes only the CURRENT M+
+    // season's scores, so deriving an archive from a live response does not
+    // refresh the snapshot — it replaces it with different data under the same
+    // label. Season 1's 595 participants would become the current season's
+    // ~160, and its champion would change from Heyems to whoever leads today.
     const details = makeDetails({
       members: [member("Buratski", 3386.7), member("Chocomann", 3260.7)],
     });
 
     const result = deriveProgression(details, archivedState);
 
-    expect(result.mythicPlusParticipants).toHaveLength(2);
-    expect(result.mythicPlusParticipants[0].name).toBe("Buratski");
-    // Heyems, the real Season 1 champion, is gone.
-    expect(result.mythicPlusParticipants.map((p) => p.name)).not.toContain("Heyems");
+    expect(result.mythicPlusParticipants.map((p) => p.name)).toEqual(["Heyems", "Exyie"]);
+    expect(result.mythicPlusRunners[0].name).toBe("Heyems");
+    expect(result.mythicPlusParticipants.map((p) => p.name)).not.toContain("Buratski");
   });
 
   it("still preserves the snapshot when the roster comes back empty", () => {
-    // The guarantee that DOES hold: an empty fetch never wipes the archive.
     const result = deriveProgression(makeDetails(), archivedState);
 
     expect(result.mythicPlusParticipants).toHaveLength(2);
     expect(result.mythicPlusParticipants[0].name).toBe("Heyems");
+  });
+
+  it("does NOT freeze a live Season's roster", () => {
+    // The guard must not over-fire: without isArchived, the live roster wins.
+    const details = makeDetails({
+      members: [member("Buratski", 3386.7), member("Chocomann", 3260.7)],
+    });
+
+    const result = deriveProgression(details, { ...archivedState, isArchived: false });
+
+    expect(result.mythicPlusParticipants.map((p) => p.name)).toEqual(["Buratski", "Chocomann"]);
   });
 });

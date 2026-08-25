@@ -81,6 +81,12 @@ export async function GET(request: Request) {
         mythicPlusParticipants: (season.mythicPlusParticipants as ProgressionState["mythicPlusParticipants"] | null) ?? [],
         raidSlugs: (season.raidSlugs ?? []).map((r) => r.slug),
         rankSourceRaidSlug: season.rankSourceRaidSlug,
+        // This route syncs the *current* Season by definition — it reads the
+        // pointer above — so it is never deriving an archive. Stated rather
+        // than left to the default, because the flag is what stops a Season
+        // from being degraded by a live response, and a future caller that
+        // derives some other Season must decide this deliberately.
+        isArchived: false,
       };
       derivedProgression = deriveProgression(details, currentProgression);
 
