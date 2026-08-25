@@ -91,14 +91,12 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'guild-settings': GuildSetting;
-    progression: Progression;
     'officers-section': OfficersSection;
     'recruitment-section': RecruitmentSection;
     'guild-details': GuildDetail;
   };
   globalsSelect: {
     'guild-settings': GuildSettingsSelect<false> | GuildSettingsSelect<true>;
-    progression: ProgressionSelect<false> | ProgressionSelect<true>;
     'officers-section': OfficersSectionSelect<false> | OfficersSectionSelect<true>;
     'recruitment-section': RecruitmentSectionSelect<false> | RecruitmentSectionSelect<true>;
     'guild-details': GuildDetailsSelect<false> | GuildDetailsSelect<true>;
@@ -322,7 +320,7 @@ export interface Season {
       }[]
     | null;
   /**
-   * Every Character with an M+ score this Season, not just the displayed top 10. Archival — roughly 585+ rows, so this is JSON rather than an array to keep the admin edit screen usable. Correcting it requires a script.
+   * Every Character with an M+ score this Season, not just the displayed top 10. Archival. Correcting it requires a script.
    */
   mythicPlusParticipants?:
     | {
@@ -634,71 +632,6 @@ export interface GuildSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "progression".
- */
-export interface Progression {
-  id: number;
-  tier: string;
-  difficulty?: ('Normal' | 'Heroic' | 'Mythic') | null;
-  /**
-   * e.g. "6/9 H" — auto-filled by Raider.IO sync
-   */
-  summary?: string | null;
-  /**
-   * Raider.IO profile URL
-   */
-  profileUrl?: string | null;
-  /**
-   * Last time data was synced from Raider.IO
-   */
-  lastSyncedAt?: string | null;
-  kills?: number | null;
-  totalBosses?: number | null;
-  rankings?: {
-    /**
-     * Auto-filled by sync — level 90 characters with an IO score or raid kill
-     */
-    members?: number | null;
-    world?: number | null;
-    region?: number | null;
-    realm?: number | null;
-  };
-  bosses?:
-    | {
-        name: string;
-        killed?: boolean | null;
-        /**
-         * Date the boss was first killed on mythic
-         */
-        firstDefeated?: string | null;
-        /**
-         * Total pulls — auto-set at time of kill and frozen, or live pull count while in progress
-         */
-        pulls?: number | null;
-        /**
-         * Best pull % (in-progress bosses only — auto-updated by sync until killed)
-         */
-        bestPull?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Top 10 M+ runners — auto-filled by Raider.IO sync or add manually
-   */
-  mythicPlusRunners?:
-    | {
-        name: string;
-        class: string;
-        spec: string;
-        score: number;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "officers-section".
  */
 export interface OfficersSection {
@@ -836,49 +769,6 @@ export interface GuildSettingsSelect<T extends boolean = true> {
     | {
         label?: T;
         href?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "progression_select".
- */
-export interface ProgressionSelect<T extends boolean = true> {
-  tier?: T;
-  difficulty?: T;
-  summary?: T;
-  profileUrl?: T;
-  lastSyncedAt?: T;
-  kills?: T;
-  totalBosses?: T;
-  rankings?:
-    | T
-    | {
-        members?: T;
-        world?: T;
-        region?: T;
-        realm?: T;
-      };
-  bosses?:
-    | T
-    | {
-        name?: T;
-        killed?: T;
-        firstDefeated?: T;
-        pulls?: T;
-        bestPull?: T;
-        id?: T;
-      };
-  mythicPlusRunners?:
-    | T
-    | {
-        name?: T;
-        class?: T;
-        spec?: T;
-        score?: T;
         id?: T;
       };
   updatedAt?: T;

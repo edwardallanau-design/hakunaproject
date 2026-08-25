@@ -9,7 +9,6 @@ import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { Seasons } from "./collections/Seasons";
 import { GuildSettings } from "./globals/GuildSettings";
-import { Progression } from "./globals/Progression";
 import { OfficersSection } from "./globals/OfficersSection";
 import { RecruitmentSection } from "./globals/RecruitmentSection";
 import { GuildDetails } from "./globals/GuildDetails";
@@ -25,7 +24,12 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Seasons],
-  globals: [GuildSettings, Progression, OfficersSection, RecruitmentSection, GuildDetails],
+  // `progression` was retired 2026-08-25 (season-rollover ticket `11`). It was
+  // the single-Season predecessor of the Seasons collection; once Seasons
+  // shipped nothing read it, and it sat in the admin panel looking
+  // authoritative while changing nothing on the site. Its last contents are
+  // preserved in .scratch/season-rollover/season-1-snapshot.json.
+  globals: [GuildSettings, OfficersSection, RecruitmentSection, GuildDetails],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

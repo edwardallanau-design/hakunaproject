@@ -18,11 +18,7 @@ Tickets `09`–`11` of `.scratch/season-rollover/spec.md`.
 
 - **`09` — create the Season 2 row. DONE in production 2026-08-25.** See the Shipped entry below for what was deployed and verified.
 - **`10` — re-enable the Sync. DONE 2026-08-25.** Schedule restored (`c63ebbf`), `SYNC_DISABLED` cleared by the operator, first Sync ran clean. See the Shipped entry.
-- **`11` — remove the `progression` global. Unblocked, not yet done.** Its condition — one full production Sync against the Seasons collection with no incident — is now met.
-
-  **Nothing reads it.** The page renders `toProgressionData(selectedSeason)` from the Season row; the Sync route writes Seasons only; the sole remaining reader anywhere is `scripts/snapshot-season-1.mjs`, which has already served its purpose. Production's copy was last written 2026-08-11 and still holds Season 1 complete (10/10, world 1375, 595 members, 10 bosses, 10 runners) — it was the fallback, and the fallback is no longer needed.
-
-  **It is not merely clutter.** A global that looks authoritative in the admin panel and changes nothing on the site is a trap: someone will edit it and reasonably conclude the site is broken. Removing it needs a migration dropping `progression`, `progression_bosses` and `progression_mythic_plus_runners` (ADR `0004`). A one-line `admin: { hidden: true }` is the reversible interim if the drop is not wanted yet.
+- **`11` — remove the `progression` global. DONE 2026-08-25.** See the Shipped entry. The rollover spec is now fully delivered.
 
 ### Season 2 theming: what is left after the v2 layout
 
@@ -46,6 +42,16 @@ Still open:
 ## Shipped
 
 Append-only. Newest first.
+
+### 2026-08-25 — The `progression` global retired, and the admin tidied
+
+Rollover ticket `11`, the last of the spec. `progression` was the single-Season predecessor of the Seasons collection. Once Seasons shipped, nothing read it — the page renders `toProgressionData(selectedSeason)` from the Season row and the Sync writes Seasons only — yet it kept sitting in the admin panel looking authoritative. That is worse than clutter: someone edits it, sees the site not change, and reasonably concludes the site is broken.
+
+Dropped by migration (`20260825_083737_drop_progression_global`), which the generated SQL confirms touches only `progression`, `progression_bosses`, `progression_mythic_plus_runners` and `enum_progression_difficulty`. `scripts/snapshot-season-1.mjs` went with it — it read that global and cannot run without it; its output, the committed `season-1-snapshot.json`, is the artefact and remains.
+
+**Three copies existed; two remain.** Season 1 lives in its Seasons row (the live one) and in `.scratch/season-rollover/season-1-snapshot.json` (595 participants, 10 bosses, 10 runners, world 1375). The global was the third and most stale, last written 2026-08-11.
+
+**`mythicPlusParticipants` is hidden from the admin panel, and deliberately stays JSON.** The operator's instinct was that the JSON blob looked untidy next to relational bosses and runners. It does — but the asymmetry tracks a real distinction rather than laziness: bosses (19 rows) and runners (20 rows) are *rendered and hand-edited*, while participants are **758 rows across two Seasons, rendered nowhere and edited never**. Moving them relational would have spent migration risk on Season 1's 595 archived entries — the least recoverable data in the project, two of whose members (Exyie, Brunogarzz) Raider.IO has already dropped — and turned one JSON field write into ~163 row writes every hour. So the fix was presentation, not storage: `admin: { hidden: true }`, which the generated migration confirms costs **no schema change at all**. The column, the Sync and the archive guard are untouched.
 
 ### 2026-08-25 — The first production Sync against the Seasons collection
 

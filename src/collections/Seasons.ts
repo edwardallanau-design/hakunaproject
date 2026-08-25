@@ -165,7 +165,23 @@ export const Seasons: CollectionConfig = {
       name: 'mythicPlusParticipants',
       type: 'json',
       admin: {
-        description: 'Every Character with an M+ score this Season, not just the displayed top 10. Archival — roughly 585+ rows, so this is JSON rather than an array to keep the admin edit screen usable. Correcting it requires a script.',
+        // Hidden from the admin panel entirely (operator decision, 2026-08-25).
+        // This is a write-once archive: the Sync writes it, the Sync reads it
+        // back to honour the archived-Season freeze, and nothing renders it.
+        // Nobody should be editing it by hand, so showing a 46 kB JSON blob in
+        // an edit screen only invited someone to try.
+        //
+        // `hidden` affects the panel, not the data — the column, the Sync and
+        // the archive guard are untouched, and `payload.find` still returns it.
+        //
+        // **It stays JSON, deliberately.** Bosses and runners are relational
+        // because they are rendered and hand-edited (19 and 20 rows). This is
+        // 758 rows across two Seasons, rendered nowhere and edited never, and
+        // moving it would spend migration risk on Season 1's 595 archived
+        // entries — the least recoverable data in the project, two of whose
+        // members Raider.IO has already dropped.
+        hidden: true,
+        description: 'Every Character with an M+ score this Season, not just the displayed top 10. Archival. Correcting it requires a script.',
       },
     },
   ],
