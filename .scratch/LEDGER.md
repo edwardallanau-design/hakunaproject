@@ -77,6 +77,10 @@ Three more, dispositioned rather than fixed:
 
 85 tests, typecheck clean.
 
+**Decision, 2026-08-25: Season 1 stays mythic-only, and its difficulty columns stay empty.** The difficulty migration adds `normal_*`/`heroic_*` to every boss row as `DEFAULT false`, so Season 1's ten bosses now carry hydrated-empty groups. Upstream **can** still fill them — `raid_progression` reports `tier-mn-1` as 8 normal / 9 heroic / 9 mythic, and `sporefall` as 0/1/1, checked live on the day. The operator was offered the backfill against that closing window and **declined**: Season 1 was always a mythic-only record, the site never displayed its other difficulties, and the pixel layout has no difficulty toggle to show them in — so a backfill would have been invisible preservation bought by amending a frozen archive. If a future session finds those empty columns and reads them as an oversight: they are not. Do not fill them without a fresh operator decision.
+
+Worth keeping alongside it: local Season 1 still holds Salhadaar at **41** pulls and Midnight Falls at **608**, where upstream now reports 6 and 12. The frozen archive is measurably better than the live API's own record of the same season.
+
 ### 2026-08-25 — The Season 2 editorial layout
 
 The v2 design built: a parallel component tree under `src/components/venom/`, picked by the theme manifest's `layout` discriminator rather than a slug check. `void` renders the same eight components it always has — Season 1 is frozen **by construction**, not by careful editing, and the nine original components were verified byte-identical since `3da38d5`.
