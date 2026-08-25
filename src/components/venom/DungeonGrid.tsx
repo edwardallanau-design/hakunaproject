@@ -1,6 +1,21 @@
 "use client";
 import { motion } from "framer-motion";
+import { CLASS_COLORS } from "@/lib/wow-constants";
 import { SectionHeader } from "./SectionHeader";
+
+/** A guild member present on a run. */
+export type RunMember = { name: string; class: string; spec: string; role: string };
+
+/**
+ * Two ways of showing who ran the key, for the operator to choose between.
+ *
+ * - `row`    — one line under the key/time, tank → healer → dps, wrapping only
+ *              if it must. Reads as a party.
+ * - `stack`  — a column on the right of the key/time row, same baseline. Keeps
+ *              the card compact when only one name is known, which is the
+ *              common case.
+ */
+export type RosterLayout = "row" | "stack";
 
 export type DungeonRun = {
   name: string;
@@ -10,9 +25,43 @@ export type DungeonRun = {
   timed: boolean;
   /** Pre-formatted mm:ss — the view model owns the arithmetic. */
   bestTime: string;
+  /**
+   * Guild members on the best run. Usually one: the key was run with people
+   * outside the guild, and only members are visible to us. The card therefore
+   * lists names plainly and claims nothing about party size.
+   */
+  members: RunMember[];
 };
 
-export function DungeonGrid({ dungeons }: { dungeons: DungeonRun[] }) {
+function MemberName({ m, size }: { m: RunMember; size: string }) {
+  return (
+    <span
+      // Spec and class ride along as a tooltip rather than visible text: eight
+      // cards of spec labels is noise.
+      title={m.spec && m.class ? `${m.spec} ${m.class}` : undefined}
+      style={{
+        fontFamily: "var(--font-body)",
+        fontWeight: 500,
+        fontSize: size,
+        color: CLASS_COLORS[m.class] ?? "var(--muted)",
+        lineHeight: 1.3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {m.name}
+    </span>
+  );
+}
+
+export function DungeonGrid({
+  dungeons,
+  rosterLayout = "row",
+}: {
+  dungeons: DungeonRun[];
+  rosterLayout?: RosterLayout;
+}) {
   // Nothing to show is not an error state; the section simply does not exist,
   // matching how the M+ runners card behaves when a Season has no data yet.
   if (dungeons.length === 0) return null;
@@ -112,6 +161,11 @@ export function DungeonGrid({ dungeons }: { dungeons: DungeonRun[] }) {
                 >
                   {d.name}
                 </span>
+                {/* Key, time, and — in `stack` mode — the roster on the right
+                    of the same baseline. Unlabelled on purpose: a bare list
+                    reads the same whether it is one name or four, where a
+                    heading or a count would draw attention to how sparse it
+                    usually is. */}
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
                   <span
                     style={{
@@ -135,7 +189,42 @@ export function DungeonGrid({ dungeons }: { dungeons: DungeonRun[] }) {
                   >
                     {d.bestTime}
                   </span>
+
+                  {rosterLayout === "stack" && d.members.length > 0 && (
+                    <div
+                      style={{
+                        marginLeft: "auto",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        gap: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      {d.members.map((m) => (
+                        <MemberName key={m.name} m={m} size="var(--ui-xs)" />
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+                {rosterLayout === "row" && d.members.length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "baseline",
+                      gap: "0 10px",
+                      borderTop: "1px solid var(--border-dim)",
+                      paddingTop: "clamp(8px,0.7vw,12px)",
+                      minWidth: 0,
+                    }}
+                  >
+                    {d.members.map((m) => (
+                      <MemberName key={m.name} m={m} size="var(--ui-sm)" />
+                    ))}
+                  </div>
+                )}
               </motion.div>
             );
           })}

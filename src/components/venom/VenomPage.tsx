@@ -1,9 +1,10 @@
+import { MotionConfig } from "framer-motion";
 import type { Season } from "@/payload-types";
-import { initialDifficulty, availableDifficulties, rankingsAt, difficultyLabel } from "@/lib/venomViewModel";
+import { initialDifficulty, rankingsAt, difficultyLabel, raidGroups } from "@/lib/venomViewModel";
 import { VenomNavbar, type SwitcherSeason } from "./VenomNavbar";
 import { VenomHero } from "./VenomHero";
 import { RaidTimeline } from "./RaidTimeline";
-import { DungeonGrid, type DungeonRun } from "./DungeonGrid";
+import { DungeonGrid, type DungeonRun, type RosterLayout } from "./DungeonGrid";
 import { Leaderboard, type Runner } from "./Leaderboard";
 import { VenomAbout, VenomOfficers, VenomRecruitment, VenomFooter, BackToTop, type OfficerCard, type RoleCard } from "./VenomSections";
 
@@ -33,6 +34,7 @@ export function VenomPage({
   footerLinks,
   runners,
   dungeons,
+  rosterLayout = "row",
 }: {
   season: Season;
   seasons: SwitcherSeason[];
@@ -53,18 +55,25 @@ export function VenomPage({
   footerLinks: { label: string; href: string }[];
   runners: Runner[];
   dungeons: DungeonRun[];
+  /** Temporary: lets the operator compare both roster treatments live. */
+  rosterLayout?: RosterLayout;
 }) {
   // Server-computed so the client toggle initialises without a hydration
   // mismatch.
+  // Season-wide, for the stats bar only. Each raid section picks its own.
   const difficulty = initialDifficulty(season);
-  const difficulties = availableDifficulties(season);
 
   // The stats bar shows the ranks for the difficulty actually being displayed.
   // Showing mythic's zeros while the guild is ranked on heroic would read as
   // "unranked" and be simply wrong.
   const ranks = rankingsAt(season, difficulty);
+  const groups = raidGroups(season);
 
   return (
+    // Framer's whileInView/initial animations are not gated by the CSS
+    // media query the rest of the motion uses, so one MotionConfig covers every
+    // reveal in the tree rather than each component remembering to ask.
+    <MotionConfig reducedMotion="user">
     <div className={`theme-${season.themeSlug}`} style={{ minHeight: "100vh", background: "var(--bg)" }}>
       <VenomNavbar seasons={seasons} selectedUrlSlug={selectedUrlSlug} currentUrlSlug={currentUrlSlug} />
       <main>
@@ -100,13 +109,8 @@ export function VenomPage({
           </div>
         )}
 
-        <RaidTimeline
-          season={season}
-          raidName={season.name}
-          initialDifficulty={difficulty}
-          difficulties={difficulties}
-        />
-        <DungeonGrid dungeons={dungeons} />
+        <RaidTimeline season={season} groups={groups} />
+        <DungeonGrid dungeons={dungeons} rosterLayout={rosterLayout} />
         <Leaderboard runners={runners} />
         <VenomAbout heading={aboutHeading} descriptionHTML={descriptionHTML} />
         <VenomOfficers officers={officers} />
@@ -115,5 +119,6 @@ export function VenomPage({
       <VenomFooter links={footerLinks} />
       <BackToTop />
     </div>
+    </MotionConfig>
   );
 }

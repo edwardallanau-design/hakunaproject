@@ -12,7 +12,7 @@ import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { StatsBar } from "@/components/StatsBar";
 import { Progression } from "@/components/Progression";
-import { SeasonSwitcher } from "@/components/SeasonSwitcher";
+import { PixelHeaderSwitcher, PixelArchivedNotice } from "@/components/PixelHeaderSwitcher";
 import { About } from "@/components/About";
 import { Officers } from "@/components/Officers";
 import { Recruitment } from "@/components/Recruitment";
@@ -20,10 +20,12 @@ import { Footer } from "@/components/Footer";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ season?: string }>;
+  // `roster` is temporary, for choosing between the two dungeon-card roster
+  // treatments. It comes out once the operator picks one.
+  searchParams: Promise<{ season?: string; roster?: string }>;
 }) {
   const payload = await getPayload({ config: await config });
-  const { season: requestedSlug } = await searchParams;
+  const { season: requestedSlug, roster } = await searchParams;
 
   const [guildSettings, officersSection, recruitmentSection, allSeasons] =
     await Promise.all([
@@ -149,6 +151,7 @@ export default async function Home({
         footerLinks={footerLinks}
         runners={prog.mythicPlusRunners}
         dungeons={dungeons}
+        rosterLayout={roster === "stack" ? "stack" : "row"}
       />
     );
   }
@@ -156,16 +159,27 @@ export default async function Home({
   return (
     <div className={`theme-${selectedSeason.themeSlug}`} style={{ minHeight: "100vh", background: "var(--bg)" }}>
       <Navbar />
+      {/* Operator-approved amendment to the Season 1 freeze (2026-08-25): the
+          switcher moves into the header so both layouts place it the same way.
+          Added alongside Navbar rather than inside it, so the eight original
+          components stay untouched. */}
+      <PixelHeaderSwitcher
+        seasons={switcherSeasons}
+        selectedUrlSlug={selectedSeason.urlSlug}
+        currentUrlSlug={currentSeason.urlSlug}
+      />
       <main>
         <Hero />
         <StatsBar stats={stats} />
-        <div className="px-5" style={{ paddingTop: 24 }}>
-          <SeasonSwitcher
-            seasons={allSeasons.docs.map((s) => ({ urlSlug: s.urlSlug, name: s.name, startedAt: s.startedAt }))}
-            selectedUrlSlug={selectedSeason.urlSlug}
-            currentUrlSlug={currentSeason.urlSlug}
-          />
-        </div>
+        {/* The archived notice keeps its mid-page home; only the select moved
+            into the header. This is its own small component rather than a flag
+            on SeasonSwitcher, because SeasonSwitcher is one of the eight frozen
+            files and adding a prop to it would edit Season 1's components. */}
+        {isArchived && (
+          <div className="px-5" style={{ paddingTop: 24 }}>
+            <PixelArchivedNotice />
+          </div>
+        )}
         <Progression progression={prog} />
         <About guild={guild} />
         <Officers section={officersSectionData} />

@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import type { Season } from "@/payload-types";
 import type { Difficulty } from "@/lib/syncProgression";
 import { SectionHeader } from "./SectionHeader";
-import { difficultyLabel, toVenomProgression, type BossAtDifficulty } from "@/lib/venomViewModel";
+import {
+  difficultyLabel,
+  groupDifficulties,
+  toRaidProgression,
+  type BossAtDifficulty,
+  type RaidGroup,
+} from "@/lib/venomViewModel";
 
 // Amber, used only for the in-progress state. Not a theme token: it means
 // "partial" across every theme, and reads correctly on venom's dark greens.
@@ -47,27 +53,62 @@ function stateStyles(state: BossAtDifficulty["state"]) {
   };
 }
 
+/**
+ * The raid section. A Season can contribute more than one raid — Season 2 is
+ * the Abyss plus the Grotto's single lair boss — so each group renders as its
+ * own sub-section with **its own difficulty toggle and its own default**.
+ *
+ * Independent rather than shared, because the raids progress independently:
+ * the Grotto is heroic-cleared while the Abyss is mid-heroic, so one Season-wide
+ * difficulty would misrepresent whichever raid is behind.
+ */
 export function RaidTimeline({
   season,
-  raidName,
-  initialDifficulty,
-  difficulties,
+  groups,
 }: {
   season: Season;
-  raidName: string;
-  initialDifficulty: Difficulty;
-  difficulties: Difficulty[];
+  groups: RaidGroup[];
 }) {
-  const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty);
-  const prog = toVenomProgression(season, difficulty);
-
   return (
     <section id="progression" style={{ padding: "clamp(80px,9vw,130px) clamp(20px,4vw,64px)" }}>
       <div style={{ maxWidth: "76rem", margin: "0 auto" }}>
+        {groups.map((group, gi) => (
+          <RaidGroupSection
+            key={group.title}
+            season={season}
+            group={group}
+            numeral={String(gi + 1).padStart(2, "0")}
+            isFirst={gi === 0}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function RaidGroupSection({
+  season,
+  group,
+  numeral,
+  isFirst,
+}: {
+  season: Season;
+  group: RaidGroup;
+  numeral: string;
+  isFirst: boolean;
+}) {
+  const { initial, available } = groupDifficulties(season, group);
+  const [difficulty, setDifficulty] = useState<Difficulty>(initial);
+  const difficulties = available;
+  const onDifficultyChange = setDifficulty;
+  const prog = toRaidProgression(season, group, difficulty);
+
+  return (
+    <div style={{ marginTop: isFirst ? 0 : "clamp(56px,6vw,96px)" }}>
         <SectionHeader
-          numeral="01"
-          eyebrow="The Raid"
-          heading={raidName}
+          numeral={numeral}
+          eyebrow={group.eyebrow}
+          heading={group.title}
           meta={
             <div style={{ textAlign: "right" }}>
               <span
@@ -97,7 +138,8 @@ export function RaidTimeline({
           }
         />
 
-        {/* Difficulty toggle. Only rendered when there is a real choice. */}
+        {/* Each raid gets its own toggle, offering only the difficulties it has
+            actually killed something on. */}
         {difficulties.length > 1 && (
           <div
             role="group"
@@ -115,7 +157,7 @@ export function RaidTimeline({
               return (
                 <button
                   key={d}
-                  onClick={() => setDifficulty(d)}
+                  onClick={() => onDifficultyChange(d)}
                   aria-pressed={isActive}
                   style={{
                     fontFamily: "var(--font-ui)",
@@ -166,7 +208,15 @@ export function RaidTimeline({
             }}
           />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "clamp(6px,0.7vw,12px)" }}>
+          {/* Keyed on the difficulty so switching re-mounts the list and it
+              fades rather than hard-swapping under the cursor. */}
+          <motion.div
+            key={difficulty}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.18 }}
+            style={{ display: "flex", flexDirection: "column", gap: "clamp(6px,0.7vw,12px)" }}
+          >
             {prog.bosses.map((boss, i) => {
               const s = stateStyles(boss.state);
               return (
@@ -290,9 +340,8 @@ export function RaidTimeline({
                 </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </section>
+    </div>
   );
 }

@@ -142,3 +142,97 @@ export function toVenomProgression(season: Season, difficulty: Difficulty): Veno
 export function difficultyLabel(d: Difficulty): string {
   return d.toUpperCase();
 }
+
+/**
+ * A Season's bosses split into the raids they belong to.
+ *
+ * Bosses are stored as one flat, hand-typed list per Season, in encounter order
+ * across every contributing raid — Season 2 is the Abyss's eight followed by
+ * the Grotto's one. Nothing in the row records where one raid ends, because
+ * the Sync resolves kills by boss *name* and never needed to know.
+ *
+ * So the split lives here, keyed by the Season's urlSlug. That is honest about
+ * what it is: a piece of per-Season editorial knowledge, not something derived.
+ * A Season with no entry renders as a single raid, which is what every Season
+ * before this one was.
+ */
+export type RaidGroup = {
+  /** Section heading. */
+  title: string;
+  /** Eyebrow above it. */
+  eyebrow: string;
+  /** Index into the Season's boss list where this raid starts. */
+  start: number;
+  /** How many bosses belong to it. */
+  count: number;
+};
+
+const RAID_GROUPS: Record<string, RaidGroup[]> = {
+  "season-2": [
+    { title: "Vaults of Atal'Utek", eyebrow: "The Raid", start: 0, count: 8 },
+    { title: "The Tidebound Grotto", eyebrow: "Lair Boss", start: 8, count: 1 },
+  ],
+};
+
+/**
+ * The raids to render for a Season. Falls back to one group covering every
+ * boss, so a Season without an entry behaves exactly as before.
+ */
+export function raidGroups(season: Season): RaidGroup[] {
+  const configured = RAID_GROUPS[season.urlSlug];
+  const total = (season.bosses ?? []).length;
+  if (!configured) {
+    return [{ title: season.name, eyebrow: "The Raid", start: 0, count: total }];
+  }
+  // Guard against a boss list that has grown or shrunk since the split was
+  // written: never slice past the end, and never silently drop a boss off it.
+  const groups = configured.filter((g) => g.start < total);
+  const covered = groups.reduce((n, g) => Math.max(n, g.start + g.count), 0);
+  if (covered < total) {
+    const last = groups[groups.length - 1];
+    if (last) last.count = total - last.start;
+  }
+  return groups;
+}
+
+/** The progression view for one raid group at one difficulty. */
+export function toRaidProgression(
+  season: Season,
+  group: RaidGroup,
+  difficulty: Difficulty,
+): VenomProgression {
+  const all = toVenomProgression(season, difficulty);
+  const bosses = all.bosses.slice(group.start, group.start + group.count);
+  const kills = bosses.filter((b) => b.state === "dead").length;
+  return {
+    bosses,
+    kills,
+    totalBosses: bosses.length,
+    pct: bosses.length > 0 ? Math.round((kills / bosses.length) * 100) : 0,
+    rankings: all.rankings,
+  };
+}
+
+/**
+ * Kill counts for one raid group, so a raid's own toggle reflects its own
+ * progression. The Grotto and the Abyss advance independently — the Grotto is
+ * heroic-cleared while the Abyss is not — so a Season-wide default would
+ * misrepresent whichever raid is behind.
+ */
+export function killsByDifficultyForGroup(season: Season, group: RaidGroup): KillsByDifficulty {
+  const bosses = (season.bosses ?? []).slice(group.start, group.start + group.count);
+  return Object.fromEntries(
+    DIFFICULTIES.map((d) => [d, bosses.filter((b) => progressAt(b, d).killed).length]),
+  ) as KillsByDifficulty;
+}
+
+/** The difficulty a raid group should open on, and which it can offer. */
+export function groupDifficulties(
+  season: Season,
+  group: RaidGroup,
+): { initial: Difficulty; available: Difficulty[] } {
+  const kills = killsByDifficultyForGroup(season, group);
+  const available = DIFFICULTIES.filter((d) => kills[d] > 0);
+  const initial = defaultDifficulty(kills);
+  return { initial, available: available.length > 0 ? available : [initial] };
+}

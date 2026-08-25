@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { DungeonRun } from "@/components/venom/DungeonGrid";
+import type { DungeonRun, RunMember } from "@/components/venom/DungeonGrid";
 
 /**
  * The guild's best key per dungeon, for the Season 2 dungeon-rotation grid.
@@ -22,15 +22,32 @@ import type { DungeonRun } from "@/components/venom/DungeonGrid";
 
 const RunSchema = z.object({
   zoneId: z.number(),
+  // Identifies one keystone run, so members of the same party share it. This is
+  // what makes the per-run roster on a dungeon card possible.
+  keystoneRunId: z.number(),
   mythicLevel: z.number(),
   clearTimeMs: z.number(),
   parTimeMs: z.number(),
   numChests: z.number(),
 });
 
+const RankedCharacterSchema = z.object({
+  character: z.object({
+    name: z.string(),
+    class: z.object({ name: z.string() }).optional(),
+    // `role` is what orders a party tank → healer → dps, the way a group is
+    // read in game.
+    spec: z.object({ name: z.string(), role: z.string().optional() }).optional(),
+  }),
+  runs: z.array(RunSchema).optional(),
+});
+
+/** Party order: tank first, then healer, then dps. */
+const ROLE_ORDER: Record<string, number> = { tank: 0, healer: 1, dps: 2 };
+
 const RankingsSchema = z.object({
   rankings: z.object({
-    rankedCharacters: z.array(z.object({ runs: z.array(RunSchema).optional() })),
+    rankedCharacters: z.array(RankedCharacterSchema),
   }),
 });
 
@@ -78,8 +95,27 @@ export async function fetchDungeonRotation(args: DungeonFetchArgs): Promise<Dung
   const parsed = RankingsSchema.parse(await res.json());
 
   const best = new Map<number, z.infer<typeof RunSchema>>();
+  // Who ran each key together. Built across *every* character's runs before any
+  // best-run selection, because a party is only visible by collecting the same
+  // keystoneRunId from each member's own list.
+  //
+  // Only guild members appear: the endpoint is scoped to the guild, so a key
+  // run with pugs shows just the members who were there. That is usually one
+  // person, which is why the card lists names plainly and claims nothing about
+  // party size.
+  const parties = new Map<number, RunMember[]>();
+
   for (const character of parsed.rankings.rankedCharacters) {
     for (const run of character.runs ?? []) {
+      const roster = parties.get(run.keystoneRunId) ?? [];
+      roster.push({
+        name: character.character.name,
+        class: character.character.class?.name ?? "",
+        spec: character.character.spec?.name ?? "",
+        role: character.character.spec?.role ?? "dps",
+      });
+      parties.set(run.keystoneRunId, roster);
+
       const current = best.get(run.zoneId);
       const better =
         !current ||
@@ -103,6 +139,13 @@ export async function fetchDungeonRotation(args: DungeonFetchArgs): Promise<Dung
         // numChests is the number of keystone upgrades; zero means over time.
         timed: run.numChests > 0,
         bestTime: formatClearTime(run.clearTimeMs),
+        // Party order, not alphabetical: tank, healer, then dps.
+        members: (parties.get(run.keystoneRunId) ?? [])
+          .slice()
+          .sort(
+            (a, b) =>
+              (ROLE_ORDER[a.role] ?? 2) - (ROLE_ORDER[b.role] ?? 2) || a.name.localeCompare(b.name),
+          ),
       };
     })
     .filter((d): d is DungeonRun => d !== null)
