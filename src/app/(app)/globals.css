@@ -230,6 +230,39 @@
 .venom-card-hover { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
 .venom-card-hover:hover { transform: translateY(-4px); }
 
+/* Dungeon, officer and boss-row hovers are NOT here. Those elements animate in
+   with framer-motion, which writes `transform` and `border-color` as inline
+   styles — and an inline style beats a class, so a CSS `:hover` on them applies
+   silently and never renders. They use framer's `whileHover` instead. Anything
+   below this line is on an element framer does not touch. */
+
+/* Footer and external links warm to the glow colour. Sets the custom property
+   the element's inline `color` reads, rather than `color` itself — an inline
+   declaration would win against this rule. */
+.venom-link { transition: color 200ms ease; }
+.venom-link:hover { --venom-link-color: var(--glow); }
+
+/* The back-to-top button lifts less than a card — it is a control, not a
+   surface. */
+.venom-lift-2 { transition: transform 150ms ease, box-shadow 150ms ease; }
+.venom-lift-2:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Leaderboard rows brighten under the cursor. These set no inline background,
+   so CSS reaches them. */
+.venom-runner-row { transition: background 160ms ease; }
+.venom-runner-row:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+
+/* Hover is a pointer affordance; a touch device gets the resting state and no
+   sticky :hover left behind after a tap. */
+@media (hover: none) {
+  .venom-card-hover:hover,
+  .venom-lift-2:hover { transform: none; }
+  .venom-runner-row:hover { background: inherit; }
+}
+
 /* Hard-shadowed buttons. `--shadow-accent` carries venom's #14320a. */
 .venom-btn {
   font-family: var(--font-ui);

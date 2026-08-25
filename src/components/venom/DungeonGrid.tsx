@@ -101,10 +101,20 @@ export function DungeonGrid({
             return (
               <motion.div
                 key={d.name}
-                className="venom-notch venom-card-hover"
+                className="venom-notch"
                 initial={{ opacity: 0, scale: 0.94 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-40px" }}
+                // Hover belongs to framer here, not CSS. The reveal animation
+                // writes `transform` inline, and an inline style beats a class
+                // — so a CSS `:hover { transform: … }` silently never applied.
+                // Measured: the glow landed, the lift and border change did not.
+                whileHover={{
+                  y: -4,
+                  borderColor: "var(--accent)",
+                  boxShadow:
+                    "0 12px 32px rgba(0,0,0,0.4), 0 0 20px color-mix(in srgb,var(--accent) 25%,transparent)",
+                }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
                 style={{
                   position: "relative",

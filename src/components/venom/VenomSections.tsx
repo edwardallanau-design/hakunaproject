@@ -145,10 +145,17 @@ export function VenomOfficers({ officers }: { officers: OfficerCard[] }) {
             return (
               <motion.div
                 key={o.id}
-                className="venom-card-hover"
                 initial={{ opacity: 0, scale: 0.94 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-40px" }}
+                // Same reason as the dungeon cards: the reveal writes an inline
+                // transform, so hover has to come from framer rather than CSS.
+                // Each card borrows its officer's class colour.
+                whileHover={{
+                  y: -4,
+                  borderColor: c,
+                  boxShadow: `0 12px 32px rgba(0,0,0,0.4), 0 0 18px ${c}4d`,
+                }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.3) }}
                 style={{
                   position: "relative",
@@ -431,14 +438,17 @@ export function VenomFooter({ links }: { links: { label: string; href: string }[
               href={l.href}
               target="_blank"
               rel="noopener noreferrer"
+              className="venom-link"
               style={{
                 fontFamily: "var(--font-ui)",
                 fontWeight: 600,
                 fontSize: "var(--ui-sm)",
-                color: "var(--muted)",
+                // Via a custom property, not `color` directly: an inline
+                // `color` would outrank the class's :hover rule and the link
+                // would never light up. Measured — it did not.
+                color: "var(--venom-link-color, var(--muted))",
                 textDecoration: "none",
                 letterSpacing: "0.14em",
-                transition: "color 200ms ease",
               }}
             >
               {l.label} ↗
@@ -479,7 +489,7 @@ export function BackToTop() {
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
-      className="venom-card-hover"
+      className="venom-lift-2"
       style={{
         position: "fixed",
         bottom: "1.5rem",

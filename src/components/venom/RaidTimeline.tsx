@@ -225,6 +225,11 @@ function RaidGroupSection({
                   initial={{ opacity: 0, x: -36 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
+                  // The row's border colour is set inline per state, so a CSS
+                  // hover rule loses to it — framer has to own this too.
+                  // Deliberately no movement: a row that lifts would drift off
+                  // the diamond node pinned to the spine beside it.
+                  whileHover={{ borderColor: "color-mix(in srgb,var(--accent) 45%,transparent)" }}
                   transition={{ duration: 0.5, delay: Math.min(i * 0.04, 0.3) }}
                   style={{
                     position: "relative",

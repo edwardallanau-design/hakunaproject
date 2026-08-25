@@ -95,6 +95,42 @@ describe("the difficulty the page opens on", () => {
   });
 });
 
+describe("what happens when the guild starts pulling mythic", () => {
+  // Two distinct moments, and they behave differently on purpose.
+
+  it("shows mythic pulls without switching the page to mythic", () => {
+    // Pulling but nothing dead yet. The toggle does NOT offer mythic and the
+    // page stays on heroic: promoting on attempts alone would swap a real 5/9
+    // heroic view for an empty 0/9 mythic one the moment someone pulls once.
+    const s = season({
+      bosses: [
+        boss("A", { normal: { killed: true }, heroic: { killed: true }, mythic: { pulls: 12 } }),
+      ],
+    } as Partial<Season>);
+
+    expect(initialDifficulty(s)).toBe("heroic");
+    expect(availableDifficulties(s)).toEqual(["normal", "heroic"]);
+
+    // The pulls are recorded and visible to anyone who selects mythic.
+    const vm = toVenomProgression(s, "mythic");
+    expect(vm.bosses[0].state).toBe("prog");
+    expect(vm.bosses[0].pulls).toBe(12);
+  });
+
+  it("switches to mythic the moment the first mythic boss dies", () => {
+    const s = season({
+      bosses: [
+        boss("A", { normal: { killed: true }, heroic: { killed: true }, mythic: { killed: true } }),
+        boss("B", { normal: { killed: true }, heroic: { killed: true }, mythic: { pulls: 40 } }),
+      ],
+    } as Partial<Season>);
+
+    expect(initialDifficulty(s)).toBe("mythic");
+    expect(availableDifficulties(s)).toEqual(["normal", "heroic", "mythic"]);
+    expect(toVenomProgression(s, "mythic")).toMatchObject({ kills: 1, totalBosses: 2 });
+  });
+});
+
 describe("boss render state", () => {
   it("is dead when killed", () => {
     const s = season({
