@@ -33,15 +33,19 @@ export type TileCategory = (typeof CATEGORIES)[number];
 /**
  * Badge text, and the token each category is painted in.
  *
- * `--warn` carries a literal fallback because it is a *status* colour, declared
- * only by `.theme-venom`. ADR 0007 lets a theme be palette-only, and such a
- * theme would define the accent pair but have no reason to know this section
- * exists — leaving the badge unstyled. The fallback is venom's own value, so
- * nothing changes today and a future theme degrades to a readable orange rather
- * than to nothing.
+ * `--warn` and `--best` carry literal fallbacks because neither is part of the
+ * accent pair: both are declared only by `.theme-venom`. ADR 0007 lets a theme
+ * be palette-only, and such a theme would define the accent pair but have no
+ * reason to know this section exists — leaving those badges unstyled. Each
+ * fallback is venom's own value, so nothing changes today and a future theme
+ * degrades to readable colours rather than to nothing.
+ *
+ * The four are deliberately four *hues*, not four shades. BEST KEY does not
+ * borrow `--glow`: that sits beside `--accent` on GUILD GROUP tiles as one hue
+ * at two lightnesses, and the pair stopped reading as two categories.
  */
 export const CATEGORY_STYLE: Record<TileCategory, { label: string; color: string }> = {
-  "best-key": { label: "BEST KEY", color: "var(--glow)" },
+  "best-key": { label: "BEST KEY", color: "var(--best, #a7f3d0)" },
   "latest-run": { label: "LATEST RUN", color: "var(--accent2)" },
   "closest-call": { label: "CLOSEST CALL", color: "var(--warn, #f97316)" },
   "guild-group": { label: "GUILD GROUP", color: "var(--accent)" },

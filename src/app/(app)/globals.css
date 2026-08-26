@@ -171,6 +171,16 @@
   --warn: #f97316;
   --miss: #e07b5f;
 
+  /* BEST KEY's own colour, for the same separability reason. The badge used
+     to borrow `--glow`, which sits beside `--accent` on GUILD GROUP tiles —
+     one hue at two lightnesses, so the pair read as one colour twice rather
+     than as two categories. `--glow` cannot move: it is the site's emphasis
+     colour in ~50 places (halos, active nav, the hero bloom) and must stay a
+     bright light green. So the badge moves instead. Pale ice-green is cool
+     enough to separate from both greens and reads as the trophy the category
+     is. */
+  --best: #a7f3d0;
+
   /* The design's own type scale. Deliberately separate from the `--px-*` and
      `--vt-*` scales above, which are Season 1's pixel-font sizes and stay
      frozen — venom's faces are proportional serifs and need their own ramp. */
