@@ -43,6 +43,24 @@ Still open:
 
 Append-only. Newest first.
 
+### 2026-08-26 — Three mobile defects, and hover becomes a gated affordance
+
+Reported from an iPhone 17 in Safari, and reproduced in Brave and every other browser on the device — which was the first clue, because all iOS browsers are WebKit underneath. Commits `d8d9949` and `1da2436`.
+
+**The raid "4/8" and the marquee Pause button both fell to the bottom of their section, for one shared reason.** `SectionHeader` gave its title block `minWidth: min(100%, 300px)`. The 300px floor existed to stop a wide meta crushing the heading, but on a phone that expression resolves to **100%** — the title claimed the whole row and flex-wrap pushed the meta onto a line of its own. It becomes `minWidth: 0`, so the heading wraps internally instead of the row wrapping. Only `RaidTimeline` and `DungeonMarquee` pass `meta`, so the behaviour change lands exactly on the two reported sections; the metaless headers simply fill the row.
+
+**Tapping the marquee paused it with nothing able to resume it — and the existing Pause button was not the fix, it was the proof.** iOS Safari leaves a tapped element in `:hover` until something else is tapped, so a tap paused the strip through the *desktop* hover rule while React state still read `paused: false`. Pressing Pause and then Resume round-tripped the state and landed back on the same stuck hover. The button was working correctly; it was operating a different mechanism from the one holding the strip.
+
+**Touch gets hold-to-pause instead**, which is what the operator asked for. `held` is separate state from `paused` rather than folded into it, because they are different intents with different lifetimes: `paused` is a decision that persists until undone, `held` lasts exactly as long as a finger is down. `data-paused` is `paused || held`, so releasing a hold can never clear a deliberate press of the button. `held` clears on `pointerup`, `pointercancel` **and** `pointerleave` — `pointercancel` matters most, because iOS fires it rather than `pointerup` when a scroll takes over from a touch that began in the strip, and missing it would strand the strip paused with the button still reading "Pause". That is the reported bug rebuilt from the other side.
+
+**The button stays.** Hold-to-pause requires a finger over the tile you were trying to read; the button is how you stop the strip and actually read it.
+
+**The guild crest now leads the About section when it stacks.** Below 899px the two-column grid collapses, and the crest sat under a full block of prose — far enough down that it read as a footer to the section rather than its portrait. Fixed with `order: -1` rather than by reordering the markup, so the DOM keeps heading → prose → image: that is what a screen reader announces and how focus moves, and neither should change because the window got narrow.
+
+**`/code-review` then found the codebase already had an idiom for the sticky-hover problem, and it was the weaker one.** An `@media (hover: none)` block undid three lift-and-brighten effects after the fact. Undoing has to name every property the original rule set and silently misses any it forgets — that block cancelled `.venom-lift-2`'s transform but left its box-shadow glow stuck on after a tap. All six venom hover effects are now gated on `@media (hover: hover)` instead, which cannot drift that way because the declaration never applies at all. The two `.venom-btn` hovers are deliberately left ungated for now: they were out of scope for the review finding, and are recorded here as a known gap rather than swept in silently.
+
+**Known limit, recorded because it cannot be closed from this machine.** The fix was verified in Playwright at 390×664 with touch, where `(hover: hover)` is false — but that is Chromium, which does not reproduce iOS sticky hover. Those tests prove the new code paths work; they cannot prove the original bug is gone. The reasoning rests on the platform fact that iOS reports `hover: none`, which is also why every browser on the phone behaved identically. **On-device iPhone Safari confirmation is outstanding** and is the operator's check after deploy.
+
 ### 2026-08-26 — Venom repalettes to jungle green and gold
 
 An operator colour decision: the lime/teal accent pair becomes emerald `#22c55e`, gold `#facc15` and light green `#4ade80`, with gold taking the slot teal held. Recorded because two knock-on changes were judgement calls, not transcription, and should not be re-litigated later as accidents.
