@@ -89,7 +89,7 @@ export function VenomHero({
         flexDirection: "column",
         overflow: "hidden",
         background:
-          "radial-gradient(ellipse at 70% 20%, rgba(20,50,10,0.7) 0%, transparent 55%), radial-gradient(ellipse at 10% 90%, rgba(45,212,191,0.09) 0%, transparent 50%), var(--bg)",
+          "radial-gradient(ellipse at 70% 20%, rgba(10,50,25,0.7) 0%, transparent 55%), radial-gradient(ellipse at 10% 90%, rgba(250,204,21,0.09) 0%, transparent 50%), var(--bg)",
       }}
     >
       {/* Scale texture */}
@@ -101,7 +101,7 @@ export function VenomHero({
           pointerEvents: "none",
           opacity: 0.45,
           backgroundImage:
-            "radial-gradient(circle at 6px 0px, rgba(132,204,22,0.10) 4px, transparent 5px),radial-gradient(circle at 18px 12px, rgba(45,212,191,0.07) 4px, transparent 5px)",
+            "radial-gradient(circle at 6px 0px, rgba(34,197,94,0.10) 4px, transparent 5px),radial-gradient(circle at 18px 12px, rgba(250,204,21,0.07) 4px, transparent 5px)",
           backgroundSize: "24px 24px",
         }}
       />
