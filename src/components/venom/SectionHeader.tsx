@@ -47,7 +47,15 @@ export function SectionHeader({
       >
         {numeral}
       </span>
-      <div style={{ flex: 1, minWidth: "min(100%, 300px)" }}>
+      {/* minWidth 0, not a 300px floor. The floor was meant to stop a wide
+          meta from crushing the heading, but on a phone `min(100%, 300px)`
+          resolves to 100% — the title block claimed the whole row and
+          flex-wrap dropped the meta onto its own line. That is why the raid
+          "4/8" and the marquee Pause button both stacked to the bottom on a
+          narrow screen. Both metas here are narrow (a numeral, a small
+          button), so letting the heading wrap internally is the better
+          trade. */}
+      <div style={{ flex: 1, minWidth: 0 }}>
         <span
           style={{
             fontFamily: "var(--font-ui)",

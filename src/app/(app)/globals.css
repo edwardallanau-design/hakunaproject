@@ -230,6 +230,16 @@
   .venom-officer-grid { grid-template-columns: repeat(2, 1fr); }
   .venom-role-grid    { grid-template-columns: 1fr; }
   .venom-about-grid   { grid-template-columns: 1fr; }
+  /* Stacked, the crest goes first. In two columns the text leads and the
+     crest sits beside it, but collapsing to one column put the crest below
+     a full block of prose — far enough down that it reads as a footer to the
+     section rather than as its portrait.
+
+     Done with `order` rather than by reordering the markup, so the DOM keeps
+     heading -> prose -> image: that is the order a screen reader announces
+     and the order focus moves in, and neither should change because the
+     window got narrow. Only the visual order does. */
+  .venom-about-grid > :last-child  { order: -1; }
 }
 @media (max-width: 519px) {
   .venom-officer-grid { grid-template-columns: 1fr; }
@@ -353,7 +363,9 @@
   cursor: pointer;
   transition: background 160ms ease;
 }
-.venom-mq-toggle:hover { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+@media (hover: hover) {
+  .venom-mq-toggle:hover { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+}
 .venom-mq-toggle[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -367,7 +379,16 @@
     animation: venom-marquee var(--venom-mq-duration, 120s) linear infinite;
     animation-delay: var(--venom-mq-start, 0s);
   }
-  .venom-mq-view:hover .venom-mq-track,
+  /* Hover-to-pause is gated on a real pointer. iOS Safari gives a tapped
+     element a sticky :hover that survives until you tap something else, so
+     on a phone an ordinary tap paused the strip through this rule — and the
+     Pause button could not undo it, because React state was still
+     `paused: false`. Pressing Pause then Resume simply returned to the stuck
+     hover, which read as "the carousel stopped and nothing restarts it".
+     Touch gets hold-to-pause instead, via data-paused; see DungeonMarquee. */
+  @media (hover: hover) {
+    .venom-mq-view:hover .venom-mq-track { animation-play-state: paused; }
+  }
   .venom-mq-track[data-paused="true"] { animation-play-state: paused; }
   /* Shifts by exactly one copy, whatever the copy count. A hard -50% assumed
      two copies, which breaks the moment a thin board needs more of them to
@@ -396,7 +417,9 @@
 }
 
 .venom-card-hover { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
-.venom-card-hover:hover { transform: translateY(-4px); }
+@media (hover: hover) {
+  .venom-card-hover:hover { transform: translateY(-4px); }
+}
 
 /* Dungeon, officer and boss-row hovers are NOT here. Those elements animate in
    with framer-motion, which writes `transform` and `border-color` as inline
@@ -408,28 +431,41 @@
    the element's inline `color` reads, rather than `color` itself — an inline
    declaration would win against this rule. */
 .venom-link { transition: color 200ms ease; }
-.venom-link:hover { --venom-link-color: var(--glow); }
+@media (hover: hover) {
+  .venom-link:hover { --venom-link-color: var(--glow); }
+}
 
 /* The back-to-top button lifts less than a card — it is a control, not a
    surface. */
 .venom-lift-2 { transition: transform 150ms ease, box-shadow 150ms ease; }
-.venom-lift-2:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 30%, transparent);
+@media (hover: hover) {
+  .venom-lift-2:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
 }
 
 /* Leaderboard rows brighten under the cursor. These set no inline background,
    so CSS reaches them. */
 .venom-runner-row { transition: background 160ms ease; }
-.venom-runner-row:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
-
-/* Hover is a pointer affordance; a touch device gets the resting state and no
-   sticky :hover left behind after a tap. */
-@media (hover: none) {
-  .venom-card-hover:hover,
-  .venom-lift-2:hover { transform: none; }
-  .venom-runner-row:hover { background: inherit; }
+@media (hover: hover) {
+  .venom-runner-row:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
 }
+
+/* Hover is a pointer affordance, and every :hover above is gated on one.
+
+   This used to be an `@media (hover: none)` block that undid the three lift
+   and brighten effects after the fact. Undoing is the weaker form: it has to
+   name every property the original rule set, and it silently misses any it
+   forgets — this block cancelled `.venom-lift-2`'s transform but left its
+   box-shadow glow stuck on after a tap. Gating each rule on
+   `@media (hover: hover)` cannot drift that way, because the declaration
+   never applies in the first place.
+
+   The same idiom now covers the marquee: see the hover-pause rule and
+   `.venom-mq-toggle` above. iOS Safari leaves a tapped element in :hover
+   until something else is tapped, so on touch these are not transient
+   affordances at all — they stick. */
 
 /* Hard-shadowed buttons. `--shadow-accent` carries venom's #0a3218. */
 .venom-btn {

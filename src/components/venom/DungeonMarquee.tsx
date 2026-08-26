@@ -88,6 +88,14 @@ export function DungeonMarquee({
 }) {
   const [paused, setPaused] = useState(false);
 
+  // Hold-to-pause, for touch. Separate from `paused` rather than folded into
+  // it: they are different intents with different lifetimes. `paused` is a
+  // decision that persists until undone; `held` lasts exactly as long as a
+  // finger is down. Keeping them apart means a hold-and-release can never
+  // clear a deliberate press of the Pause button — the OR below just resolves
+  // to whichever is asking.
+  const [held, setHeld] = useState(false);
+
   // Nothing to show is not an error state; the section simply does not exist,
   // matching how the M+ runners card behaves when a Season has no data yet.
   if (tiles.length === 0) return null;
@@ -129,8 +137,10 @@ export function DungeonMarquee({
           // say which of those two things it is.
           heading="Recent Keys"
           meta={
-            // Hover pauses the strip, but touch has no hover — without this
-            // control a phone can only read what happens to drift past.
+            // Kept even though touch now has hold-to-pause, because the two
+            // do different jobs: a hold pauses the strip under a finger that
+            // is covering the tile you wanted to read. The button is how you
+            // stop it and actually read. Hover-pause is desktop-only now.
             //
             // The activity count lives in the hero's stat line beside World /
             // Region / Realm, not here. It is derived from this section's data
@@ -154,10 +164,32 @@ export function DungeonMarquee({
             It stays a tab stop either way rather than being toggled on a media
             query, which the server cannot evaluate: a conditional tabindex is a
             hydration mismatch waiting to happen. */}
-        <div className="venom-mq-view" role="region" tabIndex={0} aria-label="Recent keys">
+        {/* The handlers sit on the view, not the track: the track is what
+            moves, so a finger resting on it would slide off its own target
+            mid-hold. The view is stationary.
+
+            pointercancel matters as much as pointerup. iOS fires cancel, not
+            up, when a vertical scroll takes over from a touch that started
+            here — handling only pointerup would strand `held` at true and
+            leave the strip frozen with the button still reading Pause, which
+            is the bug this change exists to remove. pointerleave covers a
+            finger dragged out of the strip before release.
+
+            No preventDefault: the page still has to scroll through this
+            section while a finger is on it. */}
+        <div
+          className="venom-mq-view"
+          role="region"
+          tabIndex={0}
+          aria-label="Recent keys"
+          onPointerDown={(e) => { if (e.pointerType !== "mouse") setHeld(true); }}
+          onPointerUp={() => setHeld(false)}
+          onPointerCancel={() => setHeld(false)}
+          onPointerLeave={() => setHeld(false)}
+        >
           <div
             className="venom-mq-track"
-            data-paused={paused ? "true" : undefined}
+            data-paused={paused || held ? "true" : undefined}
             style={
               {
                 // Seconds per tile, not a fixed total: the strip reads at the
