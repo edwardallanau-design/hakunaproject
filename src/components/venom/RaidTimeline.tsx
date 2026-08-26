@@ -12,9 +12,16 @@ import {
   type RaidGroup,
 } from "@/lib/venomViewModel";
 
-// Amber, used only for the in-progress state. Not a theme token: it means
-// "partial" across every theme, and reads correctly on venom's dark greens.
-const PROG = "#fbbf24";
+// Burnt orange, used only for the in-progress state. Not a theme token: it
+// means "partial" across every theme, and reads correctly on venom's dark
+// greens.
+//
+// It was amber #fbbf24 until gold became the accent: DEAD paints in
+// --accent2, and gold sat 4.6deg from amber at the same saturation and
+// lightness, so the two states of this one badge stopped being tellable
+// apart on adjacent rows. It matches --warn, which moved off amber for the
+// same collision.
+const PROG = "#f97316";
 
 function stateStyles(state: BossAtDifficulty["state"]) {
   if (state === "dead") {
@@ -31,8 +38,8 @@ function stateStyles(state: BossAtDifficulty["state"]) {
   }
   if (state === "prog") {
     return {
-      rowBg: "rgba(245,158,11,0.03)",
-      rowBorder: "rgba(245,158,11,0.18)",
+      rowBg: "rgba(249,115,22,0.03)",
+      rowBorder: "rgba(249,115,22,0.18)",
       node: PROG,
       nodeGlow: `0 0 8px ${PROG}`,
       nodeBorder: PROG,
@@ -319,8 +326,8 @@ function RaidGroupSection({
                         fontWeight: 700,
                         fontSize: "var(--ui-xs)",
                         color: PROG,
-                        background: "rgba(245,158,11,0.1)",
-                        border: "1px solid rgba(245,158,11,0.35)",
+                        background: "rgba(249,115,22,0.1)",
+                        border: "1px solid rgba(249,115,22,0.35)",
                         padding: "3px 12px",
                         letterSpacing: "0.12em",
                         flexShrink: 0,

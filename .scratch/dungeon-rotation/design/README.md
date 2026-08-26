@@ -20,22 +20,37 @@ Each tile carries **exactly one** category badge, coloured to it:
 
 | category | design | shipped |
 |---|---|---|
-| BEST KEY | `var(--glow)` lime | `var(--glow)` |
-| LATEST RUN | `var(--accent2)` teal | `var(--accent2)` |
-| CLOSEST CALL | `#fbbf24` amber | `var(--warn)` |
-| GUILD GROUP | `#a3e635` lime-bright | `var(--accent)` |
+| BEST KEY | `var(--glow)` lime | `var(--best)` ice-green |
+| LATEST RUN | `var(--accent2)` teal | `var(--accent2)` gold |
+| CLOSEST CALL | `#fbbf24` amber | `var(--warn)` orange |
+| GUILD GROUP | `#a3e635` lime-bright | `var(--accent)` emerald |
 
-Two reconciliations, both small:
+Three reconciliations. The `shipped` column reflects the 2026-08-26 repalette,
+which retired the lime/teal pair the design was drawn against; the design column
+is left as drawn.
 
 - **`#a3e635` *is* `--glow`.** The design gives BEST KEY and GUILD GROUP literally
   the same colour under two names — the kind of collision that survives a
   prototype because the two tiles are never adjacent in a mock. On a marquee
-  they are adjacent constantly. GUILD GROUP moves to `--accent`, the next lime
-  down, which keeps the design's family and gives the notch something to say.
-- **The amber becomes a token.** `--warn: #e8b64c` and `--miss: #e07b5f` join the
-  venom palette as *status* colours, deliberately outside the lime/teal accent
-  pair — a tile has to say "close" and "missed", and saying either in an accent
-  colour reads as emphasis rather than as outcome.
+  they are adjacent constantly.
+
+  **The first fix was insufficient and is worth recording.** GUILD GROUP moved to
+  `--accent`, "the next lime down", which kept the design's family — but one hue
+  at two lightnesses is still one colour twice: the pair measured **1.31:1**
+  badge-against-badge, and the notch never got anything to say. Naming the
+  collision was right; treating it as a lightness problem was not. BEST KEY now
+  has its own hue in `--best`, at **1.78:1**. The lesson generalises: on this
+  marquee a category needs a different *hue*, not a different shade.
+- **The amber becomes a token.** `--warn` and `--miss` join the venom palette as
+  *status* colours, deliberately outside the accent pair — a tile has to say
+  "close" and "missed", and saying either in an accent colour reads as emphasis
+  rather than as outcome. `--warn` is now `#f97316` orange rather than the
+  original `#e8b64c` amber: the repalette made gold an accent, and amber sat too
+  close to it to keep the property the token exists for.
+- **`--best` puts the palette at 14 tokens.** ADR `0007`'s "required 13-token
+  palette" is a floor, not an exact set — `--warn` and `--miss` already sat above
+  it. `--best` follows their pattern: declared only by `.theme-venom`, consumed
+  with a literal fallback so a palette-only theme degrades to a readable badge.
 
 ## Tile anatomy, from the design's own markup
 

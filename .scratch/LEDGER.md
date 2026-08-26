@@ -43,6 +43,29 @@ Still open:
 
 Append-only. Newest first.
 
+### 2026-08-26 — Venom repalettes to jungle green and gold
+
+An operator colour decision: the lime/teal accent pair becomes emerald `#22c55e`, gold `#facc15` and light green `#4ade80`, with gold taking the slot teal held. Recorded because two knock-on changes were judgement calls, not transcription, and should not be re-litigated later as accidents.
+
+**`--warn` moved from amber `#e8b64c` to burnt orange `#f97316`.** The token exists to sit *outside* the accent pair so the dungeon marquee can say "close" as an outcome rather than as emphasis. Amber sits roughly 20 degrees from gold, so once gold was an accent, LATEST RUN and CLOSEST CALL tiles read as one colour and the token lost the only property it is for.
+
+**BEST KEY stopped borrowing `--glow` and got its own `--best: #a7f3d0`.** The four marquee categories were four colours on paper and three in practice: `--glow` and `--accent` are one hue at two lightnesses, so BEST KEY and GUILD GROUP read as one colour twice. **This flaw predates the repalette** — the old `#a3e635`/`#84cc16` pair had it too; gold pulling attention is what made it visible.
+
+`--glow` is the token that could not move. It is the site's emphasis colour in roughly fifty places across *both* themes — text-shadow halos, box-shadow glows, active nav states, the hero title bloom — and its job everywhere is to be luminous, which requires a bright light green. Rehueing it to separate one badge would have repainted every section. The badge moved instead.
+
+**This makes the venom palette 14 tokens, not 13.** ADR `0007` calls the 13-token palette "required; the only mandatory element" — a floor, and `--warn`/`--miss` already sat above it since the marquee shipped. `--best` follows their pattern exactly: declared only by `.theme-venom`, with a literal fallback (`var(--best, #a7f3d0)`) so a palette-only theme degrades to a readable badge rather than an unstyled one.
+
+Derived values moved with their source rather than being left as lime residue on an emerald page: the border rgba pair, `--shadow-accent`, the scrollbar block, the `SerpentEye` crest (entirely hardcoded, being SVG), the Low-priority recruitment pill, and the atmospheric rgba washes in the hero and sections. The deep olive darks (`#1f4a0e`, `rgba(20,50,10,…)`) were lime-derived and read muddy against emerald, so they shift to the same hue family at matched lightness.
+
+Season 1 is untouched: `:root`, `.theme-void` and `.light` keep their original values, and no pixel-layout component was edited.
+
+**Two more collisions the repalette caused, found by `/code-review` and fixed in the same branch.** Both were the marquee defect in a different room: gold arrived as an accent and landed next to amber literals written when `--accent2` was teal.
+
+- **The raid timeline's DEAD and IN PROGRESS badges.** These are one badge slot in two states, on adjacent rows. DEAD paints in `--accent2`; `PROG` was the amber literal `#fbbf24`. Gold sits **4.6 degrees** from that amber at the same saturation and lightness — a badge-against-badge contrast of **1.09:1**, which is not a distinction at all. `PROG` moves to `#f97316`, matching `--warn` for the same reason: 23.4 degrees and 1.83:1.
+- **The recruitment severity ramp.** `Low` had been teal and became gold, sitting beside `Medium` amber — the same 4.6-degree pair. It moves to `#4ade80`, which fixes a second problem the repalette exposed: gold is now the site's accent, so the *lowest* priority was wearing the most attention-grabbing colour. Green is the quiet end a severity ramp needs.
+
+For the record, the BEST KEY separation is real and not just a hue change: badge-against-badge contrast goes from **1.31:1** to **1.78:1**. The old lime pair measured the same 1.31:1, which is why the flaw predates this work.
+
 ### 2026-08-26 — The hero intro becomes CMS copy, and archived Seasons lock in the admin
 
 **`heroIntro` on Guild Settings.** The sentence under the guild name was hardcoded in `VenomPage`, on the ADR `0007` reasoning that one-off strings the design invented do not earn CMS fields. The operator moved it across that line, and the distinction that survives is a better one: the recruitment headline describes the *design* and changes when the theme does, while this sentence describes the *guild* and changes when the guild does. Migration `20260825_155820_add_hero_intro` adds one column to `guild_settings` with the existing copy as its default, so no deploy can blank it. Blank at render falls back to the built-in string rather than leaving a hole under the guild's name. Verified end to end: text set through the CMS appears on the page, then restored.

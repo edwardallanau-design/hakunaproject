@@ -124,7 +124,7 @@
 }
 
 /* ── venom — Season 2, The Curse of Ula'tek ──
-   Poison greens and serpent teal. The full package: palette, all three font
+   Jungle greens and serpent gold. The full package: palette, all three font
    roles, and (with the layout work) its own page structure.
 
    **venom is dark-only, and that is a deliberate exception to the rule above.**
@@ -815,7 +815,7 @@ body {
 /* ── Scrollbar ──
    The page scrollbar belongs to the *root* element, but a Season's theme class
    sits on a wrapper `div` inside `<body>` — so `var(--accent)` here resolved
-   against `:root` and painted Season 1's purple down the side of a lime page,
+   against `:root` and painted Season 1's purple down the side of a green page,
    on every venom render.
 
    `:has()` lets the root read a class from its own subtree without moving the

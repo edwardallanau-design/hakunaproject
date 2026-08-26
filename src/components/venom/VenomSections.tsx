@@ -255,7 +255,7 @@ export function VenomOfficers({ officers, numeral = "05" }: { officers: OfficerC
 const PRIORITY = {
   High: { text: "#f87171", bg: "rgba(239,68,68,0.15)" },
   Medium: { text: "#fbbf24", bg: "rgba(245,158,11,0.12)" },
-  Low: { text: "#facc15", bg: "rgba(250,204,21,0.1)" },
+  Low: { text: "#4ade80", bg: "rgba(74,222,128,0.1)" },
 } as const;
 
 export type RoleCard = { role: string; specs: string[]; priority: keyof typeof PRIORITY };
