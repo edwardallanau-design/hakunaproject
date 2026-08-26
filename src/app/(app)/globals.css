@@ -353,7 +353,9 @@
   cursor: pointer;
   transition: background 160ms ease;
 }
-.venom-mq-toggle:hover { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+@media (hover: hover) {
+  .venom-mq-toggle:hover { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+}
 .venom-mq-toggle[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -367,7 +369,16 @@
     animation: venom-marquee var(--venom-mq-duration, 120s) linear infinite;
     animation-delay: var(--venom-mq-start, 0s);
   }
-  .venom-mq-view:hover .venom-mq-track,
+  /* Hover-to-pause is gated on a real pointer. iOS Safari gives a tapped
+     element a sticky :hover that survives until you tap something else, so
+     on a phone an ordinary tap paused the strip through this rule — and the
+     Pause button could not undo it, because React state was still
+     `paused: false`. Pressing Pause then Resume simply returned to the stuck
+     hover, which read as "the carousel stopped and nothing restarts it".
+     Touch gets hold-to-pause instead, via data-paused; see DungeonMarquee. */
+  @media (hover: hover) {
+    .venom-mq-view:hover .venom-mq-track { animation-play-state: paused; }
+  }
   .venom-mq-track[data-paused="true"] { animation-play-state: paused; }
   /* Shifts by exactly one copy, whatever the copy count. A hard -50% assumed
      two copies, which breaks the moment a thin board needs more of them to
