@@ -4,7 +4,7 @@ import { fetchAndTransformGuildDetails } from "@/lib/raiderio";
 import { deriveProgression, type ProgressionState } from "@/lib/syncProgression";
 import { deriveOfficers, type Officer } from "@/lib/syncOfficers";
 import { fetchGuildRuns } from "@/lib/mythicPlusDungeons";
-import { mergeStoredRuns, type GuildRun } from "@/lib/dungeonRotation";
+import { mergeStoredRuns, parseStoredRuns } from "@/lib/dungeonRotation";
 import type { MythicPlusRunner } from "@/lib/raiderio";
 import type { Season } from "@/payload-types";
 
@@ -78,10 +78,27 @@ export async function GET(request: Request) {
     // belongs here and not in a page render. Part of the fetch stage, so a
     // failure stops the Sync before anything is written and the stored runs
     // survive untouched (ADR 0001).
+    // No `?? "us"` defaults here, unlike the page. CONTEXT.md makes this triple
+    // the guild's identity, and a Sync that silently substitutes literals for a
+    // missing var polls *a* guild successfully and reports 200 — the green-on-
+    // failure signal ADR 0001 was written against. Absent config is a config
+    // error and says so.
+    const region = process.env.GUILD_REGION;
+    const realm = process.env.GUILD_REALM;
+    const guild = process.env.GUILD_NAME;
+    if (!region || !realm || !guild) {
+      const missing = [
+        !region && "GUILD_REGION",
+        !realm && "GUILD_REALM",
+        !guild && "GUILD_NAME",
+      ].filter(Boolean).join(", ");
+      throw new SyncStageError("fetch", `Mythic+ keys: missing guild identity env var(s): ${missing}.`);
+    }
+
     const freshRuns = await fetchGuildRuns({
-      region: process.env.GUILD_REGION ?? "us",
-      realm: process.env.GUILD_REALM ?? "Barthilas",
-      guild: process.env.GUILD_NAME ?? "Potato Corner",
+      region,
+      realm,
+      guild,
       seasonSlug: season.mythicPlusSeasonSlug,
     }).catch((err) => {
       throw new SyncStageError("fetch", `Mythic+ keys: ${err instanceof Error ? err.message : String(err)}`);
@@ -122,7 +139,7 @@ export async function GET(request: Request) {
       // recent runs, so a single poll can never reach further back than that —
       // folding hourly keeps a run after it scrolls out of everyone's ten.
       mergedRuns = mergeStoredRuns(
-        (season.mythicPlusRuns as GuildRun[] | null) ?? [],
+        parseStoredRuns(season.mythicPlusRuns, "Recent Keys (sync)"),
         freshRuns,
       );
     } catch (err) {

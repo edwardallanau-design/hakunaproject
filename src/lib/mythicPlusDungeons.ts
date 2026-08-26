@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { GuildRun, RunMember } from "@/lib/dungeonRotation";
+import { unionMember, type GuildRun, type RunMember } from "@/lib/dungeonRotation";
 
 /**
  * The guild's Mythic+ runs, for the Season 2 dungeon marquee.
@@ -139,7 +139,8 @@ const PROFILE_FIELD = "mythic_plus_recent_runs";
  *
  * It also decides whether {@link countActiveCharacters} can speak for the
  * guild: at 2000 the honest phrasing is "73 of the 88 we polled", which is not
- * a statement about the guild. At 0 it is 115 of 165.
+ * a statement about the guild. At 0 it is roughly 110 of 165 — the figure moves
+ * hour to hour, so it is a scale rather than a constant.
  */
 const MIN_CHARACTER_SCORE = 0;
 
@@ -235,7 +236,7 @@ export function mergeProfileRuns(profiles: Profile[], seasonSlug: string): Guild
         // A run already seen came from a *different* character's profile — that
         // is how a party is assembled. The same character reporting it twice is
         // guarded against too, cheaply, rather than assumed impossible.
-        if (!existing.members.some((m) => m.name === member.name)) existing.members.push(member);
+        unionMember(existing.members, member);
         continue;
       }
 

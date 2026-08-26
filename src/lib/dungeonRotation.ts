@@ -132,6 +132,66 @@ export const RECENCY_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
 export const RUN_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
+ * Add a member to a run's party if they are not already on it.
+ *
+ * Shared because a party is assembled in two places for two different reasons —
+ * across characters within one poll (mergeProfileRuns) and across polls over
+ * time (mergeStoredRuns) — and both are the same domain rule: a party
+ * accumulates by name, and seeing the same run twice must never duplicate
+ * anyone. Keeping one copy means the rule cannot drift between them.
+ */
+/**
+ * Read a stored run set back out of the Season row.
+ *
+ * The column is Payload `json`, which is not schema-checked on the way out, so
+ * this is the same trust-the-shape boundary ADR 0002 closed at the *fetch*
+ * edge — reopened at the *storage* edge. A malformed row would otherwise
+ * surface as `Date.parse(undefined)` several layers inside `buildRotation`,
+ * which is precisely the failure that ADR names.
+ *
+ * Deliberately lenient rather than throwing: this data is decoration, and a
+ * page that 500s because one stored run lost a field is worse than a board
+ * missing that run. Bad entries are dropped and counted in one log line, so a
+ * silently thinner board is still traceable.
+ */
+export function parseStoredRuns(value: unknown, label = "stored runs"): GuildRun[] {
+  if (!Array.isArray(value)) return [];
+  const kept: GuildRun[] = [];
+  let dropped = 0;
+  for (const r of value) {
+    const ok =
+      r !== null &&
+      typeof r === "object" &&
+      typeof (r as GuildRun).keystoneRunId === "number" &&
+      typeof (r as GuildRun).dungeon === "string" &&
+      typeof (r as GuildRun).mythicLevel === "number" &&
+      typeof (r as GuildRun).clearTimeMs === "number" &&
+      typeof (r as GuildRun).parTimeMs === "number" &&
+      typeof (r as GuildRun).completedAt === "string" &&
+      !Number.isNaN(Date.parse((r as GuildRun).completedAt)) &&
+      Array.isArray((r as GuildRun).members);
+    if (ok) kept.push(r as GuildRun);
+    else dropped++;
+  }
+  if (dropped > 0) console.error(`${label}: dropped ${dropped} malformed run(s) of ${value.length}.`);
+  return kept;
+}
+
+export function unionMember(members: RunMember[], member: RunMember): void {
+  if (!members.some((m) => m.name === member.name)) members.push(member);
+}
+
+/**
+ * Newest first, with the keystone id as the tie-break.
+ *
+ * `completedAt` has second resolution, so two runs by the same party can share
+ * a timestamp. Falling through to the id keeps the order total — without it the
+ * server and a re-render could disagree on which run a tile shows.
+ */
+export const newestFirst = (a: GuildRun, b: GuildRun) =>
+  Date.parse(b.completedAt) - Date.parse(a.completedAt) || b.keystoneRunId - a.keystoneRunId;
+
+/**
  * Fold a fresh poll into the stored set, dropping anything past retention.
  *
  * **This is the reason storing runs beats storing tiles.** Each character
@@ -160,16 +220,12 @@ export function mergeStoredRuns(
       byId.set(run.keystoneRunId, { ...run, members: [...run.members] });
       continue;
     }
-    for (const member of run.members) {
-      if (!existing.members.some((m) => m.name === member.name)) existing.members.push(member);
-    }
+    for (const member of run.members) unionMember(existing.members, member);
   }
 
   // Newest first. Stored order is otherwise arbitrary, and a stable one keeps
   // the hourly write from churning the whole blob on every sync.
-  return [...byId.values()].sort(
-    (a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt) || b.keystoneRunId - a.keystoneRunId,
-  );
+  return [...byId.values()].sort(newestFirst);
 }
 
 /** Party order: tank first, then healer, then dps. */
@@ -199,15 +255,7 @@ export type DungeonTile = {
 /** Signed gap against par: negative is time to spare, positive is over. */
 const margin = (r: GuildRun) => r.clearTimeMs - r.parTimeMs;
 
-/**
- * Newest first, with the keystone id as the tie-break.
- *
- * `completedAt` has second resolution, so two runs by the same party can share
- * a timestamp. Falling through to the id keeps the order total — without it the
- * server and a re-render could disagree on which run a tile shows.
- */
-const newest = (a: GuildRun, b: GuildRun) =>
-  Date.parse(b.completedAt) - Date.parse(a.completedAt) || b.keystoneRunId - a.keystoneRunId;
+const newest = newestFirst;
 
 const SELECT: Record<TileCategory, (runs: GuildRun[]) => GuildRun | undefined> = {
   // Ties break on recency, not on the faster clear. The old grid broke them the

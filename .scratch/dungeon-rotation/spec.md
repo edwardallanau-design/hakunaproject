@@ -127,7 +127,8 @@ operator accepted that trade (*"im good with showing +2"*).
 
 It also decides whether the activity count can speak for the guild: at 2000 the
 honest phrasing is "73 of the 88 we polled", which is not a statement about the
-guild. At 0 it is 109 of 165.
+guild. At 0 it is roughly 110 of 165 — the exact figure moves hour to hour, so
+treat it as a scale rather than a constant.
 
 `MAX_CHARACTERS` is a backstop against unbounded fan-out, expected never to
 bind. If it ever fires it logs that the board is thinner than the guild's
@@ -243,14 +244,18 @@ to be re-run, because none of them were testing what they claimed to.
 ## The activity count
 
 The same poll answers a question the page was previously guessing at: **how many
-characters actually played this week.** 112–115 of the 165 ranked characters run
+characters actually played this week.** Roughly 110 of the 165 ranked characters run
 a key in any 48-hour window, at a median of 4 keys each.
 
 It replaces the hero's `Active Members`, which read `season.rankings.members` —
 the guild's *roster size*, a membership number wearing an activity label since
-before this work. The fallback at zero is that same roster count, so an archived
-Season (fetch skipped, ADR 0005) or a failed fetch returns to exactly the old
-behaviour rather than putting a bare `0` under a headline.
+before this work. The fallback triggers on **null, not zero** — null meaning the count was never
+taken, which is an archived Season (fetch skipped, ADR 0005) or a failed poll.
+Only then does it fall back to the roster count, which is exactly what the stat
+showed before. **A measured `0` renders as `0`**: a guild that ran nothing for
+48 hours should say so rather than quietly showing its roster size under an
+activity label. An earlier draft collapsed the three cases into a falsy zero and
+that is the bug this distinction exists to prevent.
 
 **Characters, not people, and the label must never imply otherwise.** Raider.IO
 exposes no account link — `persona_id` looked like one and is not: 165 ranked

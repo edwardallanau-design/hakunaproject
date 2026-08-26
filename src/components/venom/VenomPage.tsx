@@ -1,5 +1,6 @@
 import { MotionConfig } from "framer-motion";
 import type { Season } from "@/payload-types";
+import { DEFAULT_HERO_INTRO } from "@/globals/GuildSettings";
 import { initialDifficulty, rankingsAt, raidGroups } from "@/lib/venomViewModel";
 import { VenomNavbar, type SwitcherSeason } from "./VenomNavbar";
 import { VenomHero } from "./VenomHero";
@@ -101,8 +102,7 @@ export function VenomPage({
           // Falls back rather than rendering an empty line: a blank field in the
           // CMS should not leave a hole under the guild's name.
           intro={
-            heroIntro.trim() ||
-            "Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding."
+            heroIntro.trim() || DEFAULT_HERO_INTRO
           }
           stats={{
             // "Active Members" now means what it says: distinct characters who

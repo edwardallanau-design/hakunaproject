@@ -1,5 +1,15 @@
 import type { GlobalConfig } from 'payload'
 
+/**
+ * The hero sentence when the CMS field is empty.
+ *
+ * Exported because it is also the column default in the migration and the
+ * render-time fallback in VenomPage — three copies of one string that must stay
+ * in step, which is two too many. One name, imported by the component.
+ */
+export const DEFAULT_HERO_INTRO =
+  "Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding."
+
 export const GuildSettings: GlobalConfig = {
   slug: 'guild-settings',
   label: 'Guild Settings',
@@ -32,8 +42,7 @@ export const GuildSettings: GlobalConfig = {
     {
       name: 'heroIntro',
       type: 'textarea',
-      defaultValue:
-        "Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding.",
+      defaultValue: DEFAULT_HERO_INTRO,
       admin: {
         description:
           'The sentence under the guild name in the hero. Left blank, the layout falls back to its built-in copy rather than rendering an empty space.',

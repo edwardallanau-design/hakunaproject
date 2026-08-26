@@ -6,6 +6,7 @@ import {
   GUILD_GROUP_MIN,
   MIN_KEY_LEVEL,
   mergeStoredRuns,
+  parseStoredRuns,
   RECENCY_WINDOW_MS,
   RUN_RETENTION_MS,
   type GuildRun,
@@ -255,6 +256,38 @@ describe("countActiveCharacters", () => {
     ];
     const named = new Set(build(runs).flatMap((t) => t.members.map((m) => m.name)));
     expect(countActiveCharacters(runs, T0)).toBe(named.size);
+  });
+});
+
+describe("parseStoredRuns", () => {
+  it("keeps well-formed runs", () => {
+    const good = run({ dungeon: "Kings' Rest" });
+    expect(parseStoredRuns([good])).toHaveLength(1);
+  });
+
+  it("returns empty for anything that is not an array", () => {
+    // The column is Payload `json`, unchecked on the way out — null, an object
+    // or a string are all reachable states, and none should throw.
+    for (const v of [null, undefined, {}, "runs", 7]) expect(parseStoredRuns(v)).toEqual([]);
+  });
+
+  it("drops malformed entries instead of letting them reach buildRotation", () => {
+    // An unparseable completedAt is the specific failure this guards: it would
+    // otherwise surface as Date.parse(undefined) several layers inside the
+    // selection code, which is the shape ADR 0002 names.
+    const kept = parseStoredRuns([
+      run({ dungeon: "Kings' Rest" }),
+      { keystoneRunId: 1, dungeon: "Broken" },
+      { ...run({ dungeon: "Bad date" }), completedAt: "not a date" },
+      null,
+    ]);
+    expect(kept.map((r) => r.dungeon)).toEqual(["Kings' Rest"]);
+  });
+
+  it("survives a round trip through JSON, which is how it is stored", () => {
+    const runs = [run({ dungeon: "Kings' Rest", members: [member("A"), member("B")] })];
+    const back = parseStoredRuns(JSON.parse(JSON.stringify(runs)));
+    expect(back).toEqual(runs);
   });
 });
 

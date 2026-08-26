@@ -7,7 +7,7 @@ import { toStatsData, toProgressionData } from "@/lib/seasonViewModel";
 import { resolveRequestedSeason } from "@/lib/resolveRequestedSeason";
 import { findTheme } from "@/lib/themes";
 import { VenomPage } from "@/components/venom/VenomPage";
-import { buildRotation, countActiveCharacters, type DungeonTile, type GuildRun } from "@/lib/dungeonRotation";
+import { buildRotation, countActiveCharacters, parseStoredRuns, type DungeonTile } from "@/lib/dungeonRotation";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { StatsBar } from "@/components/StatsBar";
@@ -118,7 +118,7 @@ export default async function Home({
     // `activeCharacters: null` says the count was not measured, as against a
     // measured `0` — a genuinely quiet 48 hours — which must render as zero
     // rather than falling back to the roster size.
-    const storedRuns = (selectedSeason.mythicPlusRuns as GuildRun[] | null) ?? [];
+    const storedRuns = parseStoredRuns(selectedSeason.mythicPlusRuns, "Recent Keys (render)");
     // One clock for both, so the headline count and the tiles can never
     // describe different windows.
     const now = Date.now();
