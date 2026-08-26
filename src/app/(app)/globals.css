@@ -161,6 +161,12 @@
   --corner: #2dd4bf;
   --shadow-accent: #14320a;
 
+  /* Status, deliberately outside the lime/teal accent pair. The dungeon
+     marquee has to say "close" and "missed" at a glance, and saying either in
+     an accent colour would read as emphasis rather than as outcome. */
+  --warn: #e8b64c;
+  --miss: #e07b5f;
+
   /* The design's own type scale. Deliberately separate from the `--px-*` and
      `--vt-*` scales above, which are Season 1's pixel-font sizes and stay
      frozen — venom's faces are proportional serifs and need their own ramp. */
@@ -202,13 +208,11 @@
   .venom-eye { width: clamp(180px, 44vw, 260px) !important; }
 }
 
-.venom-dungeon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 1vw, 16px); }
 .venom-officer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.2vw, 20px); }
 .venom-role-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.2vw, 20px); }
 .venom-about-grid   { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(28px, 4vw, 64px); align-items: center; }
 
 @media (max-width: 899px) {
-  .venom-dungeon-grid { grid-template-columns: repeat(2, 1fr); }
   .venom-officer-grid { grid-template-columns: repeat(2, 1fr); }
   .venom-role-grid    { grid-template-columns: 1fr; }
   .venom-about-grid   { grid-template-columns: 1fr; }
@@ -229,6 +233,153 @@
 /* The clipped top-right corner on a dungeon card. */
 .venom-notch { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); }
 .venom-notch-fill { clip-path: polygon(0 0, 100% 100%, 100% 0); }
+
+/* ── The dungeon marquee ──
+   The section's tiles ride one CSS-animated track. Deliberately *not* driven by
+   framer-motion: framer writes `transform` inline, and the track's whole job is
+   to own `transform`. A per-tile reveal would fight the scroll for the same
+   property, and an inline `animation-play-state` would beat the hover rule
+   below — so the pause is an attribute the cascade can see instead. */
+.venom-mq-view {
+  overflow: hidden;
+  /* Says "this continues past the frame" without a hard cut at either edge. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+.venom-mq-view:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
+.venom-mq-track { display: flex; width: max-content; }
+
+.venom-mq-tile {
+  position: relative;
+  flex: none;
+  width: clamp(238px, 22vw, 284px);
+  /* Both copies of the strip carry this on every tile, including the last, so
+     the two halves are exactly equal and the -50% loop lands seamlessly. */
+  margin-right: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-dim);
+  padding: clamp(14px, 1.2vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.venom-mq-notch { position: absolute; top: 0; right: 0; width: 16px; height: 16px; opacity: 0.8; }
+.venom-mq-badge {
+  align-self: flex-start;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--ui-xs);
+  letter-spacing: 0.17em;
+  border: 1px solid currentColor;
+  padding: 2px 9px;
+}
+.venom-mq-name {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--bd-sm);
+  line-height: 1.14;
+  color: var(--text);
+  /* Two lines, always: the longest dungeon names wrap and the shortest do not,
+     and a strip whose tiles change height as they scroll reads as broken. */
+  min-height: calc(2 * 1.14em);
+  padding-right: 18px;
+}
+.venom-mq-row { display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap; }
+.venom-mq-key {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 2.6vw, 46px);
+  line-height: 0.95;
+  color: var(--glow);
+  text-shadow: 0 0 15px color-mix(in srgb, var(--glow) 45%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+/* The tile stops widening at 284px, so the type inside must stop growing too.
+   On `--ui-sm` (16px ceiling) the outcome outgrew the row past ~2000px and
+   "SPARE BY 0:06" dropped onto a second line on 5 of 32 tiles at 2560px. The
+   `--ui-xs` ceiling is 14px, which measures 0 of 32 out to 3440px.
+   `nowrap` is the belt to that braces: if a longer phrase ever does run out of
+   room it moves down whole, rather than breaking between "BY" and the number. */
+.venom-mq-stat, .venom-mq-outcome {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--ui-xs);
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.venom-mq-stat { color: var(--muted); }
+.venom-mq-outcome { margin-left: auto; }
+.venom-mq-party {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--ui-sm);
+  line-height: 1.35;
+  border-top: 1px solid var(--border-dim);
+  padding-top: 8px;
+  /* Room for two rows of names whether or not they arrive — 179 of the 235
+     measured runs at or above the floor list exactly one member, and the 5 that
+     list a full team must not make their tiles taller than the rest. */
+  min-height: 38px;
+}
+
+.venom-mq-toggle {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--ui-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+.venom-mq-toggle:hover { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+.venom-mq-toggle[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A *negative* delay starts the animation partway through rather than
+     delaying its start, so each page load enters the loop at a different
+     point. Without it every visit began at tile 1 and, at roughly 83px/s,
+     the far end of a 32-tile strip sat ~100 seconds away — a refresh showed
+     the same handful of tiles and nothing else, which is the opposite of what
+     a marquee is for. The value is seeded server-side; see DungeonMarquee. */
+  .venom-mq-track {
+    animation: venom-marquee var(--venom-mq-duration, 120s) linear infinite;
+    animation-delay: var(--venom-mq-start, 0s);
+  }
+  .venom-mq-view:hover .venom-mq-track,
+  .venom-mq-track[data-paused="true"] { animation-play-state: paused; }
+  /* Shifts by exactly one copy, whatever the copy count. A hard -50% assumed
+     two copies, which breaks the moment a thin board needs more of them to
+     out-measure the viewport. */
+  @keyframes venom-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(-100% / var(--venom-mq-copies, 2))); }
+  }
+}
+
+/* Nothing scrolls, so the seamless-loop copy has no job and the pause control
+   has nothing to pause. What remains is a strip the reader moves themselves. */
+@media (prefers-reduced-motion: reduce) {
+  .venom-mq-view {
+    overflow-x: auto;
+    /* The fade would hide the cut edge, which is exactly the cue that there is
+       more to the right. Nothing is scrolling it there for them any more. */
+    -webkit-mask-image: none;
+            mask-image: none;
+    /* Overlay scrollbars appear only while scrolling, so the affordance would
+       not exist until it was already found. This forces a permanent one. */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .venom-mq-copy, .venom-mq-toggle { display: none; }
+}
 
 .venom-card-hover { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
 .venom-card-hover:hover { transform: translateY(-4px); }
@@ -647,10 +798,37 @@ body {
   }
 }
 
-/* ── Scrollbar ── */
+/* ── Scrollbar ──
+   The page scrollbar belongs to the *root* element, but a Season's theme class
+   sits on a wrapper `div` inside `<body>` — so `var(--accent)` here resolved
+   against `:root` and painted Season 1's purple down the side of a lime page,
+   on every venom render.
+
+   `:has()` lets the root read a class from its own subtree without moving the
+   theme class up onto `<html>`, which would mean editing the layout fork that
+   keeps Season 1 frozen by construction. Each theme restates its own two
+   colours because custom properties on a descendant cannot be read from an
+   ancestor — the values, not the tokens, have to travel.
+
+   `scrollbar-color` is the standard property and the only one Firefox honours;
+   `::-webkit-scrollbar` is the Chromium/WebKit pseudo-element. Both are needed,
+   and the two are not interchangeable. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--surface);
+}
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--glow); }
+
+/* venom — lime on deep green, matching the page it runs beside. */
+html:has(.theme-venom) {
+  scrollbar-color: #84cc16 #081810;
+}
+html:has(.theme-venom) ::-webkit-scrollbar-track { background: #081810; }
+html:has(.theme-venom) ::-webkit-scrollbar-thumb { background: #84cc16; }
+html:has(.theme-venom) ::-webkit-scrollbar-thumb:hover { background: #a3e635; }
 
 /* ── Selection ── */
 ::selection {

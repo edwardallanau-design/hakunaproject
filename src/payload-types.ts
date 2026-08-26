@@ -174,6 +174,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * ⚠ Written by the hourly Raider.IO Sync — not by hand. Almost every field here is auto-filled and read-only, and the values feed the live site directly. Archived Seasons are locked: only the Season that Guild Settings → Current Season points at can be edited at all. If something looks wrong, run the Sync from Guild Details rather than typing over it — a hand edit is overwritten within the hour, or worse, is not.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "seasons".
  */
@@ -318,6 +320,18 @@ export interface Season {
         score: number;
         id?: string | null;
       }[]
+    | null;
+  /**
+   * Every Mythic+ run the roster could see, accumulated hourly by the Sync and pruned at seven days. The Recent Keys section derives its tiles and its activity count from this — the site no longer polls Raider.IO at render.
+   */
+  mythicPlusRuns?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
   /**
    * Every Character with an M+ score this Season, not just the displayed top 10. Archival. Correcting it requires a script.
@@ -532,6 +546,7 @@ export interface SeasonsSelect<T extends boolean = true> {
         score?: T;
         id?: T;
       };
+  mythicPlusRuns?: T;
   mythicPlusParticipants?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -599,6 +614,10 @@ export interface GuildSetting {
    * The Season the Sync writes to and the home page renders by default. Exactly one Season is current — this pointer, not a per-row flag, is what makes that true by construction.
    */
   currentSeason?: (number | null) | Season;
+  /**
+   * The sentence under the guild name in the hero. Left blank, the layout falls back to its built-in copy rather than rendering an empty space.
+   */
+  heroIntro?: string | null;
   /**
    * Guild description shown on the About section. Supports bold, italic, lists, links.
    */
@@ -763,6 +782,7 @@ export interface GuildSettingsSelect<T extends boolean = true> {
   region?: T;
   faction?: T;
   currentSeason?: T;
+  heroIntro?: T;
   description?: T;
   footerLinks?:
     | T

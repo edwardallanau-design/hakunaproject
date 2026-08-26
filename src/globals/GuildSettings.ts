@@ -1,5 +1,15 @@
 import type { GlobalConfig } from 'payload'
 
+/**
+ * The hero sentence when the CMS field is empty.
+ *
+ * Exported because it is also the column default in the migration and the
+ * render-time fallback in VenomPage — three copies of one string that must stay
+ * in step, which is two too many. One name, imported by the component.
+ */
+export const DEFAULT_HERO_INTRO =
+  "Semi-hardcore Mythic progression. Two nights a week. Small potatoes, big pulls — don't worry, be raiding."
+
 export const GuildSettings: GlobalConfig = {
   slug: 'guild-settings',
   label: 'Guild Settings',
@@ -27,6 +37,15 @@ export const GuildSettings: GlobalConfig = {
       relationTo: 'seasons',
       admin: {
         description: 'The Season the Sync writes to and the home page renders by default. Exactly one Season is current — this pointer, not a per-row flag, is what makes that true by construction.',
+      },
+    },
+    {
+      name: 'heroIntro',
+      type: 'textarea',
+      defaultValue: DEFAULT_HERO_INTRO,
+      admin: {
+        description:
+          'The sentence under the guild name in the hero. Left blank, the layout falls back to its built-in copy rather than rendering an empty space.',
       },
     },
     {

@@ -20,7 +20,10 @@ export function Leaderboard({ runners, numeral = "03" }: { runners: Runner[]; nu
       id="leaderboard"
       style={{ padding: "clamp(80px,9vw,130px) clamp(20px,4vw,64px)", borderTop: "1px solid var(--border-dim)" }}
     >
-      <div style={{ maxWidth: "66rem", margin: "0 auto" }}>
+      {/* 76rem, matching the raid, dungeon, about and officer sections. At 66rem
+          this section's numeral sat 80px right of every other one, so the column
+          of 01/02/03/… down the page had a single step in it. */}
+      <div style={{ maxWidth: "76rem", margin: "0 auto" }}>
         <SectionHeader numeral={numeral} eyebrow="Leaderboard" heading="Top Mythic+ Runners" />
 
         {/* Champion spotlight */}
