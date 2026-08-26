@@ -230,6 +230,16 @@
   .venom-officer-grid { grid-template-columns: repeat(2, 1fr); }
   .venom-role-grid    { grid-template-columns: 1fr; }
   .venom-about-grid   { grid-template-columns: 1fr; }
+  /* Stacked, the crest goes first. In two columns the text leads and the
+     crest sits beside it, but collapsing to one column put the crest below
+     a full block of prose — far enough down that it reads as a footer to the
+     section rather than as its portrait.
+
+     Done with `order` rather than by reordering the markup, so the DOM keeps
+     heading -> prose -> image: that is the order a screen reader announces
+     and the order focus moves in, and neither should change because the
+     window got narrow. Only the visual order does. */
+  .venom-about-grid > :last-child  { order: -1; }
 }
 @media (max-width: 519px) {
   .venom-officer-grid { grid-template-columns: 1fr; }
