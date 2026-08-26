@@ -798,10 +798,37 @@ body {
   }
 }
 
-/* ── Scrollbar ── */
+/* ── Scrollbar ──
+   The page scrollbar belongs to the *root* element, but a Season's theme class
+   sits on a wrapper `div` inside `<body>` — so `var(--accent)` here resolved
+   against `:root` and painted Season 1's purple down the side of a lime page,
+   on every venom render.
+
+   `:has()` lets the root read a class from its own subtree without moving the
+   theme class up onto `<html>`, which would mean editing the layout fork that
+   keeps Season 1 frozen by construction. Each theme restates its own two
+   colours because custom properties on a descendant cannot be read from an
+   ancestor — the values, not the tokens, have to travel.
+
+   `scrollbar-color` is the standard property and the only one Firefox honours;
+   `::-webkit-scrollbar` is the Chromium/WebKit pseudo-element. Both are needed,
+   and the two are not interchangeable. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--surface);
+}
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--glow); }
+
+/* venom — lime on deep green, matching the page it runs beside. */
+html:has(.theme-venom) {
+  scrollbar-color: #84cc16 #081810;
+}
+html:has(.theme-venom) ::-webkit-scrollbar-track { background: #081810; }
+html:has(.theme-venom) ::-webkit-scrollbar-thumb { background: #84cc16; }
+html:has(.theme-venom) ::-webkit-scrollbar-thumb:hover { background: #a3e635; }
 
 /* ── Selection ── */
 ::selection {
