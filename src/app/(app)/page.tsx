@@ -161,6 +161,7 @@ export default async function Home({
         runners={prog.mythicPlusRunners}
         dungeonTiles={rotation.tiles}
         activeCharacters={rotation.activeCharacters}
+        renderedAt={now}
       />
     );
   }

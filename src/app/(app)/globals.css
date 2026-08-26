@@ -343,7 +343,16 @@
 .venom-mq-toggle[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
 @media (prefers-reduced-motion: no-preference) {
-  .venom-mq-track { animation: venom-marquee var(--venom-mq-duration, 120s) linear infinite; }
+  /* A *negative* delay starts the animation partway through rather than
+     delaying its start, so each page load enters the loop at a different
+     point. Without it every visit began at tile 1 and, at roughly 83px/s,
+     the far end of a 32-tile strip sat ~100 seconds away — a refresh showed
+     the same handful of tiles and nothing else, which is the opposite of what
+     a marquee is for. The value is seeded server-side; see DungeonMarquee. */
+  .venom-mq-track {
+    animation: venom-marquee var(--venom-mq-duration, 120s) linear infinite;
+    animation-delay: var(--venom-mq-start, 0s);
+  }
   .venom-mq-view:hover .venom-mq-track,
   .venom-mq-track[data-paused="true"] { animation-play-state: paused; }
   /* Shifts by exactly one copy, whatever the copy count. A hard -50% assumed

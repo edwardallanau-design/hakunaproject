@@ -72,7 +72,20 @@ function Tile({ tile, copy }: { tile: DungeonTile; copy: boolean }) {
  */
 const MIN_TRACK_TILES = 26;
 
-export function DungeonMarquee({ tiles, numeral }: { tiles: DungeonTile[]; numeral: string }) {
+export function DungeonMarquee({
+  tiles,
+  numeral,
+  renderedAt,
+}: {
+  tiles: DungeonTile[];
+  numeral: string;
+  /**
+   * Server render time, in ms. Passed in rather than read here: this is a
+   * client component, so a Date.now() call would run on both sides and the two
+   * values would disagree — a hydration mismatch on every load.
+   */
+  renderedAt: number;
+}) {
   const [paused, setPaused] = useState(false);
 
   // Nothing to show is not an error state; the section simply does not exist,
@@ -80,6 +93,21 @@ export function DungeonMarquee({ tiles, numeral }: { tiles: DungeonTile[]; numer
   if (tiles.length === 0) return null;
 
   const copies = Math.max(2, Math.ceil(MIN_TRACK_TILES / tiles.length));
+  const duration = tiles.length * 3.6;
+
+  // Where in the loop this page load starts.
+  //
+  // The tile order is deterministic by design — same runs in, same strip out,
+  // with no two neighbours sharing a dungeon or a category. Without an offset
+  // the CSS animation also always began at tile 1, so every refresh showed the
+  // same opening handful and the far end of a 32-tile strip sat ~100 seconds
+  // away. Most visitors would never have seen it.
+  //
+  // Seeded from the wall clock rather than Math.random(): this renders on the
+  // server and the value is handed to the client as markup, so a random number
+  // would be a hydration mismatch. The clock is monotonic, so consecutive
+  // refreshes genuinely differ, and it needs no state.
+  const startOffset = -(renderedAt / 1000) % duration;
 
   return (
     <section
@@ -136,7 +164,10 @@ export function DungeonMarquee({ tiles, numeral }: { tiles: DungeonTile[]; numer
                 // same speed whether the guild has run four dungeons or eight.
                 // Independent of `copies` — the animation always traverses
                 // exactly one copy, however many there are.
-                "--venom-mq-duration": `${(tiles.length * 3.6).toFixed(1)}s`,
+                "--venom-mq-duration": `${duration.toFixed(1)}s`,
+                // Negative: starts the animation partway through, rather than
+                // delaying it.
+                "--venom-mq-start": `${startOffset.toFixed(2)}s`,
                 "--venom-mq-copies": copies,
               } as CSSProperties
             }

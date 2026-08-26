@@ -42,6 +42,7 @@ export function VenomPage({
   runners,
   dungeonTiles,
   activeCharacters,
+  renderedAt,
 }: {
   season: Season;
   seasons: SwitcherSeason[];
@@ -70,6 +71,8 @@ export function VenomPage({
    * measurement; null is the absence of one.
    */
   activeCharacters: number | null;
+  /** Server render time, for the marquee start offset. */
+  renderedAt: number;
 }) {
   // Server-computed so the client toggle initialises without a hydration
   // mismatch.
@@ -146,7 +149,11 @@ export function VenomPage({
             raid does not leave two sections both numbered 02. The raid groups
             take 01..n and everything after continues from there. */}
         <RaidTimeline season={season} groups={groups} />
-        <DungeonMarquee tiles={dungeonTiles} numeral={numeralAfter(groups.length)} />
+        <DungeonMarquee
+          tiles={dungeonTiles}
+          numeral={numeralAfter(groups.length)}
+          renderedAt={renderedAt}
+        />
         <Leaderboard runners={runners} numeral={numeralAfter(groups.length + 1)} />
         <VenomAbout
           heading={aboutHeading}
