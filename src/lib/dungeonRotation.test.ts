@@ -5,6 +5,9 @@ import {
   CATEGORIES,
   GUILD_GROUP_MIN,
   MIN_KEY_LEVEL,
+  mergeStoredRuns,
+  RECENCY_WINDOW_MS,
+  RUN_RETENTION_MS,
   type GuildRun,
   type RunMember,
 } from "@/lib/dungeonRotation";
@@ -252,6 +255,55 @@ describe("countActiveCharacters", () => {
     ];
     const named = new Set(build(runs).flatMap((t) => t.members.map((m) => m.name)));
     expect(countActiveCharacters(runs, T0)).toBe(named.size);
+  });
+});
+
+describe("mergeStoredRuns", () => {
+  it("keeps runs the fresh poll can no longer see", () => {
+    // The whole reason runs are stored rather than fetched: each character
+    // exposes only their ten most recent, so a poll cannot reach back further
+    // than that window goes.
+    const older = run({ dungeon: "Kings' Rest", completedAt: iso(40), members: [member("Scrolled")] });
+    const fresh = run({ dungeon: "Murder Row", completedAt: iso(1), members: [member("Fresh")] });
+    const merged = mergeStoredRuns([older], [fresh], T0);
+    expect(merged.map((r) => r.keystoneRunId).sort()).toEqual([older.keystoneRunId, fresh.keystoneRunId].sort());
+  });
+
+  it("unions a party rather than replacing it", () => {
+    // A run can first appear when only one member's window still holds it and
+    // gain the rest later; taking the fresh copy wholesale would shrink it.
+    const id = 4242;
+    const stored = run({ dungeon: "Kings' Rest", keystoneRunId: id, members: [member("A"), member("B")] });
+    const fresh = run({ dungeon: "Kings' Rest", keystoneRunId: id, members: [member("B"), member("C")] });
+    const merged = mergeStoredRuns([stored], [fresh], T0);
+    expect(merged).toHaveLength(1);
+    expect(merged[0].members.map((m) => m.name).sort()).toEqual(["A", "B", "C"]);
+  });
+
+  it("prunes past the retention window so the blob stays bounded", () => {
+    const ancient = run({ dungeon: "Kings' Rest", completedAt: new Date(T0 - RUN_RETENTION_MS - 1000).toISOString() });
+    const keep = run({ dungeon: "Murder Row", completedAt: iso(1) });
+    const merged = mergeStoredRuns([ancient, keep], [], T0);
+    expect(merged.map((r) => r.keystoneRunId)).toEqual([keep.keystoneRunId]);
+  });
+
+  it("retains longer than it displays, so the window can be retuned", () => {
+    expect(RUN_RETENTION_MS).toBeGreaterThan(RECENCY_WINDOW_MS);
+  });
+
+  it("returns newest first, so an hourly rewrite does not churn the blob", () => {
+    const merged = mergeStoredRuns(
+      [run({ dungeon: "A", completedAt: iso(30) }), run({ dungeon: "B", completedAt: iso(2) })],
+      [run({ dungeon: "C", completedAt: iso(10) })],
+      T0,
+    );
+    expect(merged.map((r) => r.dungeon)).toEqual(["B", "C", "A"]);
+  });
+
+  it("does not mutate what it was given", () => {
+    const stored = run({ dungeon: "Kings' Rest", keystoneRunId: 7, members: [member("A")] });
+    mergeStoredRuns([stored], [run({ dungeon: "Kings' Rest", keystoneRunId: 7, members: [member("B")] })], T0);
+    expect(stored.members.map((m) => m.name)).toEqual(["A"]);
   });
 });
 

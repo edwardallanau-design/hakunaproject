@@ -322,6 +322,18 @@ export interface Season {
       }[]
     | null;
   /**
+   * Every Mythic+ run the roster could see, accumulated hourly by the Sync and pruned at seven days. The Recent Keys section derives its tiles and its activity count from this — the site no longer polls Raider.IO at render.
+   */
+  mythicPlusRuns?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
    * Every Character with an M+ score this Season, not just the displayed top 10. Archival. Correcting it requires a script.
    */
   mythicPlusParticipants?:
@@ -534,6 +546,7 @@ export interface SeasonsSelect<T extends boolean = true> {
         score?: T;
         id?: T;
       };
+  mythicPlusRuns?: T;
   mythicPlusParticipants?: T;
   updatedAt?: T;
   createdAt?: T;

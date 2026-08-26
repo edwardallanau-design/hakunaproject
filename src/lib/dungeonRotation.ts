@@ -119,6 +119,59 @@ export const MIN_KEY_LEVEL = 0;
  */
 export const RECENCY_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
 
+/**
+ * How long a run is kept in the stored set.
+ *
+ * Longer than {@link RECENCY_WINDOW_MS} on purpose. The window decides what the
+ * board *shows*; this decides what survives to be shown, and keeping a few days
+ * of slack means the display window can be retuned without waiting days for the
+ * store to refill. At current volume this holds roughly 1,500 runs — a JSON blob
+ * a few hundred kilobytes wide, rewritten hourly, which is the same order as
+ * `mythicPlusParticipants` already on this row.
+ */
+export const RUN_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * Fold a fresh poll into the stored set, dropping anything past retention.
+ *
+ * **This is the reason storing runs beats storing tiles.** Each character
+ * exposes only their ten most recent runs, so a request-time fetch can never
+ * see further back than that window reaches — on an active roster, about two
+ * days. Accumulating hourly means a run stays after it scrolls out of everyone's
+ * ten, and the board keeps a history upstream does not actually offer.
+ *
+ * Parties are unioned rather than replaced. A run can first appear when only one
+ * member's window still holds it and gain the rest on a later poll, so taking
+ * the fresh copy wholesale would sometimes *shrink* a party that had already
+ * been seen in full.
+ */
+export function mergeStoredRuns(
+  stored: GuildRun[],
+  fresh: GuildRun[],
+  now: number = Date.now(),
+): GuildRun[] {
+  const cutoff = now - RUN_RETENTION_MS;
+  const byId = new Map<number, GuildRun>();
+
+  for (const run of [...stored, ...fresh]) {
+    if (Date.parse(run.completedAt) < cutoff) continue;
+    const existing = byId.get(run.keystoneRunId);
+    if (!existing) {
+      byId.set(run.keystoneRunId, { ...run, members: [...run.members] });
+      continue;
+    }
+    for (const member of run.members) {
+      if (!existing.members.some((m) => m.name === member.name)) existing.members.push(member);
+    }
+  }
+
+  // Newest first. Stored order is otherwise arbitrary, and a stable one keeps
+  // the hourly write from churning the whole blob on every sync.
+  return [...byId.values()].sort(
+    (a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt) || b.keystoneRunId - a.keystoneRunId,
+  );
+}
+
 /** Party order: tank first, then healer, then dps. */
 const ROLE_ORDER: Record<string, number> = { tank: 0, healer: 1, dps: 2 };
 

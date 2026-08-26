@@ -208,6 +208,15 @@ export const Seasons: CollectionConfig = {
       ],
     },
     {
+      name: 'mythicPlusRuns',
+      type: 'json',
+      admin: {
+        hidden: true,
+        description:
+          'Every Mythic+ run the roster could see, accumulated hourly by the Sync and pruned at seven days. The Recent Keys section derives its tiles and its activity count from this — the site no longer polls Raider.IO at render.',
+      },
+    },
+    {
       name: 'mythicPlusParticipants',
       type: 'json',
       admin: {

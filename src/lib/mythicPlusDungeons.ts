@@ -1,11 +1,5 @@
 import { z } from "zod";
-import {
-  buildRotation,
-  countActiveCharacters,
-  type DungeonTile,
-  type GuildRun,
-  type RunMember,
-} from "@/lib/dungeonRotation";
+import type { GuildRun, RunMember } from "@/lib/dungeonRotation";
 
 /**
  * The guild's Mythic+ runs, for the Season 2 dungeon marquee.
@@ -181,11 +175,15 @@ const MAX_CHARACTERS = 250;
 const CONCURRENCY = 16;
 
 /**
- * Fifteen minutes, matching the rest of the section's data. The page is
- * `force-dynamic`, where an un-annotated `fetch` is `no-store` — so without an
- * explicit `revalidate` this would be 21 upstream requests on every page view.
+ * `no-store`, deliberately.
+ *
+ * These fetches now run inside the hourly Sync rather than a page render, and
+ * the Sync exists precisely to go and look. A cached response would mean the
+ * Sync stores what it was told an hour ago and reports success — the silent
+ * staleness ADR 0001 was written against. The Data Cache was load-bearing when
+ * a visitor's render paid for the poll; it is now actively wrong.
  */
-const REVALIDATE_SECONDS = 900;
+const RUN_FETCH_CACHE = { cache: "no-store" } as const;
 
 const SEASON_IN_URL = /\/mythic-plus-runs\/([^/]+)\//;
 
@@ -268,7 +266,7 @@ async function fetchRankedRoster(args: DungeonFetchArgs): Promise<{ name: string
     `${RANKINGS_URL}?region=${args.region}&realm=${encodeURIComponent(args.realm)}` +
     `&guild=${encodeURIComponent(args.guild)}&season=${args.seasonSlug}&class=all&role=all&page=0`;
 
-  const res = await fetch(url, { next: { revalidate: REVALIDATE_SECONDS } });
+  const res = await fetch(url, RUN_FETCH_CACHE);
   if (!res.ok) throw new Error(`M+ rankings ${res.status} ${res.statusText}`);
   const parsed = RankingsSchema.parse(await res.json());
 
@@ -298,7 +296,7 @@ async function fetchProfiles(region: string, characters: { name: string; realm: 
           `${PROFILE_URL}?region=${region}&realm=${encodeURIComponent(realm)}` +
           `&name=${encodeURIComponent(name)}&fields=${encodeURIComponent(fields)}`;
         try {
-          const res = await fetch(url, { next: { revalidate: REVALIDATE_SECONDS } });
+          const res = await fetch(url, RUN_FETCH_CACHE);
           if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
           return ProfileSchema.parse(await res.json());
         } catch (err) {
@@ -313,26 +311,32 @@ async function fetchProfiles(region: string, characters: { name: string; realm: 
   return profiles;
 }
 
-export type DungeonRotation = {
-  tiles: DungeonTile[];
-  /** Distinct characters who ran a key inside the recency window. */
-  activeCharacters: number;
-};
-
 /**
- * Four tiles per dungeon, ordered for the marquee, plus the activity count.
+ * Every guild run the roster can currently see, for the Sync to store.
  *
- * Both come out of the same merged runs and the same window, deliberately: a
- * headline saying "115 characters" beside tiles drawn from a different slice
- * would be two answers to one question.
+ * **Called from the hourly Sync, never from a page render.** It was the other
+ * way round until the runs were persisted: the section polled ~166 upstream
+ * endpoints while a visitor waited, and because Raider.IO's edge expires at 300s
+ * against a 900s revalidate, the render that refilled the cache was essentially
+ * always the cold one — a measured 7.1s. Worse, Next dedupes fetches *within* a
+ * render and not across concurrent ones, so several visitors arriving on an
+ * expired cache each started their own poll.
+ *
+ * Throwing here fails the whole Sync at its fetch stage, per ADR 0001, and that
+ * is deliberate rather than incidental. The alternative considered was to
+ * tolerate a keys failure so raid progression still wrote: rejected because it
+ * needs a second, weaker notion of failure, and because only the bulk roster
+ * call can throw at all — individual profiles are already skipped one by one
+ * below. A total failure therefore means Raider.IO's M+ API is down while its
+ * guild API is up, which the next hourly run heals.
  */
-export async function fetchDungeonRotation(args: DungeonFetchArgs): Promise<DungeonRotation> {
+export async function fetchGuildRuns(args: DungeonFetchArgs): Promise<GuildRun[]> {
   const roster = await fetchRankedRoster(args);
   const eligible = roster.filter((c) => c.score >= MIN_CHARACTER_SCORE);
 
   if (eligible.length > MAX_CHARACTERS) {
     console.error(
-      `M+ rotation: ${eligible.length} characters are at or above ${MIN_CHARACTER_SCORE} io, ` +
+      `M+ keys: ${eligible.length} characters are at or above ${MIN_CHARACTER_SCORE} io, ` +
         `polling the top ${MAX_CHARACTERS} by score. The board will be thinner than the guild's activity.`,
     );
   }
@@ -340,14 +344,10 @@ export async function fetchDungeonRotation(args: DungeonFetchArgs): Promise<Dung
   // it anyway: an empty section otherwise looks like an upstream outage.
   if (eligible.length === 0 && roster.length > 0) {
     console.error(
-      `M+ rotation: none of ${roster.length} ranked characters reach ${MIN_CHARACTER_SCORE} io, so the section is empty.`,
+      `M+ keys: none of ${roster.length} ranked characters reach ${MIN_CHARACTER_SCORE} io, so nothing was polled.`,
     );
   }
 
   const profiles = await fetchProfiles(args.region, eligible.slice(0, MAX_CHARACTERS));
-  const runs = mergeProfileRuns(profiles, args.seasonSlug);
-  // One clock for both, so the tiles and the count can never describe different
-  // windows on a slow render.
-  const now = Date.now();
-  return { tiles: buildRotation(runs, now), activeCharacters: countActiveCharacters(runs, now) };
+  return mergeProfileRuns(profiles, args.seasonSlug);
 }

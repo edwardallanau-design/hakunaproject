@@ -3,6 +3,8 @@ import config from "@/payload.config";
 import { fetchAndTransformGuildDetails } from "@/lib/raiderio";
 import { deriveProgression, type ProgressionState } from "@/lib/syncProgression";
 import { deriveOfficers, type Officer } from "@/lib/syncOfficers";
+import { fetchGuildRuns } from "@/lib/mythicPlusDungeons";
+import { mergeStoredRuns, type GuildRun } from "@/lib/dungeonRotation";
 import type { MythicPlusRunner } from "@/lib/raiderio";
 import type { Season } from "@/payload-types";
 
@@ -44,26 +46,49 @@ export async function GET(request: Request) {
   }
 
   try {
-    const details = await fetchAndTransformGuildDetails().catch((err) => {
-      throw new SyncStageError("fetch", err instanceof Error ? err.message : String(err));
-    });
-
-    let currentSeasonId: number;
-    let derivedProgression, derivedOfficers;
+    // The Season pointer is resolved before any upstream call, because the
+    // Mythic+ poll below needs this Season's own M+ slug to filter runs by.
+    // A missing pointer is our own state being wrong, not upstream's, so it
+    // keeps the "derivation" stage it has always reported.
+    let season: Season;
+    let officersGlobal;
     try {
-      const [guildSettings, officersGlobal] = await Promise.all([
+      const [guildSettings, officers] = await Promise.all([
         payload.findGlobal({ slug: "guild-settings" }),
         payload.findGlobal({ slug: "officers-section" }),
       ]);
+      officersGlobal = officers;
 
       // An empty pointer must be announced, never silently write nothing (ADR 0001).
       const currentSeason = guildSettings.currentSeason;
       if (!currentSeason || typeof currentSeason !== "object") {
         throw new Error("guild-settings.currentSeason is not set — no Season to sync to.");
       }
-      const season = currentSeason as Season;
-      currentSeasonId = season.id;
+      season = currentSeason as Season;
+    } catch (err) {
+      throw new SyncStageError("derivation", err instanceof Error ? err.message : String(err));
+    }
+    const currentSeasonId = season.id;
 
+    const details = await fetchAndTransformGuildDetails().catch((err) => {
+      throw new SyncStageError("fetch", err instanceof Error ? err.message : String(err));
+    });
+
+    // The Recent Keys poll — ~166 upstream requests, which is precisely why it
+    // belongs here and not in a page render. Part of the fetch stage, so a
+    // failure stops the Sync before anything is written and the stored runs
+    // survive untouched (ADR 0001).
+    const freshRuns = await fetchGuildRuns({
+      region: process.env.GUILD_REGION ?? "us",
+      realm: process.env.GUILD_REALM ?? "Barthilas",
+      guild: process.env.GUILD_NAME ?? "Potato Corner",
+      seasonSlug: season.mythicPlusSeasonSlug,
+    }).catch((err) => {
+      throw new SyncStageError("fetch", `Mythic+ keys: ${err instanceof Error ? err.message : String(err)}`);
+    });
+
+    let derivedProgression, derivedOfficers, mergedRuns;
+    try {
       // A current Season with no bosses yet is a normal mid-rollover state, not a
       // failure — rankings and M+ still derive below, bosses simply stay empty.
       const currentProgression: ProgressionState = {
@@ -92,6 +117,14 @@ export async function GET(request: Request) {
 
       const currentOfficers = (officersGlobal.officers ?? []) as Officer[];
       derivedOfficers = deriveOfficers(details, currentOfficers);
+
+      // Accumulated, not replaced. Each character exposes only their ten most
+      // recent runs, so a single poll can never reach further back than that —
+      // folding hourly keeps a run after it scrolls out of everyone's ten.
+      mergedRuns = mergeStoredRuns(
+        (season.mythicPlusRuns as GuildRun[] | null) ?? [],
+        freshRuns,
+      );
     } catch (err) {
       throw new SyncStageError("derivation", err instanceof Error ? err.message : String(err));
     }
@@ -117,6 +150,7 @@ export async function GET(request: Request) {
           rankingsHeroic: derivedProgression.rankingsByDifficulty.heroic,
           mythicPlusRunners: derivedProgression.mythicPlusRunners,
           mythicPlusParticipants: derivedProgression.mythicPlusParticipants,
+          mythicPlusRuns: mergedRuns,
           lastSyncedAt: syncedAt,
         },
       });
