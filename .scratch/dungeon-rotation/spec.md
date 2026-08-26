@@ -6,8 +6,8 @@
 > the wrong thing.
 
 
-Status: `ready-for-agent`
-Date: 2026-08-25
+Status: `shipped`
+Date: 2026-08-25, reconciled against the code 2026-08-26
 
 ## Problem Statement
 
@@ -49,101 +49,149 @@ Altar of Fangs  LATEST +6      Den of Nalorakk  LATEST +7, over by 8:41
 Murder Row      LATEST +8      Kings' Rest      CLOSEST +2
 ```
 
-**Runs come from `characters/profile` instead**, unioning three fields —
-`mythic_plus_recent_runs`, `mythic_plus_highest_level_runs`,
-`mythic_plus_weekly_highest_level_runs`. One request yields ~15 distinct runs
-per character with real `completed_at`, `par_time_ms`, affix names and dungeon
-names, and — unlike the bulk payload — **depleted runs**, which the bulk drops
-because a blown +16 scores below a timed +14.
+**Runs come from `characters/profile` instead** — one field,
+`mythic_plus_recent_runs`. The other two run lists
+(`mythic_plus_highest_level_runs`, `mythic_plus_weekly_highest_level_runs`) were
+fetched at first and dropped: measured against live data **neither contributed a
+single unique run**, everything they returned already being in `recent_runs` or
+in each other. They were also a slow leak — `highest_level_runs` is
+*season*-scoped, and only looked fresh because the season was two weeks old. By
+month three a standout run from month one would still have been headlining BEST
+KEY on a board built to move.
 
 **The bulk call still happens, for one reason: it is the only score-ordered
-source that carries each character's realm.** Realms vary across the guild —
-Heyems is on Frostmourne, not Barthilas, and a wrong realm 400s. The stored
+source that carries each character's realm.** Realms vary across this guild —
+Heyems is on Frostmourne, not Barthilas — and a wrong realm is a 400. The stored
 `mythicPlusRunners` cannot substitute; it has no realm column. So the bulk
-response is an address book, never a run source.
+response is an address book, never a run source. The roster it returns is
+rebuilt every poll: nothing is hardcoded, so a member who joins and scores
+appears next hour and one who leaves disappears.
 
-**The whole ranked roster is polled, not its top scorers** (operator,
-2026-08-25: *"expand it to the whole mythic+ roster … so we will have more
-variety of the tiles"*). Twenty names fills all 32 tiles but features only 14
-people, because the top of a score board is the same handful on every tile. The
-full 164 takes that to **25**, and it is where the five-man guild groups come
-from — Redwithwings / Kookeeya / Flashbangg / Mootilate / Slapsoil never appear
-in a top-20 poll at all.
+## Where the fetching happens
 
-**Breadth needs a floor, or it drags the board down.** Measured over 1,286 live
-runs:
+**The Sync fetches; the page derives.** This was the other way round when the
+section first shipped, and the reversal is the single largest change to it.
 
-| floor | runs | tiles | people | LATEST RUN keys |
-|---|---|---|---|---|
-| +0 | 1286 | 32 | 32 | +2..+10 |
-| +10 | 782 | 32 | 34 | +10..+14 |
-| **+12** | **235** | **32** | **25** | **+12..+16** |
-| +15 | 33 | 31 | 8 | +15..+16 |
+| | before | after |
+|---|---|---|
+| requests per page render | ~166 | **0** |
+| cold render | **7.1s** | **0.23s** |
+| Sync duration | ~1s | 14.9s |
 
-Without one, LATEST RUN becomes a parade of alts clearing +2s — true, and not
-worth a tile. At +15 the pool collapses, a category starts coming back empty,
-and the newest thing on the board is 22 hours old. `MIN_KEY_LEVEL = 12`.
+Request-time polling failed three ways at once. The poll sat inside the render
+on a 900s revalidate against an upstream edge that expires at 300s, so the
+render that refilled the cache was essentially *always* the cold one. Next
+dedupes fetches *within* a render but not *across* concurrent ones, so several
+visitors arriving on an expired cache each started their own poll. And nothing
+could ever be seen beyond a character's ten-run window.
 
-**Breadth is bought by score, not by polling everybody.**
-`MIN_CHARACTER_SCORE = 2000` — the roster entry already carries `score`, so this
-costs no extra request. Simulated across one poll of the full 165:
+**Runs are stored, not tiles** (operator, 2026-08-26: *"yes store it"*). Storing
+finished tiles would freeze the presentation into the database — changing a
+category, a threshold or the window would need a re-sync before it showed.
+Storing runs keeps every selection rule in code where it is tested, and buys
+reach: each character exposes only their ten most recent runs, so a single poll
+can never see further back than that window goes. Folding hourly keeps a run
+after it scrolls out of everyone's ten. First sync stored **1,034 runs (264 KB)
+spanning 0h to 6.9d** — roughly three times the reach of any one poll.
 
-| floor | polled | cold | runs | tiles | people | biggest party |
-|---|---|---|---|---|---|---|
-| 0 | 165 | 7.1s | 235 | 32 | 25 | 5 |
-| 1500 | 105 | 4.5s | 235 | 32 | 25 | 5 |
-| **2000** | **88** | **3.8s** | **235** | **32** | **25** | **5** |
-| 2500 | 66 | 2.9s | 232 | 32 | 24 | 5 |
-| 3000 | 13 | 0.6s | 109 | 32 | 11 | 5 |
+`mergeStoredRuns` unions parties rather than replacing them: a run can first
+appear when only one member's window still holds it and gain the rest later, so
+taking the fresh copy wholesale would sometimes *shrink* a party already seen in
+full. `RUN_RETENTION_MS` is **7 days** against a 48-hour display window,
+deliberately longer so the window can be retuned without waiting days for the
+store to refill.
 
-At 2000 the board is identical to the full roster's for half the requests, and
-that is not luck: `MIN_KEY_LEVEL` already discards everything a sub-2000
-character contributes, because clearing +12s is roughly what earns that score.
-The two floors measure the same thing from opposite ends, and the score one is
-the cheap end — applied *before* the request rather than after it.
+The fetches are `cache: "no-store"`. The Data Cache was load-bearing when a
+visitor's render paid for the poll; it is actively wrong when the Sync's whole
+job is to go and look.
 
-**3000 is the intended destination and is not reachable yet** (operator: *"i
-should just aim for 3k io people but i don't think everyone is past that now …
-then we increase that to 3k later on"*). Guild mean is **1840**, median
-**2153**, and only **13 of 165** are at 3000 — the board collapses back to 11
-people, the narrow one this change set out to fix. Raise it when the median
-does, and re-run the simulation rather than assuming the shape held.
+**The keys poll joins the fetch stage, so its failure fails the whole Sync
+before anything is written** (ADR 0001). Tolerating a keys failure so raid
+progression still wrote was considered and rejected: it needs a second, weaker
+notion of failure, and a `lastSyncError` whose description ("the data below is
+stale") would then be false. Only the bulk roster call can throw — individual
+profiles are already skipped one by one — so a total failure means Raider.IO's
+M+ API is down while its guild API is up, which the next hourly run heals.
 
-**Request budget: 89** — 1 bulk + 88 profiles, at concurrency 16. The six
-`mythic-plus/static-data` calls are **dropped**: the per-character runs carry
-`dungeon` and `zone_id` directly, so nothing needs the zoneId→name map any more.
+## Who gets polled
 
-**Re-timing this needs a quiet window.** Upstream sends
-`cache-control: max-age=300`; the same poll inside five minutes returns in 0.2s
-off Cloudflare's edge, which reads as a fast poll and is not one.
+**The whole ranked roster.** `MIN_CHARACTER_SCORE = 0` and `MAX_CHARACTERS =
+250`, so today all 165 ranked characters are polled and neither limit binds.
 
-`MAX_CHARACTERS = 250` is a hard ceiling expected never to bind — the score
-floor does the real bounding. It exists because an unbounded fan-out to a third
-party inside a page render is what takes a site down when an assumption changes.
+An io floor of 2000 was tried and then disarmed. Under a 48-hour window a
+low-scoring character only enters the pool by running *recently*, which changes
+the arithmetic entirely — measured, dropping the floor takes the board from 32
+distinct people to **40**, leaves BEST KEY (+15..+17) and CLOSEST CALL (+7..+16)
+untouched, and costs only LATEST RUN, which widens from +9..+11 to +2..+11. The
+operator accepted that trade (*"im good with showing +2"*).
+
+It also decides whether the activity count can speak for the guild: at 2000 the
+honest phrasing is "73 of the 88 we polled", which is not a statement about the
+guild. At 0 it is 109 of 165.
+
+`MAX_CHARACTERS` is a backstop against unbounded fan-out, expected never to
+bind. If it ever fires it logs that the board is thinner than the guild's
+activity, rather than truncating silently.
+
+**`MIN_KEY_LEVEL = 0` — the key floor is disarmed too** (operator, 2026-08-26:
+*"no restriction on key levels for now … since it's too early for the season"*).
+It was 12 briefly. The "+2 parade of alts" it was raised against came from the
+*sub-2000 characters*, not from the missing floor; with the poll widened,
+measured over the 963 runs the roster returns:
+
+| floor | runs | tiles | people | LATEST RUN keys | oldest LATEST |
+|---|---|---|---|---|---|
+| **+0** | **963** | **32** | **29** | **+9..+11** | **4h** |
+| +10 | 737 | 32 | 30 | +10..+14 | 7h |
+| +12 | 235 | 32 | 25 | +12..+16 | 10h |
+
+No floor is six hours fresher. GUILD GROUP survives it: only two dungeons drop
+to +11, and both *gain* a member doing so. The constant stays in place carrying
+this table, so raising it as the keys climb is a one-number edit.
+
 
 ## Requirements
 
-- [ ] Four categories per dungeon: best key, latest run, closest call, guild group
-- [ ] Runs sourced from `characters/profile`, never from the bulk payload's `runs[]`
-- [ ] Everyone at or above `MIN_CHARACTER_SCORE` is polled, not just top scorers
-- [ ] A roster where nobody clears the score floor logs why the section is empty
-- [ ] Runs below `MIN_KEY_LEVEL` cannot headline a tile
-- [ ] The bulk call is used only to enumerate name + realm
-- [ ] `static-data` fetches removed
-- [ ] Closest call shows the **real** sign — over-time renders as over, not "SPARE"
-- [ ] One meaning per slot: the `mm:ss` stat is the clear time on *every*
+All shipped. Checked because this spec was written alongside the build and
+revised as it changed; an unticked box here would mean the spec is stale, not
+that work remains.
+
+- [x] Four categories per dungeon: best key, latest run, closest call, guild group
+- [x] Runs sourced from `characters/profile`, never from the bulk payload's `runs[]`
+- [x] Only `mythic_plus_recent_runs` is requested — the other two run lists
+      contributed no unique runs and only added age
+- [x] Everyone at or above `MIN_CHARACTER_SCORE` is polled, not just top scorers
+- [x] A roster where nobody clears the score floor logs why nothing was polled
+- [x] Runs below `MIN_KEY_LEVEL` cannot headline a tile (mechanism live; the
+      constant is currently 0, so it passes everything)
+- [x] Runs older than `RECENCY_WINDOW_MS` cannot headline a tile
+- [x] The bulk call is used only to enumerate name + realm
+- [x] `static-data` fetches removed
+- [x] The Sync fetches and stores runs; the page does no I/O
+- [x] Stored runs accumulate and are pruned at `RUN_RETENTION_MS`, and parties
+      are unioned rather than replaced
+- [x] A keys-poll failure fails the Sync before anything is written (ADR 0001)
+- [x] Closest call shows the **real** sign — over-time renders as over, not "SPARE"
+- [x] One meaning per slot: the `mm:ss` stat is the clear time on *every*
       category, and a closest call's margin lives in the outcome ("SPARE BY
       0:04"). Putting the margin in the stat slot made a 29:56 clear read as a
       four-second run.
-- [ ] Marquee halts under `prefers-reduced-motion`, with a readable static fallback
-- [ ] A pause control exists, because touch has no hover
-- [ ] Section numeral computed, not hardcoded
-- [ ] No MIDNIGHT / LEGACY badges, and no pool legend
-- [ ] A category with no qualifying run omits its tile; the marquee length is free
-- [ ] Duplicate runs across categories are kept — one run wearing two badges is
+- [x] Marquee halts under `prefers-reduced-motion`, with a readable static fallback
+- [x] A pause control exists, because touch has no hover
+- [x] Each page load enters the loop at a different point
+- [x] Section numeral computed, not hardcoded
+- [x] No MIDNIGHT / LEGACY badges, and no pool legend
+- [x] A category with no qualifying run omits its tile; the marquee length is free
+- [x] Duplicate runs across categories are kept — one run wearing two badges is
       two true statements, and deduping would silently blank a tile
-- [ ] Every fetch inside the existing catch-to-empty envelope; one character
-      failing must not cost the section, and the section must never cost the page
+- [x] One character failing must not cost the section: profiles are skipped
+      individually inside the poll
+
+**The page's catch-to-empty envelope is gone, and its absence is the
+requirement now.** It existed because the render performed I/O. The render reads
+a stored array and calls two pure functions; there is nothing left to fail, and
+a `try/catch` around it would be theatre.
+
 
 ## Decisions worth not re-litigating
 
@@ -151,9 +199,14 @@ party inside a page render is what takes a site down when an assumption changes.
 best-key tile. Colloquially "best key" means timed, so the code says otherwise
 explicitly.
 
-**Guild group means three or more members.** Four is the honest read of "group",
-but at four Voidscar Arena has no qualifying run at all. Three keeps every
-dungeon represented while still meaning *several members ran this together*.
+**Guild group means three or more members — and the reason it does is now
+stale.** Four is the honest read of "group". Three was chosen because at four,
+Voidscar Arena had no qualifying run at all. With `MIN_KEY_LEVEL` disarmed the
+pool is four times larger and **every one of the eight dungeons now fields a run
+of four or more** — measured party sizes on the current picks are 5, 4, 4, 4, 4,
+5, 5, 5. Raising it to 4 would cost no dungeon a tile and make the badge mean
+what it says. Left at 3 because it changes what the tiles show, which is the
+operator's call rather than a maintenance detail. Five would cover 4 of 8.
 
 **Best key breaks ties by the most recent run, not the fastest.** The old grid
 broke them by clear time, which is why it never moved: among equal keys it
@@ -217,19 +270,32 @@ number silently becomes "active among the ones we bothered to poll".
 
 ## Known edge
 
-**Below about six tiles the loop shows a gap on a wide screen.** The strip
-scrolls by `translateX(-50%)`, which is seamless only while one copy is at least
-as wide as the viewport — two copies of a four-tile strip are ~1200px against a
-1440px frame, so the tail of each cycle exposes blank track. Only reachable on
-day one of a season, before the guild has run more than one dungeon. Left
-unguarded deliberately: a third copy for a case that lasts hours costs markup
-every other day of the season.
+**A thin board needs more than two copies of the track.** The strip loops by
+shifting exactly one copy, which only reads as seamless while a copy is at least
+as wide as the viewport — roughly 5 tiles at 1440px, 9 at 2560px, 12 at 3440px.
+A quiet week that thins the board to three dungeons is well inside that.
+
+Guarded: the track repeats the tile list to at least `MIN_TRACK_TILES` (26) and
+the keyframe shifts by `calc(-100% / var(--venom-mq-copies))` rather than a
+hard-coded `-50%`. At a full 32-tile board nothing changes. This was originally
+left unguarded on the reasoning that it only occurred on day one of a season;
+the degradation curve showed it is reachable in any lull, and the reasoning was
+wrong rather than merely optimistic.
 
 ## Out of scope
 
-**Persisting the rotation at sync time.** This ship *raises* the request-time
-cost from 7 to 165, which strengthens rather than closes the ledger's Open item
-— hard enough that it is now the next thing this section should get.
-Storing hourly would also compound: runs captured while inside a character's
-10-run window would be kept after they scroll out, building a guild run log
-Raider.IO itself does not expose. Not required to ship the categories.
+**Suspense-streaming the section.** It was the cheap alternative to persisting —
+the page would render immediately and the strip stream in behind a boundary.
+Moot now: with the poll in the Sync there is nothing to wait for. Had it been
+built first it would have been a few hours of restructuring the
+`page.tsx` → `VenomPage` seam that persisting then undid.
+
+**A frozen view for archived Seasons.** Their stored runs survive whatever the
+last Sync saw, so a "final week of the season" board is technically available.
+Not built: a section headed *Recent Keys* showing a two-year-old week answers a
+question nobody asked. Archived Seasons render nothing, as they always have
+(ADR 0005).
+
+**Alt detection.** Raider.IO exposes no account link — `persona_id` looked like
+one and is not — so the activity count is of characters and cannot be of people.
+See *The activity count*.
