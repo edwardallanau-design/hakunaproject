@@ -46,18 +46,18 @@ export function SerpentEye({ className }: { className?: string }) {
       viewBox="0 0 200 200"
       aria-hidden
       className={className}
-      style={{ filter: "drop-shadow(0 0 40px rgba(132,204,22,0.25))" }}
+      style={{ filter: "drop-shadow(0 0 40px rgba(34,197,94,0.25))" }}
     >
       <defs>
         <radialGradient id="venomOuter" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1f4a0e" stopOpacity="0.95" />
-          <stop offset="70%" stopColor="#0a2408" stopOpacity="0.5" />
+          <stop offset="0%" stopColor="#124a24" stopOpacity="0.95" />
+          <stop offset="70%" stopColor="#07240f" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#050f08" stopOpacity="0" />
         </radialGradient>
         <radialGradient id="venomIris" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#d9f99d" />
-          <stop offset="55%" stopColor="#84cc16" />
-          <stop offset="100%" stopColor="#1f4a0e" />
+          <stop offset="0%" stopColor="#bbf7d0" />
+          <stop offset="55%" stopColor="#22c55e" />
+          <stop offset="100%" stopColor="#124a24" />
         </radialGradient>
         <radialGradient id="venomPotato" cx="42%" cy="38%" r="70%">
           <stop offset="0%" stopColor="#e3bc7f" />
@@ -75,12 +75,12 @@ export function SerpentEye({ className }: { className?: string }) {
 
       {/* Halo and orbit rings */}
       <circle cx="100" cy="100" r="92" fill="url(#venomOuter)" />
-      <circle cx="100" cy="100" r="76" fill="none" stroke="#84cc16" strokeWidth="1.3" opacity="0.4" strokeDasharray="3 7" />
-      <circle cx="100" cy="100" r="62" fill="none" stroke="#a3e635" strokeWidth="1.7" opacity="0.5" />
-      <circle cx="100" cy="100" r="48" fill="none" stroke="#2dd4bf" strokeWidth="1.1" opacity="0.4" strokeDasharray="8 5" />
+      <circle cx="100" cy="100" r="76" fill="none" stroke="#22c55e" strokeWidth="1.3" opacity="0.4" strokeDasharray="3 7" />
+      <circle cx="100" cy="100" r="62" fill="none" stroke="#4ade80" strokeWidth="1.7" opacity="0.5" />
+      <circle cx="100" cy="100" r="48" fill="none" stroke="#facc15" strokeWidth="1.1" opacity="0.4" strokeDasharray="8 5" />
 
       {/* Fangs at the compass points */}
-      <g fill="#a3e635" opacity="0.75">
+      <g fill="#4ade80" opacity="0.75">
         <polygon points="100,20 104,33 96,33" />
         <polygon points="180,100 167,104 167,96" />
         <polygon points="100,180 96,167 104,167" />
@@ -97,10 +97,10 @@ export function SerpentEye({ className }: { className?: string }) {
       </g>
 
       {/* Venom sprouts */}
-      <line x1="82" y1="72" x2="76" y2="60" stroke="#a3e635" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="75" cy="58" r="3" fill="#a3e635" />
-      <line x1="120" y1="70" x2="126" y2="61" stroke="#84cc16" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="127" cy="59" r="2.4" fill="#84cc16" />
+      <line x1="82" y1="72" x2="76" y2="60" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="75" cy="58" r="3" fill="#4ade80" />
+      <line x1="120" y1="70" x2="126" y2="61" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="127" cy="59" r="2.4" fill="#22c55e" />
 
       {/* The eye. The blink lives on this group so the pupil moves with it. */}
       <g className="venom-eye-blink" style={{ transformOrigin: "100px 100px" }}>
@@ -112,8 +112,8 @@ export function SerpentEye({ className }: { className?: string }) {
         </g>
       </g>
 
-      {/* Teal minor fangs */}
-      <g fill="#2dd4bf" opacity="0.7">
+      {/* Gold minor fangs */}
+      <g fill="#facc15" opacity="0.7">
         <polygon points="160,94 164,103 156,103" />
         <polygon points="118.5,151.1 122.5,160.1 114.5,160.1" />
         <polygon points="51.5,129.3 55.5,138.3 47.5,138.3" />

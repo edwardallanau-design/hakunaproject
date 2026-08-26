@@ -22,7 +22,7 @@ export function VenomAbout({
       id="about"
       style={{
         padding: "clamp(80px,9vw,130px) clamp(20px,4vw,64px)",
-        background: "linear-gradient(180deg, transparent, rgba(20,50,10,0.12) 50%, transparent)",
+        background: "linear-gradient(180deg, transparent, rgba(10,50,25,0.12) 50%, transparent)",
         borderTop: "1px solid var(--border-dim)",
       }}
     >
@@ -255,7 +255,7 @@ export function VenomOfficers({ officers, numeral = "05" }: { officers: OfficerC
 const PRIORITY = {
   High: { text: "#f87171", bg: "rgba(239,68,68,0.15)" },
   Medium: { text: "#fbbf24", bg: "rgba(245,158,11,0.12)" },
-  Low: { text: "#2dd4bf", bg: "rgba(45,212,191,0.1)" },
+  Low: { text: "#facc15", bg: "rgba(250,204,21,0.1)" },
 } as const;
 
 export type RoleCard = { role: string; specs: string[]; priority: keyof typeof PRIORITY };
@@ -283,7 +283,7 @@ export function VenomRecruitment({
         position: "relative",
         overflow: "hidden",
         background:
-          "linear-gradient(135deg, rgba(20,50,10,0.45) 0%, rgba(5,15,8,0.95) 55%, rgba(132,204,22,0.10) 100%)",
+          "linear-gradient(135deg, rgba(10,50,25,0.45) 0%, rgba(5,15,8,0.95) 55%, rgba(34,197,94,0.10) 100%)",
         borderTop: "1px solid var(--border)",
       }}
     >

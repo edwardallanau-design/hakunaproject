@@ -19,8 +19,8 @@ const PROG = "#fbbf24";
 function stateStyles(state: BossAtDifficulty["state"]) {
   if (state === "dead") {
     return {
-      rowBg: "rgba(45,212,191,0.04)",
-      rowBorder: "rgba(45,212,191,0.14)",
+      rowBg: "rgba(250,204,21,0.04)",
+      rowBorder: "rgba(250,204,21,0.14)",
       node: "var(--accent2)",
       nodeGlow: "0 0 8px var(--accent2)",
       nodeBorder: "var(--accent2)",
@@ -298,8 +298,8 @@ function RaidGroupSection({
                         fontWeight: 700,
                         fontSize: "var(--ui-xs)",
                         color: "var(--accent2)",
-                        background: "rgba(45,212,191,0.1)",
-                        border: "1px solid rgba(45,212,191,0.3)",
+                        background: "rgba(250,204,21,0.1)",
+                        border: "1px solid rgba(250,204,21,0.3)",
                         padding: "3px 12px",
                         letterSpacing: "0.16em",
                         flexShrink: 0,

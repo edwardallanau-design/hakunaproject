@@ -150,21 +150,25 @@
   --bg: #050f08;
   --surface: #081810;
   --surface2: #0c2114;
-  --accent: #84cc16;
-  --accent2: #2dd4bf;
-  --glow: #a3e635;
+  --accent: #22c55e;
+  --accent2: #facc15;
+  --glow: #4ade80;
   --text: #e3f0da;
   --muted: #7d9a80;
-  --border: rgba(132,204,22,0.45);
-  --border-dim: rgba(132,204,22,0.22);
+  --border: rgba(34,197,94,0.45);
+  --border-dim: rgba(34,197,94,0.22);
   --card-bg: rgba(8,24,16,0.85);
-  --corner: #2dd4bf;
-  --shadow-accent: #14320a;
+  --corner: #facc15;
+  --shadow-accent: #0a3218;
 
-  /* Status, deliberately outside the lime/teal accent pair. The dungeon
+  /* Status, deliberately outside the green/gold accent pair. The dungeon
      marquee has to say "close" and "missed" at a glance, and saying either in
-     an accent colour would read as emphasis rather than as outcome. */
-  --warn: #e8b64c;
+     an accent colour would read as emphasis rather than as outcome.
+
+     `--warn` is a burnt orange rather than the amber it once was: gold is now
+     an accent, and an amber status sat close enough in hue to be read as one.
+     Orange keeps the four marquee categories four separable colours. */
+  --warn: #f97316;
   --miss: #e07b5f;
 
   /* The design's own type scale. Deliberately separate from the `--px-*` and
@@ -417,7 +421,7 @@
   .venom-runner-row:hover { background: inherit; }
 }
 
-/* Hard-shadowed buttons. `--shadow-accent` carries venom's #14320a. */
+/* Hard-shadowed buttons. `--shadow-accent` carries venom's #0a3218. */
 .venom-btn {
   font-family: var(--font-ui);
   font-weight: 700;
@@ -822,13 +826,13 @@ html {
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--glow); }
 
-/* venom — lime on deep green, matching the page it runs beside. */
+/* venom — jungle green on deep green, matching the page it runs beside. */
 html:has(.theme-venom) {
-  scrollbar-color: #84cc16 #081810;
+  scrollbar-color: #22c55e #081810;
 }
 html:has(.theme-venom) ::-webkit-scrollbar-track { background: #081810; }
-html:has(.theme-venom) ::-webkit-scrollbar-thumb { background: #84cc16; }
-html:has(.theme-venom) ::-webkit-scrollbar-thumb:hover { background: #a3e635; }
+html:has(.theme-venom) ::-webkit-scrollbar-thumb { background: #22c55e; }
+html:has(.theme-venom) ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
 
 /* ── Selection ── */
 ::selection {

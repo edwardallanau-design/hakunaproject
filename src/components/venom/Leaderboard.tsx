@@ -103,7 +103,7 @@ export function Leaderboard({ runners, numeral = "03" }: { runners: Runner[]; nu
                 fontSize: "clamp(38px,3.6vw,66px)",
                 lineHeight: 1,
                 color: "var(--accent2)",
-                textShadow: "0 0 20px rgba(45,212,191,0.5)",
+                textShadow: "0 0 20px rgba(250,204,21,0.5)",
               }}
             >
               {Math.round(champion.score).toLocaleString()}

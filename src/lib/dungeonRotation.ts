@@ -37,13 +37,13 @@ export type TileCategory = (typeof CATEGORIES)[number];
  * only by `.theme-venom`. ADR 0007 lets a theme be palette-only, and such a
  * theme would define the accent pair but have no reason to know this section
  * exists — leaving the badge unstyled. The fallback is venom's own value, so
- * nothing changes today and a future theme degrades to a readable amber rather
+ * nothing changes today and a future theme degrades to a readable orange rather
  * than to nothing.
  */
 export const CATEGORY_STYLE: Record<TileCategory, { label: string; color: string }> = {
   "best-key": { label: "BEST KEY", color: "var(--glow)" },
   "latest-run": { label: "LATEST RUN", color: "var(--accent2)" },
-  "closest-call": { label: "CLOSEST CALL", color: "var(--warn, #e8b64c)" },
+  "closest-call": { label: "CLOSEST CALL", color: "var(--warn, #f97316)" },
   "guild-group": { label: "GUILD GROUP", color: "var(--accent)" },
 };
 
